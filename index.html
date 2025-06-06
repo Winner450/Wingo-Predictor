@@ -1,53 +1,87 @@
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-import random
-
-# Load past WinGo data
-data = pd.read_csv('wingo_data.csv')
-
-# Convert color & size to numeric
-data['color'] = data['color'].map({'Red': 0, 'Green': 1, 'Violet': 2})
-data['size'] = data['size'].map({'Small': 0, 'Big': 1})
-
-# Create features (shifted previous values)
-for i in range(1, 4):
-    data[f'color_{i}'] = data['color'].shift(i)
-    data[f'number_{i}'] = data['number'].shift(i)
-    data[f'size_{i}'] = data['size'].shift(i)
-
-data.dropna(inplace=True)
-
-# Features and Targets
-features = [f'color_{i}' for i in range(1, 4)] + [f'number_{i}' for i in range(1, 4)] + [f'size_{i}' for i in range(1, 4)]
-X = data[features]
-y_color = data['color']
-y_number = data['number']
-y_size = data['size']
-
-# Train models
-color_model = RandomForestClassifier().fit(X, y_color)
-number_model = RandomForestClassifier().fit(X, y_number)
-size_model = RandomForestClassifier().fit(X, y_size)
-
-def predict_next(data: pd.DataFrame):
-    latest = data.iloc[-3:][['color', 'number', 'size']].T.values.flatten()
-    pred_input = [int(i) for i in latest]
-    pred_df = pd.DataFrame([pred_input], columns=features)
-
-    color_pred = color_model.predict(pred_df)[0]
-    number_pred = number_model.predict(pred_df)[0]
-    size_pred = size_model.predict(pred_df)[0]
-
-    color_map = {0: 'Red', 1: 'Green', 2: 'Violet'}
-    size_map = {0: 'Small', 1: 'Big'}
-
-    return {
-        'color': color_map[color_pred],
-        'number': int(number_pred),
-        'size': size_map[size_pred],
-        'confidence': f"{random.randint(85, 98)}%"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎯 Wingo AI Predictor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      background: #000;
+      color: #FFD700;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
     }
 
-# Predict
-prediction = predict_next(data)
-print(prediction)
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .prediction-box {
+      border: 2px solid #FFD700;
+      padding: 1.5rem;
+      border-radius: 15px;
+      display: inline-block;
+      min-width: 300px;
+      background: #111;
+      box-shadow: 0 0 20px #FFD70080;
+      transition: all 0.3s ease-in-out;
+      animation: pulse 2s infinite;
+    }
+
+    .prediction-item {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px #FFD700; }
+      50% { box-shadow: 0 0 20px #FFD700AA; }
+      100% { box-shadow: 0 0 10px #FFD700; }
+    }
+
+    .loading {
+      font-size: 1.2rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Wingo Predictor Pro (AI)</h1>
+
+  <div id="predictionBox" class="prediction-box">
+    <div class="loading">🔄 Loading AI Prediction...</div>
+  </div>
+
+  <script>
+    async function fetchPrediction() {
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({})
+        });
+
+        const data = await res.json();
+
+        document.getElementById("predictionBox").innerHTML = `
+          <div class="prediction-item"><strong>🎨 Color:</strong> ${data.color}</div>
+          <div class="prediction-item"><strong>🔢 Number:</strong> ${data.number}</div>
+          <div class="prediction-item"><strong>📏 Size:</strong> ${data.size}</div>
+          <div class="prediction-item"><strong>⚡ Confidence:</strong> ${data.confidence}</div>
+        `;
+      } catch (err) {
+        document.getElementById("predictionBox").innerHTML =
+          "<div class='loading'>❌ Error fetching prediction</div>";
+      }
+    }
+
+    fetchPrediction();
+    setInterval(fetchPrediction, 10000); // auto refresh every 10 sec
+  </script>
+</body>
+</html>
