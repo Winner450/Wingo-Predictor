@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo Advanced AI Predictor</title>
+  <meta charset="UTF-8">
+  <title>WinGo Predictor Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -12,120 +12,154 @@
       color: #fff;
       overflow: hidden;
     }
-    .stars { position: fixed; width:100%; height:100%; z-index:0; }
+
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 0;
+      overflow: hidden;
+    }
+
     .star {
-      position: absolute; background:#fff;
-      border-radius:50%; width:2px; height:2px;
-      animation: fall linear infinite;
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: moveStars 30s linear infinite;
     }
-    @keyframes fall {
-      0% { transform:translateY(0); opacity:1; }
-      100% { transform:translateY(100vh); opacity:0; }
+
+    @keyframes moveStars {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
     }
+
     .container {
-      position: relative; z-index:1;
-      display:flex; justify-content:center;
-      align-items:center; height:100vh;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
     }
+
     .prediction-box {
-      background: rgba(255,215,0,0.1);
+      background: rgba(255, 215, 0, 0.1);
       border: 2px solid gold;
-      border-radius:20px; padding:30px;
-      width:90%; max-width:400px;
-      box-shadow:0 0 20px gold;
-      backdrop-filter:blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 15px gold;
+      backdrop-filter: blur(10px);
     }
+
     .prediction-title {
-      font-size:24px; font-weight:bold;
-      color:gold; text-align:center;
-      margin-bottom:20px;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+      color: gold;
     }
+
     .prediction-item {
-      display:flex; justify-content:space-between;
-      font-size:18px; margin:10px 0;
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 18px;
     }
-    .label { color:#ddd; }
-    .value { font-weight:bold; color:#fff; }
+
+    .label {
+      color: #ddd;
+    }
+
+    .value {
+      font-weight: bold;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
-<div class="container">
-  <div class="prediction-box">
-    <div class="prediction-title">AI Live Prediction</div>
-    <div class="prediction-item"><div class="label">Size:</div><div class="value" id="size">...</div></div>
-    <div class="prediction-item"><div class="label">Colour:</div><div class="value" id="colour">...</div></div>
-    <div class="prediction-item"><div class="label">Number:</div><div class="value" id="number">...</div></div>
-    <div class="prediction-item"><div class="label">Confidence:</div><div class="value" id="confidence">...</div></div>
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <div class="prediction-box">
+      <div class="prediction-title">🎯 WinGo Prediction</div>
+      <div class="prediction-item">
+        <div class="label">Size:</div>
+        <div class="value" id="size">Loading...</div>
+      </div>
+      <div class="prediction-item">
+        <div class="label">Colour:</div>
+        <div class="value" id="colour">Loading...</div>
+      </div>
+      <div class="prediction-item">
+        <div class="label">Number:</div>
+        <div class="value" id="number">Loading...</div>
+      </div>
+      <div class="prediction-item">
+        <div class="label">Confidence:</div>
+        <div class="value" id="confidence">Loading...</div>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-  // Star background generation
-  const stars = document.getElementById('stars');
-  for (let i = 0; i < 150; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    s.style.top = `${Math.random() * 100}vh`;
-    s.style.left = `${Math.random() * 100}vw`;
-    s.style.animationDuration = `${10 + Math.random() * 40}s`;
-    s.style.opacity = Math.random();
-    stars.appendChild(s);
-  }
-
-  // Utility to simulate incoming past results
-  const generateResult = () => {
-    const colors = ['Red','Green','Violet'];
-    const color = colors[Math.floor(Math.random()*colors.length)];
-    const number = Math.floor(Math.random()*10);
-    return { color, number };
-  };
-
-  // Maintain array of last N results
-  const pastResults = [];
-  const maxHistory = 15;
-
-  // AI Pattern & Fallback prediction
-  function aiPredict(history) {
-    if (history.length < 5) {
-      // Not enough data, random low-confidence
-      const rand = generateResult();
-      return {...rand, size: rand.number>=5?'Big':'Small', confidence:'30%'};
+  <script>
+    // Star Animation Generator
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.animationDuration = `${20 + Math.random() * 30}s`;
+      starsContainer.appendChild(star);
     }
 
-    const colorCt = {Red:0,Green:0,Violet:0};
-    const numCt = {};
-    history.forEach(r => {
-      colorCt[r.color]++;
-      numCt[r.number] = (numCt[r.number]||0)+1;
-    });
+    // Mock Last 10 Results
+    const previousResults = [
+      { color: 'Red', number: 6 },
+      { color: 'Green', number: 1 },
+      { color: 'Red', number: 9 },
+      { color: 'Violet', number: 0 },
+      { color: 'Green', number: 2 },
+      { color: 'Red', number: 7 },
+      { color: 'Green', number: 3 },
+      { color: 'Red', number: 6 },
+      { color: 'Violet', number: 0 },
+      { color: 'Green', number: 5 }
+    ];
 
-    const mostColor = Object.keys(colorCt).reduce((a,b)=>colorCt[a]>=colorCt[b]?a:b);
-    const mostNumber = parseInt(Object.keys(numCt).reduce((a,b)=>numCt[a]>=numCt[b]?a:b));
-    const size = mostNumber>=5 ? 'Big' : 'Small';
-    let base = (colorCt[mostColor]/history.length)*100;
-    const confidence = Math.min(99, Math.floor(base + (history.length/ maxHistory)*20)) + '%';
+    // AI Logic
+    function getPrediction(data) {
+      const colorCount = { Red: 0, Green: 0, Violet: 0 };
+      const numberFreq = {};
+      let bigCount = 0;
+      let smallCount = 0;
 
-    return { color: mostColor, number: mostNumber, size, confidence };
-  }
+      data.forEach(item => {
+        colorCount[item.color]++;
+        numberFreq[item.number] = (numberFreq[item.number] || 0) + 1;
+        if (item.number >= 5) bigCount++;
+        else smallCount++;
+      });
 
-  // Update UI & history simulation
-  function updatePrediction() {
-    if (pastResults.length>=maxHistory) pastResults.shift();
-    pastResults.push(generateResult());
+      const nextColor = Object.entries(colorCount).sort((a, b) => b[1] - a[1])[0][0];
+      const nextNumber = parseInt(Object.entries(numberFreq).sort((a, b) => b[1] - a[1])[0][0]);
+      const nextSize = nextNumber >= 5 ? "Big" : "Small";
+      const confidence = Math.min(99, Math.floor((colorCount[nextColor] / data.length) * 100 + 20));
 
-    const pred = aiPredict(pastResults);
-    document.getElementById('size').innerText = pred.size;
-    document.getElementById('colour').innerText = pred.color;
-    document.getElementById('number').innerText = pred.number;
-    document.getElementById('confidence').innerText = pred.confidence;
-  }
+      document.getElementById("size").innerText = nextSize;
+      document.getElementById("colour").innerText = nextColor;
+      document.getElementById("number").innerText = nextNumber;
+      document.getElementById("confidence").innerText = confidence + "%";
+    }
 
-  // Start live simulation
-  updatePrediction();
-  setInterval(updatePrediction, 4000);
-</script>
-
+    // Run on load
+    getPrediction(previousResults);
+  </script>
 </body>
 </html>
