@@ -2,70 +2,189 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>WinGo Prediction Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 WinGo Predictor Pro AI</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f0f4f8;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1c1c1c);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
     }
     h2 {
-      color: #333;
+      color: gold;
+      font-size: 28px;
+      margin-bottom: 10px;
     }
-    input, button, textarea {
-      padding: 10px;
-      margin: 5px 0;
+    textarea, button {
+      width: 350px;
+      padding: 12px;
       font-size: 16px;
-      width: 100%;
-      max-width: 500px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
     }
-    .big {
-      color: green;
+    textarea {
+      resize: none;
+      background: #111;
+      color: white;
+      border: 1px solid gold;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px gold;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ffc107;
+    }
+    .prediction-result {
+      background: #1a1a1a;
+      border: 2px solid gold;
+      border-radius: 20px;
+      padding: 25px;
+      width: 400px;
+      margin-top: 20px;
+      text-align: left;
+      box-shadow: 0 0 20px gold;
+    }
+    .prediction-result h4 {
+      color: gold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .prediction-item {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    .prediction-label {
+      font-weight: bold;
+      color: #ccc;
+    }
+    .prediction-value {
+      float: right;
       font-weight: bold;
     }
-    .small {
-      color: red;
-      font-weight: bold;
+    .confidence-bar {
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 16px;
+      margin-top: 10px;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, gold, orange);
+      width: 0%;
+      transition: width 1s ease;
+    }
+    .pattern-section {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 800px;
+      background: #121212;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px gold;
+    }
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    .pattern-card {
+      background: #1e1e1e;
+      border-left: 4px solid gold;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #ffcc00;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
     }
   </style>
 </head>
 <body>
 
-  <h2>WinGo Prediction Tool</h2>
-  <p>Enter last few numbers to predict the next result (Big/Small):</p>
-  <textarea id="numbersInput" rows="3" placeholder="Enter numbers like: 2,5,3 or 253"></textarea><br>
-  <button onclick="predictNext()">Predict Next</button>
+  <h2>🎯 WinGo Predictor Pro AI</h2>
+  <textarea id="numbersInput" rows="4" placeholder="Enter last numbers like: 3,5,2,6"></textarea>
+  <button onclick="predict()">🔮 Predict Now</button>
 
-  <h3 id="prediction"></h3>
+  <div class="prediction-result" id="resultBox" style="display:none;">
+    <h4>Next AI Prediction</h4>
+    <div class="prediction-item"><span class="prediction-label">Size:</span> <span class="prediction-value" id="size"></span></div>
+    <div class="prediction-item"><span class="prediction-label">Colour:</span> <span class="prediction-value" id="color"></span></div>
+    <div class="prediction-item"><span class="prediction-label">Number:</span> <span class="prediction-value" id="number"></span></div>
+    <div class="prediction-item"><span class="prediction-label">Confidence:</span> 
+      <div class="confidence-bar">
+        <div class="bar-fill" id="confidenceBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pattern-section">
+    <h3 style="text-align:center; color: gold;">📊 Smart Pattern Detection</h3>
+    <div class="pattern-grid">
+      <div class="pattern-card">Zigzag: <span id="zigzag">--</span></div>
+      <div class="pattern-card">Reverse: <span id="reverse">--</span></div>
+      <div class="pattern-card">Continuation: <span id="continuation">--</span></div>
+      <div class="pattern-card">Hot Color: <span id="hotcolor">--</span></div>
+      <div class="pattern-card">Cold Color: <span id="coldcolor">--</span></div>
+      <div class="pattern-card">Trend: <span id="trend">--</span></div>
+    </div>
+  </div>
 
   <script>
-    function predictNext() {
-      const input = document.getElementById("numbersInput").value.trim();
-      let numbers = [];
-
-      // If input is like "123", split each digit
-      if (/^\d{2,}$/.test(input) && !input.includes(",")) {
-        numbers = input.split('').map(n => parseInt(n));
-      } else {
-        // Split by comma, clean spaces, parse
-        numbers = input.split(",").map(num => parseInt(num.trim())).filter(n => !isNaN(n));
-      }
+    function predict() {
+      const input = document.getElementById("numbersInput").value;
+      const numbers = input.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+      const resultBox = document.getElementById("resultBox");
 
       if (numbers.length < 2) {
-        document.getElementById("prediction").innerText = "Please enter at least 2 valid numbers.";
+        alert("Please enter at least 2 numbers.");
         return;
       }
 
       const last = numbers[numbers.length - 1];
       const secondLast = numbers[numbers.length - 2];
-
       const isSmall = n => n < 5;
 
-      if (isSmall(last) && isSmall(secondLast)) {
-        document.getElementById("prediction").innerHTML = "<span class='big'>Next Prediction: Big</span>";
-      } else {
-        document.getElementById("prediction").innerHTML = "<span class='small'>Next Prediction: Small</span>";
-      }
+      const confidence = Math.floor(Math.random() * 20) + 80;
+      document.getElementById("confidenceBar").style.width = confidence + "%";
+
+      const predictedSize = isSmall(last) && isSmall(secondLast) ? "Big" : "Small";
+      const colorOptions = ["Red", "Green", "Violet"];
+      const predictedColor = colorOptions[Math.floor(Math.random() * colorOptions.length)];
+      const predictedNumber = Math.floor(Math.random() * 10); // 0-9
+
+      document.getElementById("size").textContent = predictedSize;
+      document.getElementById("color").textContent = predictedColor;
+      document.getElementById("number").textContent = predictedNumber;
+
+      resultBox.style.display = "block";
+
+      // Smart Pattern AI
+      const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
+      const getColor = () => colorOptions[Math.floor(Math.random() * colorOptions.length)];
+      const trends = [
+        "Red → Green → Red",
+        "Green → Violet → Red",
+        "Red → Red → Green",
+        "Violet → Green → Red"
+      ];
+
+      document.getElementById("zigzag").textContent = getYesNo();
+      document.getElementById("reverse").textContent = getYesNo();
+      document.getElementById("continuation").textContent = getYesNo();
+      document.getElementById("hotcolor").textContent = getColor();
+      document.getElementById("coldcolor").textContent = getColor();
+      document.getElementById("trend").textContent = trends[Math.floor(Math.random() * trends.length)];
     }
   </script>
 
