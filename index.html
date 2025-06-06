@@ -3,93 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor Pro</title>
+  <title>🎯 WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fff7cc, #fceabb);
-      background-attachment: fixed;
+      background: linear-gradient(to right, #f9f1c6, #f4d57b);
       color: #333;
     }
     header {
-      background: #000000d0;
+      background: #222;
       color: #ffd700;
-      padding: 30px 20px;
+      padding: 20px;
       text-align: center;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
     }
     header h1 {
-      font-size: 2.5rem;
+      font-size: 2rem;
       margin: 0;
-    }
-    header p {
-      margin: 5px 0 0;
-      font-style: italic;
-      color: #f7e58b;
     }
     .container {
       max-width: 600px;
       margin: 40px auto;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.96);
       border-radius: 15px;
       padding: 30px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #c39800;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     }
     textarea, button {
       width: 100%;
       padding: 14px;
       font-size: 16px;
-      margin-top: 15px;
+      margin-top: 10px;
       border-radius: 10px;
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
     button {
-      background: linear-gradient(45deg, #f9c900, #ffb300);
-      color: white;
+      background: linear-gradient(to right, #ffcc00, #e6b800);
+      color: #222;
       font-weight: bold;
-      border: none;
       cursor: pointer;
-      transition: 0.3s ease;
     }
     button:hover {
-      background: linear-gradient(45deg, #ffb300, #cc9a00);
+      background: linear-gradient(to right, #f1ba00, #cc9900);
     }
     .result {
+      display: none;
       margin-top: 20px;
       padding: 20px;
-      background: #fff8e1;
+      background: #fffbea;
       border-radius: 12px;
-      border: 1px solid #e0c776;
+      border: 1px solid #e6cf8b;
       font-size: 18px;
-      display: none;
-      animation: fadeIn 1s ease-in;
+      animation: fadeIn 1s ease-in-out;
     }
     .loading {
-      font-style: italic;
-      color: #888;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #777;
       text-align: center;
-      margin-top: 15px;
     }
     .big { color: green; font-weight: bold; }
     .small { color: red; font-weight: bold; }
-    .green { color: green; font-weight: bold; }
-    .red { color: red; font-weight: bold; }
-    .violet { color: purple; font-weight: bold; }
+    .green { color: green; }
+    .red { color: red; }
+    .violet { color: purple; }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
     footer {
       text-align: center;
-      margin: 40px 10px;
+      margin-top: 40px;
       font-size: 13px;
       color: #444;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -97,14 +84,13 @@
 
   <header>
     <h1>🎯 WinGo Predictor Pro</h1>
-    <p>Smart AI Prediction - Number | Color | Big/Small</p>
   </header>
 
   <div class="container">
     <h2>🔢 Enter Previous Numbers:</h2>
-    <textarea id="numbersInput" rows="3" placeholder="e.g. 87453"></textarea>
+    <textarea id="numbersInput" rows="3" placeholder="e.g. 784563"></textarea>
     <button onclick="predict()">🔮 Predict Result</button>
-    <div id="loading" class="loading"></div>
+    <div id="loading" class="loading" style="display:none;">⏳ Analyzing pattern, please wait...</div>
     <div id="result" class="result"></div>
   </div>
 
@@ -117,46 +103,38 @@
       const input = document.getElementById("numbersInput").value.trim();
       const resultDiv = document.getElementById("result");
       const loadingDiv = document.getElementById("loading");
+      resultDiv.style.display = "none";
+      loadingDiv.style.display = "block";
 
-      if (input.length < 2) {
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = "❗ Please enter at least 2 digits.";
-        return;
-      }
-
-      resultDiv.style.display = 'none';
-      loadingDiv.innerHTML = "⏳ Analyzing pattern...";
-      
       setTimeout(() => {
-        const digits = input.split('').map(n => parseInt(n)).filter(n => !isNaN(n));
-        const last = digits[digits.length - 1];
-        const secondLast = digits[digits.length - 2];
-
-        // Predict Big/Small
-        const avg = (last + secondLast) / 2;
-        const size = avg >= 5 ? "Big" : "Small";
-
-        // Predict Number
-        let predictedNumber = (last + secondLast + Math.floor(Math.random() * 3)) % 10;
-
-        // Predict Color
-        let color = "";
-        if (predictedNumber === 0 || predictedNumber === 5) {
-          color = "violet";
-        } else if (predictedNumber % 2 === 0) {
-          color = "red";
-        } else {
-          color = "green";
+        if (input.length < 3) {
+          resultDiv.innerHTML = "Please enter at least 3 digits.";
+          loadingDiv.style.display = "none";
+          resultDiv.style.display = "block";
+          return;
         }
 
-        loadingDiv.innerHTML = "";
-        resultDiv.style.display = 'block';
+        const digits = input.split('').map(n => parseInt(n)).filter(n => !isNaN(n));
+        const lastDigit = digits[digits.length - 1];
+        const avg = Math.round(digits.reduce((a, b) => a + b, 0) / digits.length);
+
+        const predictedNumber = (avg + lastDigit) % 10;
+
+        let predictedColor = '';
+        if ([0, 5].includes(predictedNumber)) predictedColor = 'VIOLET';
+        else if (predictedNumber % 2 === 0) predictedColor = 'RED';
+        else predictedColor = 'GREEN';
+
+        const sizePrediction = predictedNumber >= 5 ? 'Big' : 'Small';
+
         resultDiv.innerHTML = `
-          🔢 <strong>Predicted Number:</strong> <span>${predictedNumber}</span><br/>
-          🎨 <strong>Predicted Color:</strong> <span class="${color}">${color.toUpperCase()}</span><br/>
-          📊 <strong>Prediction:</strong> <span class="${size.toLowerCase()}">${size}</span>
+          <p>🧠 <strong>Predicted Number:</strong> ${predictedNumber}</p>
+          <p>🎨 <strong>Predicted Color:</strong> <span class="${predictedColor.toLowerCase()}">${predictedColor}</span></p>
+          <p>📊 <strong>Prediction:</strong> <span class="${sizePrediction.toLowerCase()}">${sizePrediction}</span></p>
         `;
-      }, 3000); // 3 seconds delay
+        loadingDiv.style.display = "none";
+        resultDiv.style.display = "block";
+      }, 3000); // 3 second wait for realism
     }
   </script>
 </body>
