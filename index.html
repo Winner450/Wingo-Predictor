@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 Wingo Predictor Pro (Manual AI)</title>
+  <title>🎯 Wingo Predictor Pro (AI Based)</title>
   <style>
     body {
       margin: 0;
@@ -91,43 +91,30 @@
       font-weight: bold;
       margin-bottom: 5px;
     }
-    button {
-      padding: 10px 20px;
-      margin-bottom: 20px;
-      background: gold;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 0 10px gold;
-    }
-    .previous-results {
-      width: 350px;
-      margin-bottom: 20px;
-    }
-    .previous-results h4 {
-      color: orange;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .prev-item {
-      background: #1b1b1b;
+    input, button {
       padding: 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 5px;
-      border-left: 4px solid orange;
+      margin-bottom: 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+    }
+    input {
+      width: 280px;
+      text-align: center;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 10px gold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
+<input type="text" id="lastResults" placeholder="Enter last 3 numbers (e.g. 3,6,1)" />
 <button onclick="generatePrediction()">🔁 Predict Now</button>
-
-<div class="previous-results" id="previousResults">
-  <h4>Previous Predictions</h4>
-</div>
 
 <div class="predict-box">
   <h2>🔮 AI Prediction</h2>
@@ -156,30 +143,34 @@
 </div>
 
 <script>
-const colors = ["Red", "Green", "Violet"];
-const trendPatterns = [
-  "Red → Green → Red",
-  "Green → Red → Green",
-  "Violet → Red → Green",
-  "Red → Violet → Green",
-  "Green → Green → Red"
-];
-
-let previousResults = [];
-
 function generatePrediction() {
-  const number = Math.floor(Math.random() * 10);
-  const color = colors[Math.floor(Math.random() * colors.length)];
-  const size = number >= 5 ? "Big" : "Small";
-  const confidence = Math.floor(Math.random() * 20) + 80;
+  const input = document.getElementById("lastResults").value;
+  const values = input.split(",").map(v => parseInt(v.trim())).filter(n => !isNaN(n));
+  if (values.length < 3) {
+    alert("Please enter exactly 3 numbers.");
+    return;
+  }
 
-  // Show prediction
-  document.getElementById("number").textContent = `Number: ${number}`;
-  document.getElementById("color").textContent = `Color: ${color}`;
-  document.getElementById("size").textContent = `Size: ${size}`;
+  const colors = ["Red", "Green", "Violet"];
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const predictedNumber = Math.floor((avg + Math.random() * 2) % 10);
+  const predictedColor = colors[predictedNumber % colors.length];
+  const predictedSize = predictedNumber >= 5 ? "Big" : "Small";
+  const confidence = Math.floor(Math.random() * 15) + 85;
+
+  document.getElementById("number").textContent = `Number: ${predictedNumber}`;
+  document.getElementById("color").textContent = `Color: ${predictedColor}`;
+  document.getElementById("size").textContent = `Size: ${predictedSize}`;
   document.getElementById("confidenceFill").style.width = confidence + "%";
 
-  // Pattern predictions
+  const trendPatterns = [
+    "Red → Green → Red",
+    "Green → Red → Green",
+    "Violet → Red → Green",
+    "Red → Violet → Green",
+    "Green → Green → Red"
+  ];
+
   const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
   const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
@@ -189,19 +180,7 @@ function generatePrediction() {
   document.getElementById("hotcolor").textContent = getRandomColor();
   document.getElementById("coldcolor").textContent = getRandomColor();
   document.getElementById("trend").textContent = trendPatterns[Math.floor(Math.random() * trendPatterns.length)];
-
-  // Save to previous results
-  const newResult = `Number: ${number} | Color: ${color} | Size: ${size}`;
-  previousResults.unshift(newResult);
-  if (previousResults.length > 3) previousResults.pop();
-
-  // Update UI
-  const prevDiv = document.getElementById("previousResults");
-  prevDiv.innerHTML = `<h4>Previous Predictions</h4>` + previousResults.map(r => `<div class="prev-item">${r}</div>`).join('');
 }
-
-// Auto-generate once on page load
-generatePrediction();
 </script>
 
 </body>
