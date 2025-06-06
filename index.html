@@ -12,14 +12,12 @@
       color: #fff;
       overflow: hidden;
     }
-
     .stars {
       position: fixed;
       width: 100%;
       height: 100%;
       z-index: 0;
     }
-
     .star {
       position: absolute;
       width: 2px;
@@ -28,12 +26,10 @@
       border-radius: 50%;
       animation: fall linear infinite;
     }
-
     @keyframes fall {
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0; }
     }
-
     .container {
       z-index: 1;
       position: relative;
@@ -42,7 +38,6 @@
       flex-direction: column;
       align-items: center;
     }
-
     .prediction-box {
       background: rgba(255, 215, 0, 0.1);
       border: 2px solid gold;
@@ -54,7 +49,6 @@
       backdrop-filter: blur(10px);
       margin-bottom: 20px;
     }
-
     .prediction-title {
       font-size: 24px;
       font-weight: bold;
@@ -62,23 +56,19 @@
       text-align: center;
       color: gold;
     }
-
     .prediction-item {
       display: flex;
       justify-content: space-between;
       margin: 10px 0;
       font-size: 18px;
     }
-
     .label {
       color: #ddd;
     }
-
     .value {
       font-weight: bold;
       color: #fff;
     }
-
     button {
       background: gold;
       border: none;
@@ -90,7 +80,6 @@
       font-size: 16px;
       transition: 0.3s;
     }
-
     button:hover {
       background: #ffc107;
     }
@@ -120,12 +109,11 @@
       <div class="value" id="confidence">...</div>
     </div>
   </div>
-
   <button onclick="predictFromHistory()">Predict Now</button>
 </div>
 
 <script>
-  // Star animation background
+  // Stars animation
   const starsContainer = document.getElementById('stars');
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
@@ -136,7 +124,7 @@
     starsContainer.appendChild(star);
   }
 
-  // 🛠️ MANUALLY EDIT YOUR PAST RESULTS HERE:
+  // 🛠️ UPDATE: Manual Past Results
   const pastResults = [
     { color: 'Red', number: 6 },
     { color: 'Green', number: 1 },
@@ -150,7 +138,7 @@
     { color: 'Green', number: 5 }
   ];
 
-  // 🧠 AI Logic
+  // 🧠 AI Prediction Logic
   function predictFromHistory() {
     const colorCount = { Red: 0, Green: 0, Violet: 0 };
     const numberFreq = {};
@@ -162,18 +150,23 @@
       if (entry.number >= 5) big++; else small++;
     });
 
-    const mostColor = Object.keys(colorCount).reduce((a, b) => colorCount[a] > colorCount[b] ? a : b);
-    const mostNumber = parseInt(Object.keys(numberFreq).reduce((a, b) => numberFreq[a] > numberFreq[b] ? a : b));
+    const mostColor = Object.entries(colorCount).sort((a, b) => b[1] - a[1])[0][0];
+    const mostNumber = parseInt(Object.entries(numberFreq).sort((a, b) => b[1] - a[1])[0][0]);
     const size = mostNumber >= 5 ? "Big" : "Small";
-    const confidence = Math.min(99, Math.floor((colorCount[mostColor] / pastResults.length) * 100 + 20));
 
+    // Confidence calculation based on weight of recent data
+    const colorScore = (colorCount[mostColor] / pastResults.length) * 60;
+    const numberScore = (numberFreq[mostNumber] / pastResults.length) * 40;
+    const confidence = Math.min(99, Math.round(colorScore + numberScore + 10)); // +10 bias
+
+    // Show prediction
     document.getElementById("size").innerText = size;
     document.getElementById("colour").innerText = mostColor;
     document.getElementById("number").innerText = mostNumber;
     document.getElementById("confidence").innerText = confidence + "%";
   }
 
-  // Optional: run once on page load
+  // Auto-predict once on page load
   predictFromHistory();
 </script>
 
