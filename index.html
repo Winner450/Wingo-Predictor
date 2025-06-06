@@ -71,18 +71,17 @@
       color: #00ffc3;
     }
 
-    .period {
-      margin-top: 1rem;
-      font-size: 1rem;
-      text-align: center;
-      color: #ccc;
-    }
-
     .timer {
       font-size: 1.2rem;
-      color: lightgreen;
       text-align: center;
       margin-top: 0.5rem;
+    }
+
+    .match {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
     }
 
     @media (max-width: 400px) {
@@ -107,8 +106,8 @@
     <div class="line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
     <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
     <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
-    <div class="period">🆔 Period: <span id="periodNumber">Loading...</span></div>
     <div class="timer">⏳ Time Left: <span id="countdown">--</span></div>
+    <div class="match" id="matchResult">🔍 Waiting for live result...</div>
   </div>
 
   <script>
@@ -117,54 +116,79 @@
     const numberText = document.getElementById("numberText");
     const confidenceText = document.getElementById("confidenceText");
     const countdown = document.getElementById("countdown");
-    const periodNumber = document.getElementById("periodNumber");
+    const matchResult = document.getElementById("matchResult");
     const tabs = document.querySelectorAll(".tab");
 
     let currentMode = '30s';
     let intervalId = null;
     let countdownInterval = null;
-    let timer = 30000;
+    let timer = 30;
+    let lastPrediction = null;
 
-    // Starting point close to bdgop.com format (live time synced logic)
-    function getCurrentPeriod() {
-      const now = new Date();
-      const offset = {
-        '30s': 30 * 1000,
-        '1m': 60 * 1000,
-        '3m': 180 * 1000
-      }[currentMode];
-      const base = Math.floor(now.getTime() / offset);
-      return 2400000 + base; // Random base logic like bdgop pattern
-    }
-
-    const mockAI = {
-      "30s": () => ({
-        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
-        number: Math.floor(Math.random() * 10),
-        size: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(84 + Math.random() * 10)
-      }),
-      "1m": () => ({
-        color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(2 + Math.random() * 7),
-        size: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(87 + Math.random() * 10)
-      }),
-      "3m": () => ({
-        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(1 + Math.random() * 10),
-        size: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(91 + Math.random() * 6)
-      })
+    const advancedAI = {
+      "30s": () => {
+        const n = Math.floor(Math.random() * 10);
+        return {
+          number: n,
+          color: n === 0 || n === 5 || n === 10 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
+          size: n <= 4 ? "SMALL" : "BIG",
+          confidence: 85 + Math.floor(Math.random() * 7)
+        };
+      },
+      "1m": () => {
+        const n = Math.floor(Math.random() * 10);
+        return {
+          number: n,
+          color: n % 2 === 0 ? "GREEN" : "RED",
+          size: n < 5 ? "SMALL" : "BIG",
+          confidence: 88 + Math.floor(Math.random() * 5)
+        };
+      },
+      "3m": () => {
+        const n = Math.floor(Math.random() * 10);
+        return {
+          number: n,
+          color: n === 0 || n === 5 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
+          size: n >= 5 ? "BIG" : "SMALL",
+          confidence: 90 + Math.floor(Math.random() * 6)
+        };
+      }
     };
 
+    async function fetchLiveResult() {
+      try {
+        const res = await fetch("https://your-api.com/live-result"); // Replace with your API
+        const data = await res.json();
+
+        const liveNumber = data.number;
+        const liveColor = data.color.toUpperCase();
+        const liveSize = data.size.toUpperCase();
+
+        const match =
+          lastPrediction &&
+          lastPrediction.number === liveNumber &&
+          lastPrediction.color === liveColor &&
+          lastPrediction.size === liveSize;
+
+        matchResult.innerText = match ? "✅ Prediction Matched!" : "❌ Prediction Missed";
+        matchResult.style.color = match ? "lightgreen" : "crimson";
+      } catch (err) {
+        matchResult.innerText = "⚠️ Live Result Not Available";
+        matchResult.style.color = "orange";
+      }
+    }
+
     function updatePrediction() {
-      const result = mockAI[currentMode]();
+      const result = advancedAI[currentMode]();
+      sizeText.innerText = result.size;
       colorText.innerText = result.color;
       numberText.innerText = result.number;
-      sizeText.innerText = result.size;
       confidenceText.innerText = result.confidence + "%";
-      periodNumber.innerText = getCurrentPeriod();
+      lastPrediction = result;
+      matchResult.innerText = "🔍 Waiting for live result...";
+      matchResult.style.color = "#999";
+
+      setTimeout(fetchLiveResult, 3000); // Delay for result to appear
       resetTimer();
     }
 
@@ -179,9 +203,7 @@
     function updateCountdown() {
       countdown.innerText = timer + "s";
       timer--;
-      if (timer < 0) {
-        updatePrediction();
-      }
+      if (timer < 0) updatePrediction();
     }
 
     function switchTab(mode) {
