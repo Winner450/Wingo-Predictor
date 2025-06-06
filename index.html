@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #1a1a1a, #000000);
+      background: linear-gradient(to bottom right, #0f0f0f, #000000);
       color: #fff;
       text-align: center;
     }
@@ -36,6 +36,9 @@
       width: 80%;
       font-size: 18px;
       margin-top: 10px;
+      background-color: #000;
+      color: #fff;
+      text-align: center;
     }
 
     .input-section button {
@@ -53,23 +56,40 @@
     .result-box {
       background-color: #111;
       color: #FFD700;
-      padding: 20px;
-      border-radius: 16px;
-      width: fit-content;
+      padding: 28px;
+      border-radius: 20px;
+      width: 85%;
+      max-width: 400px;
       margin: 30px auto;
-      font-size: 18px;
+      font-size: 20px;
       box-shadow: 0 0 15px #ffc107;
       text-align: left;
       display: none;
+      transition: all 0.3s ease-in-out;
     }
 
     .result-box p {
-      margin: 10px 0;
+      margin: 12px 0;
+      font-weight: 600;
+    }
+
+    .thinking {
+      font-size: 18px;
+      color: #FFEB3B;
+      margin-top: 20px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
     }
 
     .label {
-      font-weight: 600;
+      font-weight: bold;
       margin-right: 6px;
+      color: #fff;
     }
   </style>
 </head>
@@ -81,11 +101,12 @@
 
   <div class="container">
     <div class="input-section">
-      <label for="inputNumbers">🔢 Enter Previous Numbers:</label><br/>
-      <input type="text" id="inputNumbers" placeholder="e.g., 282"/><br/>
+      <label for="inputNumbers">🔢 <b>Enter Previous Numbers:</b></label><br/>
+      <input type="text" id="inputNumbers" placeholder="e.g., 274"/><br/>
       <button onclick="predictResult()">🔮 Predict Result</button>
     </div>
 
+    <div id="thinking" class="thinking" style="display: none;">🤖 AI Thinking...</div>
     <div class="result-box" id="resultBox"></div>
   </div>
 
@@ -95,6 +116,7 @@
     function predictResult() {
       const input = document.getElementById("inputNumbers").value.trim();
       const resultBox = document.getElementById("resultBox");
+      const thinking = document.getElementById("thinking");
 
       if (!input) {
         alert("Please enter a number.");
@@ -108,13 +130,14 @@
 
       lastInput = input;
       resultBox.style.display = "none";
+      thinking.style.display = "block";
 
-      // Wait 3 seconds before showing prediction
+      // 3 seconds delay to simulate AI thinking
       setTimeout(() => {
         const number = Math.floor(Math.random() * 10);
         const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
         const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
-        const confidence = Math.floor(Math.random() * 21) + 80;
+        const confidence = Math.floor(Math.random() * 16) + 85;
 
         const resultHTML = `
           <p><span class="label">📏 Size:</span> ${size}</p>
@@ -123,6 +146,7 @@
           <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
         `;
 
+        thinking.style.display = "none";
         resultBox.innerHTML = resultHTML;
         resultBox.style.display = "block";
       }, 3000);
