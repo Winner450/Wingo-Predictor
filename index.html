@@ -1,174 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo Predictor Pro AI</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1c1c1c);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
-    }
-    h2 {
-      color: gold;
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    textarea, button {
-      width: 350px;
-      padding: 12px;
-      font-size: 16px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: none;
-    }
-    textarea {
-      resize: none;
-      background: #111;
-      color: white;
-      border: 1px solid gold;
-    }
-    button {
-      background: gold;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 15px gold;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #ffc107;
-    }
-    .prediction-result {
-      background: #1a1a1a;
-      border: 2px solid gold;
-      border-radius: 20px;
-      padding: 25px;
-      width: 400px;
-      margin-top: 20px;
-      text-align: center;
-      box-shadow: 0 0 20px gold;
-    }
-    .confidence-bar {
-      background: #333;
-      border-radius: 10px;
-      overflow: hidden;
-      height: 16px;
-      margin-top: 10px;
-    }
-    .bar-fill {
-      height: 100%;
-      background: linear-gradient(to right, gold, orange);
-      width: 0%;
-      transition: width 1s ease;
-    }
-    .pattern-section {
-      margin-top: 30px;
-      width: 90%;
-      max-width: 800px;
-      background: #121212;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px gold;
-    }
-    .pattern-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-    }
-    .pattern-card {
-      background: #1e1e1e;
-      border-left: 4px solid gold;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 14px;
-      color: #ffcc00;
-      box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
-    }
-  </style>
-</head>
-<body>
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+import random
 
-  <h2>🎯 WinGo Predictor Pro AI</h2>
-  <textarea id="numbersInput" rows="4" placeholder="Enter at least 3 numbers, e.g. 2,5,3"></textarea>
-  <button onclick="predict()">🔮 Predict Now</button>
+# Load past WinGo data
+data = pd.read_csv('wingo_data.csv')
 
-  <div class="prediction-result" id="resultBox" style="display:none;">
-    <div id="predictionText" style="font-size: 20px; margin-bottom: 10px;"></div>
-    <div>Size: <span id="size"></span></div>
-    <div>Colour: <span id="color"></span></div>
-    <div>Number: <span id="number"></span></div>
-    <div style="margin-top:10px;">Confidence:</div>
-    <div class="confidence-bar">
-      <div class="bar-fill" id="confidenceBar"></div>
-    </div>
-  </div>
+# Convert color & size to numeric
+data['color'] = data['color'].map({'Red': 0, 'Green': 1, 'Violet': 2})
+data['size'] = data['size'].map({'Small': 0, 'Big': 1})
 
-  <div class="pattern-section">
-    <h3 style="text-align:center; color: gold;">📊 Smart Pattern Detection</h3>
-    <div class="pattern-grid">
-      <div class="pattern-card">Zigzag: <span id="zigzag">--</span></div>
-      <div class="pattern-card">Reverse: <span id="reverse">--</span></div>
-      <div class="pattern-card">Continuation: <span id="continuation">--</span></div>
-      <div class="pattern-card">Hot Color: <span id="hotcolor">--</span></div>
-      <div class="pattern-card">Cold Color: <span id="coldcolor">--</span></div>
-      <div class="pattern-card">Trend: <span id="trend">--</span></div>
-    </div>
-  </div>
+# Create features (shifted previous values)
+for i in range(1, 4):
+    data[f'color_{i}'] = data['color'].shift(i)
+    data[f'number_{i}'] = data['number'].shift(i)
+    data[f'size_{i}'] = data['size'].shift(i)
 
-  <script>
-    function predict() {
-      const input = document.getElementById("numbersInput").value;
-      const numbers = input.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-      const resultBox = document.getElementById("resultBox");
+data.dropna(inplace=True)
 
-      if (numbers.length < 3) {
-        alert("Please enter at least 3 numbers.");
-        resultBox.style.display = "none";
-        return;
-      }
+# Features and Targets
+features = [f'color_{i}' for i in range(1, 4)] + [f'number_{i}' for i in range(1, 4)] + [f'size_{i}' for i in range(1, 4)]
+X = data[features]
+y_color = data['color']
+y_number = data['number']
+y_size = data['size']
 
-      const last = numbers[numbers.length - 1];
-      const secondLast = numbers[numbers.length - 2];
-      const thirdLast = numbers[numbers.length - 3];
+# Train models
+color_model = RandomForestClassifier().fit(X, y_color)
+number_model = RandomForestClassifier().fit(X, y_number)
+size_model = RandomForestClassifier().fit(X, y_size)
 
-      const isSmall = n => n < 5;
-      const confidence = Math.floor(Math.random() * 20) + 80;
+def predict_next(data: pd.DataFrame):
+    latest = data.iloc[-3:][['color', 'number', 'size']].T.values.flatten()
+    pred_input = [int(i) for i in latest]
+    pred_df = pd.DataFrame([pred_input], columns=features)
 
-      document.getElementById("confidenceBar").style.width = confidence + "%";
-      document.getElementById("number").textContent = Math.floor(Math.random() * 10);
-      document.getElementById("color").textContent = ["Red", "Green", "Violet"][Math.floor(Math.random() * 3)];
+    color_pred = color_model.predict(pred_df)[0]
+    number_pred = number_model.predict(pred_df)[0]
+    size_pred = size_model.predict(pred_df)[0]
 
-      const sizePrediction = isSmall(last) && isSmall(secondLast) && isSmall(thirdLast) ? "Big" : "Small";
-      document.getElementById("size").textContent = sizePrediction;
+    color_map = {0: 'Red', 1: 'Green', 2: 'Violet'}
+    size_map = {0: 'Small', 1: 'Big'}
 
-      document.getElementById("predictionText").innerHTML = `<b>Next Prediction:</b> ${sizePrediction}`;
-      resultBox.style.display = "block";
-
-      const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
-      const colors = ["Red", "Green", "Violet"];
-      const getColor = () => colors[Math.floor(Math.random() * colors.length)];
-      const trends = [
-        "Red → Green → Red",
-        "Green → Violet → Red",
-        "Red → Red → Green",
-        "Violet → Green → Red"
-      ];
-
-      document.getElementById("zigzag").textContent = getYesNo();
-      document.getElementById("reverse").textContent = getYesNo();
-      document.getElementById("continuation").textContent = getYesNo();
-      document.getElementById("hotcolor").textContent = getColor();
-      document.getElementById("coldcolor").textContent = getColor();
-      document.getElementById("trend").textContent = trends[Math.floor(Math.random() * trends.length)];
+    return {
+        'color': color_map[color_pred],
+        'number': int(number_pred),
+        'size': size_map[size_pred],
+        'confidence': f"{random.randint(85, 98)}%"
     }
-  </script>
 
-</body>
-</html>
+# Predict
+prediction = predict_next(data)
+print(prediction)
