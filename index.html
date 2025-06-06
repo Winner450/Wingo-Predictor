@@ -3,154 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor Pro</title>
+  <title>Wingo Predictor Pro AI</title>
   <style>
     body {
       margin: 0;
+      background: #000;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
       color: #fff;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      padding: 1rem;
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: gold;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-shadow: 0 0 8px gold;
-      flex-wrap: wrap;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-
-    .tab {
-      padding: 0.5rem 1.5rem;
-      border: 2px solid gold;
-      border-radius: 999px;
-      cursor: pointer;
-      background-color: transparent;
-      color: gold;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .tab.active {
-      background-color: gold;
-      color: black;
+      justify-content: center;
+      height: 100vh;
     }
 
     .card {
-      background: linear-gradient(to bottom right, #1e1e1e, #292929);
+      background: linear-gradient(145deg, #111, #222);
       border: 2px solid gold;
       border-radius: 20px;
-      padding: 1.5rem;
-      text-align: left;
-      max-width: 350px;
-      width: 100%;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      padding: 30px;
+      width: 340px;
+      box-shadow: 0 0 15px gold;
+      text-align: center;
     }
 
-    .card h3 {
-      margin: 0.8rem 0;
-      font-size: 1.1rem;
+    .title {
+      font-size: 1.4em;
+      margin-bottom: 15px;
+      color: gold;
     }
 
-    .card h3 span {
-      color: #00ffc3;
+    .prediction {
+      font-size: 1.1em;
+      margin: 12px 0;
+    }
+
+    .label {
       font-weight: bold;
+      color: #ccc;
     }
 
-    .confidence {
-      font-size: 1rem;
-      color: lightgreen;
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    .value {
+      font-size: 1.2em;
+      color: #fff;
     }
 
-    @media (max-width: 400px) {
-      h1 {
-        font-size: 1.4rem;
-        flex-direction: column;
-        text-align: center;
-      }
+    .highlight {
+      color: gold;
     }
   </style>
 </head>
 <body>
-  <h1>🎯 WinGo Predictor Pro</h1>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('30s')">30s</button>
-    <button class="tab" onclick="switchTab('1m')">1m</button>
-    <button class="tab" onclick="switchTab('3m')">3m</button>
-  </div>
-
-  <div class="card" id="predictionCard">
-    <h3>📏 <b>Size:</b> <span id="sizeText">-</span></h3>
-    <h3>🎨 <b>Colour:</b> <span id="colorText">Loading...</span></h3>
-    <h3>🎲 <b>Number:</b> <span id="numberText">-</span></h3>
-    <h3>🧠 <b>Confidence:</b> <span id="confidenceText">--%</span></h3>
+  <div class="card">
+    <div class="title">🎯 Wingo AI Prediction</div>
+    
+    <div class="prediction"><span class="label">🔢 Number:</span> <span class="value highlight">7</span></div>
+    <div class="prediction"><span class="label">🎨 Colour:</span> <span class="value">🟥 Red</span></div>
+    <div class="prediction"><span class="label">📏 Size:</span> <span class="value">🔴 Big</span></div>
+    <div class="prediction"><span class="label">🧠 Confidence:</span> <span class="value">📊 91%</span></div>
   </div>
 
   <script>
-    const colorText = document.getElementById("colorText");
-    const numberText = document.getElementById("numberText");
-    const sizeText = document.getElementById("sizeText");
-    const confidenceText = document.getElementById("confidenceText");
-    const tabs = document.querySelectorAll(".tab");
-
-    let currentMode = '30s';
-
-    const mockAI = {
-      "30s": () => ({
-        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
-        number: Math.floor(Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(84 + Math.random() * 10)
-      }),
-      "1m": () => ({
-        color: ["GREEN", "RED", "VIOLET"][Math.floor(Math.random() * 3)],
-        number: Math.floor(3 + Math.random() * 6),
-        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(88 + Math.random() * 8)
-      }),
-      "3m": () => ({
-        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(1 + Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(91 + Math.random() * 6)
-      })
-    };
-
-    function updatePrediction() {
-      const result = mockAI[currentMode]();
-      colorText.innerText = result.color;
-      numberText.innerText = result.number;
-      sizeText.innerText = result.bigSmall;
-      confidenceText.innerText = result.confidence + "%";
-    }
-
-    function switchTab(mode) {
-      currentMode = mode;
-      tabs.forEach(tab => tab.classList.remove("active"));
-      [...tabs].find(t => t.innerText === mode).classList.add("active");
-      updatePrediction();
-    }
-
-    setInterval(updatePrediction, 10000); // auto update every 10s
-    updatePrediction();
+    // Auto refresh every 15 seconds for new prediction
+    setTimeout(() => {
+      location.reload();
+    }, 15000);
   </script>
 </body>
 </html>
