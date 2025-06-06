@@ -8,16 +8,17 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #000;
-      overflow-x: hidden;
+      background-color: #000;
       color: #fff;
+      overflow-x: hidden;
     }
 
     .stars {
       position: fixed;
       width: 100%;
       height: 100%;
-      background: transparent url('https://i.ibb.co/2thkNdg/stars.gif') repeat top center;
+      background: url('https://i.ibb.co/2thkNdg/stars.gif') repeat top center;
+      background-size: cover;
       z-index: -1;
       opacity: 0.2;
       animation: starsMove 100s linear infinite;
@@ -25,7 +26,7 @@
 
     @keyframes starsMove {
       from { background-position: 0 0; }
-      to { background-position: -10000px 5000px; }
+      to { background-position: -5000px 3000px; }
     }
 
     h1 {
@@ -33,7 +34,7 @@
       font-size: 1.8rem;
       color: gold;
       text-shadow: 0 0 8px gold;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
     }
 
     .tabs {
@@ -60,31 +61,29 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(10px);
       border: 2px solid gold;
       border-radius: 16px;
-      max-width: 360px;
-      margin: 0 auto;
-      padding: 1.8rem 1.2rem;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      max-width: 380px;
+      margin: 2rem auto;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
     }
 
-    .card .row {
-      font-size: 1.2rem;
-      margin: 0.8rem 0;
+    .row {
       display: flex;
-      align-items: center;
+      justify-content: space-between;
+      margin: 1.1rem 0;
+      font-size: 1.3rem;
+      font-weight: 600;
     }
 
     .label {
-      width: 130px;
-      font-weight: bold;
-      color: #ffc107;
+      color: gold;
     }
 
     .value {
-      font-weight: bold;
       color: #00ffc3;
     }
 
@@ -93,8 +92,9 @@
     }
 
     @media (max-width: 420px) {
-      h1 { font-size: 1.4rem; }
-      .label { width: 100px; }
+      h1 { font-size: 1.5rem; }
+      .card { margin: 1rem; padding: 1.5rem 1rem; }
+      .row { font-size: 1.1rem; }
     }
   </style>
 </head>
@@ -111,9 +111,9 @@
 </div>
 
 <div class="card">
-  <div class="row"><div class="label">📏 Size:</div><div class="value" id="sizeText">-</div></div>
-  <div class="row"><div class="label">🎨 Color:</div><div class="value" id="colorText">-</div></div>
-  <div class="row"><div class="label">🎲 Number:</div><div class="value" id="numberText">-</div></div>
+  <div class="row"><div class="label">📏 Size:</div><div class="value" id="sizeText">--</div></div>
+  <div class="row"><div class="label">🎨 Color:</div><div class="value" id="colorText">--</div></div>
+  <div class="row"><div class="label">🎲 Number:</div><div class="value" id="numberText">--</div></div>
   <div class="row"><div class="label">🧠 Confidence:</div><div class="confidence" id="confidenceText">--%</div></div>
 </div>
 
