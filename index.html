@@ -8,43 +8,39 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fdf6e3, #fbe9b7);
+      background: linear-gradient(to right, #f8e6a0, #fcd68c);
+      background-attachment: fixed;
       color: #333;
     }
-
     header {
-      background: #1c1c1c;
-      color: #ffd700;
-      padding: 25px;
+      background: rgba(34, 34, 34, 0.9);
+      color: #fff;
+      padding: 30px 20px;
       text-align: center;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
     }
-
     header h1 {
       font-size: 2.5rem;
       margin: 0;
+      color: #ffd700;
     }
-
     header p {
       margin: 5px 0 0;
       font-style: italic;
-      color: #ddd;
     }
-
     .container {
       max-width: 600px;
       margin: 40px auto;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 15px;
       padding: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      backdrop-filter: blur(6px);
     }
-
     h2 {
       text-align: center;
       color: #d4a400;
     }
-
     textarea, button {
       width: 100%;
       padding: 14px;
@@ -52,8 +48,8 @@
       margin-top: 15px;
       border-radius: 10px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
-
     button {
       background: linear-gradient(45deg, #f9c900, #ffb300);
       color: white;
@@ -62,38 +58,31 @@
       cursor: pointer;
       transition: 0.3s ease;
     }
-
     button:hover {
       background: linear-gradient(45deg, #ffb300, #cc9a00);
     }
-
     .result {
       margin-top: 20px;
       padding: 20px;
-      background: #fffbea;
+      background: #fff8e1;
       border-radius: 12px;
       border: 1px solid #e0c776;
       font-size: 18px;
-      min-height: 60px;
     }
-
     .big { color: green; font-weight: bold; }
     .small { color: red; font-weight: bold; }
     .green { color: green; font-weight: bold; }
     .red { color: red; font-weight: bold; }
     .violet { color: purple; font-weight: bold; }
-
-    .typing {
-      border-right: .1em solid #000;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
     footer {
       text-align: center;
       margin: 40px 10px;
       font-size: 13px;
-      color: #555;
+      color: #444;
+    }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.8rem; }
+      .container { margin: 20px 15px; }
     }
   </style>
 </head>
@@ -101,66 +90,20 @@
 
   <header>
     <h1>🎯 WinGo Predictor Pro</h1>
-    <p>AI Powered Number & Color Prediction</p>
+    <p>Smart AI Prediction - Number | Color | Big/Small</p>
   </header>
 
   <div class="container">
-    <h2>🔢 Enter Last Game Numbers:</h2>
+    <h2>🔢 Enter Previous Numbers:</h2>
     <textarea id="numbersInput" rows="3" placeholder="e.g. 784563"></textarea>
     <button onclick="predict()">🔮 Predict Result</button>
-    <div id="result" class="result">Awaiting input...</div>
+    <div id="result" class="result"></div>
   </div>
 
   <footer>
-    &copy; 2025 WinGo Predictor | Powered by @winner450
+    &copy; 2025 WinGo Predictor | Crafted with 💡 by @winner450
   </footer>
 
   <script>
     function predict() {
-      const input = document.getElementById("numbersInput").value.trim();
-      const resultDiv = document.getElementById("result");
-      if (input.length < 3) {
-        resultDiv.innerHTML = "⚠️ Please enter at least 3 digits.";
-        return;
-      }
-
-      resultDiv.innerHTML = "⏳ Processing...";
-      
-      setTimeout(() => {
-        const digits = input.split('').map(Number);
-        const last = digits[digits.length - 1];
-
-        // Big or Small
-        const size = last >= 5 ? "Big" : "Small";
-
-        // Color Prediction
-        let color = "";
-        if (last === 0 || last === 5) color = "violet";
-        else if (last % 2 === 0) color = "red";
-        else color = "green";
-
-        // Number Prediction (very simple pattern example)
-        const predictedNumber = (last + Math.floor(Math.random() * 5)) % 10;
-
-        const resultHTML = `
-          🎲 Predicted Number: <strong>${predictedNumber}</strong><br>
-          📊 Size: <span class="${size.toLowerCase()}">${size}</span><br>
-          🎨 Color: <span class="${color}">${color.charAt(0).toUpperCase() + color.slice(1)}</span>
-        `;
-
-        animateTyping(resultDiv, resultHTML, 20);
-      }, 3000); // 3 seconds delay
-    }
-
-    function animateTyping(element, text, speed) {
-      let i = 0;
-      element.innerHTML = '';
-      const interval = setInterval(() => {
-        element.innerHTML += text.charAt(i);
-        i++;
-        if (i >= text.length) clearInterval(interval);
-      }, speed);
-    }
-  </script>
-</body>
-</html>
+      const input = document.getElementById("
