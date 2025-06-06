@@ -71,19 +71,6 @@
       color: #00ffc3;
     }
 
-    .timer {
-      font-size: 1.2rem;
-      text-align: center;
-      margin-top: 0.5rem;
-    }
-
-    .match {
-      font-size: 1.2rem;
-      margin-top: 1rem;
-      text-align: center;
-      font-weight: bold;
-    }
-
     @media (max-width: 400px) {
       h1 {
         font-size: 1.4rem;
@@ -106,8 +93,6 @@
     <div class="line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
     <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
     <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
-    <div class="timer">⏳ Time Left: <span id="countdown">--</span></div>
-    <div class="match" id="matchResult">🔍 Waiting for live result...</div>
   </div>
 
   <script>
@@ -115,15 +100,10 @@
     const colorText = document.getElementById("colorText");
     const numberText = document.getElementById("numberText");
     const confidenceText = document.getElementById("confidenceText");
-    const countdown = document.getElementById("countdown");
-    const matchResult = document.getElementById("matchResult");
     const tabs = document.querySelectorAll(".tab");
 
     let currentMode = '30s';
     let intervalId = null;
-    let countdownInterval = null;
-    let timer = 30;
-    let lastPrediction = null;
 
     const advancedAI = {
       "30s": () => {
@@ -155,55 +135,12 @@
       }
     };
 
-    async function fetchLiveResult() {
-      try {
-        const res = await fetch("https://your-api.com/live-result"); // Replace with your API
-        const data = await res.json();
-
-        const liveNumber = data.number;
-        const liveColor = data.color.toUpperCase();
-        const liveSize = data.size.toUpperCase();
-
-        const match =
-          lastPrediction &&
-          lastPrediction.number === liveNumber &&
-          lastPrediction.color === liveColor &&
-          lastPrediction.size === liveSize;
-
-        matchResult.innerText = match ? "✅ Prediction Matched!" : "❌ Prediction Missed";
-        matchResult.style.color = match ? "lightgreen" : "crimson";
-      } catch (err) {
-        matchResult.innerText = "⚠️ Live Result Not Available";
-        matchResult.style.color = "orange";
-      }
-    }
-
     function updatePrediction() {
       const result = advancedAI[currentMode]();
       sizeText.innerText = result.size;
       colorText.innerText = result.color;
       numberText.innerText = result.number;
       confidenceText.innerText = result.confidence + "%";
-      lastPrediction = result;
-      matchResult.innerText = "🔍 Waiting for live result...";
-      matchResult.style.color = "#999";
-
-      setTimeout(fetchLiveResult, 3000); // Delay for result to appear
-      resetTimer();
-    }
-
-    function resetTimer() {
-      timer = {
-        '30s': 30,
-        '1m': 60,
-        '3m': 180
-      }[currentMode];
-    }
-
-    function updateCountdown() {
-      countdown.innerText = timer + "s";
-      timer--;
-      if (timer < 0) updatePrediction();
     }
 
     function switchTab(mode) {
@@ -212,20 +149,12 @@
       [...tabs].find(t => t.innerText === mode).classList.add("active");
 
       clearInterval(intervalId);
-      clearInterval(countdownInterval);
-
       updatePrediction();
-      intervalId = setInterval(updatePrediction, {
-        '30s': 30000,
-        '1m': 60000,
-        '3m': 180000
-      }[mode]);
-      countdownInterval = setInterval(updateCountdown, 1000);
+      intervalId = setInterval(updatePrediction, 3000); // Every 3 seconds
     }
 
     updatePrediction();
-    intervalId = setInterval(updatePrediction, 30000);
-    countdownInterval = setInterval(updateCountdown, 1000);
+    intervalId = setInterval(updatePrediction, 3000); // Auto-refresh
   </script>
 </body>
 </html>
