@@ -1,6 +1,44 @@
-{ font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; } h2 { color: #333; } input, button { padding: 10px; margin: 5px 0; font-size: 16px; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { padding: 10px; text-align: center; border: 1px solid #ccc; } .big { color: green; font-weight: bold; } .small { color: red; font-weight: bold; } 
-WinGo Prediction Tool
-Enter last few numbers to predict the next result (Big/Small):
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WinGo Prediction Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; }
+        h2 { color: #333; }
+        input, button { padding: 10px; margin: 5px 0; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: center; border: 1px solid #ccc; }
+        .big { color: green; font-weight: bold; }
+        .small { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>WinGo Prediction Tool</h2>
+    <p>Enter last few numbers to predict the next result (Big/Small):</p>
+    <textarea id="numbersInput" rows="5" cols="50" placeholder="Enter numbers like: 2,5,3,4,6"></textarea><br>
+    <button onclick="predictNext()">Predict Next</button>
+    <h3 id="prediction"></h3>
+    <script>
+        function predictNext() {
+            const input = document.getElementById("numbersInput").value;
+            const numbers = input.split(",").map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+            if (numbers.length < 2) {
+                document.getElementById("prediction").innerText = "Please enter at least 2 numbers.";
+                return;
+            }
 
-Predict Next 
-function predictNext() { const input = document.getElementById("numbersInput").value; const numbers = input.split(",").map(num => parseInt(num.trim())).filter(num => !isNaN(num)); if (numbers.length < 2) { document.getElementById("prediction").innerText = "Please enter at least 2 numbers."; return; } <pre><code> const last = numbers[numbers.length - 1]; const secondLast = numbers[numbers.length - 2]; const isSmall = n =&gt; n &lt; 5; if (isSmall(last) &amp;&amp; isSmall(secondLast)) { document.getElementById(&quot;prediction&quot;).innerHTML = &quot;&lt;span class='big'&gt;Next Prediction: Big&lt;/span&gt;&quot;; } else { document.getElementById(&quot;prediction&quot;).innerHTML = &quot;&lt;span class='small'&gt;Next Prediction: Small&lt;/span&gt;&quot;; } } </code></pre> 
+            const last = numbers[numbers.length - 1];
+            const secondLast = numbers[numbers.length - 2];
+
+            const isSmall = n => n < 5;
+
+            if (isSmall(last) && isSmall(secondLast)) {
+                document.getElementById("prediction").innerHTML = "<span class='big'>Next Prediction: Big</span>";
+            } else {
+                document.getElementById("prediction").innerHTML = "<span class='small'>Next Prediction: Small</span>";
+            }
+        }
+    </script>
+</body>
+</html>
