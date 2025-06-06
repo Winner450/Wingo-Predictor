@@ -1,44 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>WinGo Prediction Tool</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; }
-        h2 { color: #333; }
-        input, button { padding: 10px; margin: 5px 0; font-size: 16px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: center; border: 1px solid #ccc; }
-        .big { color: green; font-weight: bold; }
-        .small { color: red; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>WinGo Prediction Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #e6e6e6; padding: 20px; }
+    h2 { color: #333; }
+    input, button, textarea { padding: 10px; margin-top: 10px; width: 100%; }
+    .big { color: green; font-weight: bold; }
+    .small { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
-    <h2>WinGo Prediction Tool</h2>
-    <p>Enter last few numbers to predict the next result (Big/Small):</p>
-    <textarea id="numbersInput" rows="5" cols="50" placeholder="Enter numbers like: 2,5,3,4,6"></textarea><br>
-    <button onclick="predictNext()">Predict Next</button>
-    <h3 id="prediction"></h3>
-    <script>
-        function predictNext() {
-            const input = document.getElementById("numbersInput").value;
-            const numbers = input.split(",").map(num => parseInt(num.trim())).filter(num => !isNaN(num));
-            if (numbers.length < 2) {
-                document.getElementById("prediction").innerText = "Please enter at least 2 numbers.";
-                return;
-            }
+  <h2>WinGo Prediction Tool</h2>
+  <p>Enter last few numbers to predict the next result (Big/Small):</p>
+  <textarea id="numbersInput" rows="4" placeholder="e.g. 77456"></textarea><br />
+  <button onclick="predictNext()">Predict Next</button>
+  <div id="result"></div>
 
-            const last = numbers[numbers.length - 1];
-            const secondLast = numbers[numbers.length - 2];
+  <script>
+    function predictNext() {
+      const input = document.getElementById("numbersInput").value.trim();
+      if (input.length < 2) {
+        document.getElementById("result").innerHTML = "<p>Please enter at least 2 numbers.</p>";
+        return;
+      }
 
-            const isSmall = n => n < 5;
+      const lastChar = input[input.length - 1];
+      const secondLastChar = input[input.length - 2];
 
-            if (isSmall(last) && isSmall(secondLast)) {
-                document.getElementById("prediction").innerHTML = "<span class='big'>Next Prediction: Big</span>";
-            } else {
-                document.getElementById("prediction").innerHTML = "<span class='small'>Next Prediction: Small</span>";
-            }
-        }
-    </script>
+      const bigCount = [lastChar, secondLastChar].filter(n => parseInt(n) >= 5).length;
+      const smallCount = 2 - bigCount;
+
+      const prediction = bigCount > smallCount ? "Big" : "Small";
+
+      document.getElementById("result").innerHTML = "<p>Prediction: <span class='" + (prediction === "Big" ? "big" : "small") + "'>" + prediction + "</span></p>";
+    }
+  </script>
 </body>
 </html>
