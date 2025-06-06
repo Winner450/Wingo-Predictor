@@ -20,17 +20,14 @@
       font-size: 1.8rem;
       font-weight: 700;
       color: gold;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
       text-shadow: 0 0 8px gold;
-      flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
 
     .tabs {
       display: flex;
       gap: 1rem;
-      margin: 1.5rem 0;
+      margin-bottom: 1.5rem;
     }
 
     .tab {
@@ -49,52 +46,49 @@
       color: black;
     }
 
-    .next-period {
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
-      color: #00ffc3;
-    }
-
-    .timer {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #ffcc00;
-    }
-
     .card {
-      background: linear-gradient(to bottom right, #1e1e1e, #292929);
+      background: #1e1e1e;
       border: 2px solid gold;
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 1.5rem;
-      text-align: left;
-      max-width: 350px;
       width: 100%;
+      max-width: 380px;
       box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
     }
 
-    .card h3 {
+    .prediction-line {
       margin: 0.8rem 0;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
     }
 
-    .card h3 span {
-      color: #00ffc3;
+    .label {
       font-weight: bold;
+      color: gold;
     }
 
-    .confidence {
-      font-size: 1rem;
-      color: lightgreen;
+    .value {
+      font-weight: bold;
+      color: #00ffc3;
+    }
+
+    .next-period {
       margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 1rem;
+      color: #aaa;
+      text-align: center;
+    }
+
+    .countdown {
+      font-size: 1.3rem;
+      color: lightgreen;
+      margin-top: 0.5rem;
+      font-weight: bold;
+      text-align: center;
     }
 
     @media (max-width: 400px) {
       h1 {
         font-size: 1.4rem;
-        flex-direction: column;
         text-align: center;
       }
     }
@@ -109,14 +103,13 @@
     <button class="tab" onclick="switchTab('3m')">3m</button>
   </div>
 
-  <div class="next-period" id="periodText">Next Period: #1001</div>
-  <div class="timer" id="timerText">Time left: 30s</div>
-
-  <div class="card" id="predictionCard">
-    <h3>📏 <b>Size:</b> <span id="sizeText">-</span></h3>
-    <h3>🎨 <b>Colour:</b> <span id="colorText">Loading...</span></h3>
-    <h3>🎲 <b>Number:</b> <span id="numberText">-</span></h3>
-    <h3>🧠 <b>Confidence:</b> <span id="confidenceText">--%</span></h3>
+  <div class="card">
+    <div class="prediction-line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
+    <div class="prediction-line"><span class="label">📏 Size:</span> <span class="value" id="sizeText">-</span></div>
+    <div class="prediction-line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
+    <div class="prediction-line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
+    <div class="next-period">⏱️ Next Period: <span id="nextPeriod">Loading...</span></div>
+    <div class="countdown">⏳ Time Left: <span id="countdown">--</span></div>
   </div>
 
   <script>
@@ -124,33 +117,35 @@
     const numberText = document.getElementById("numberText");
     const sizeText = document.getElementById("sizeText");
     const confidenceText = document.getElementById("confidenceText");
-    const periodText = document.getElementById("periodText");
-    const timerText = document.getElementById("timerText");
+    const nextPeriod = document.getElementById("nextPeriod");
+    const countdown = document.getElementById("countdown");
     const tabs = document.querySelectorAll(".tab");
 
     let currentMode = '30s';
+    let intervalTime = 30000;
+    let timer = intervalTime;
     let intervalId = null;
-    let countdownId = null;
-    let currentPeriod = 1001;
+    let countdownInterval = null;
+    let periodBase = 2025060610005200;
 
     const mockAI = {
       "30s": () => ({
         color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
         number: Math.floor(Math.random() * 10),
         bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(84 + Math.random() * 10)
+        confidence: Math.floor(83 + Math.random() * 10)
       }),
       "1m": () => ({
-        color: ["GREEN", "RED", "VIOLET"][Math.floor(Math.random() * 3)],
+        color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
         number: Math.floor(3 + Math.random() * 6),
         bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(88 + Math.random() * 8)
+        confidence: Math.floor(86 + Math.random() * 10)
       }),
       "3m": () => ({
         color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
         number: Math.floor(1 + Math.random() * 10),
         bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(91 + Math.random() * 6)
+        confidence: Math.floor(90 + Math.random() * 7)
       })
     };
 
@@ -160,22 +155,17 @@
       numberText.innerText = result.number;
       sizeText.innerText = result.bigSmall;
       confidenceText.innerText = result.confidence + "%";
-      periodText.innerText = "Next Period: #" + (++currentPeriod);
+      periodBase++;
+      nextPeriod.innerText = periodBase;
+      timer = intervalTime;
     }
 
-    function startCountdown(duration) {
-      let timeLeft = duration;
-      timerText.innerText = `Time left: ${timeLeft}s`;
-
-      countdownId = setInterval(() => {
-        timeLeft--;
-        timerText.innerText = `Time left: ${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(countdownId);
-          updatePrediction();
-          startCountdown(duration); // restart for next round
-        }
-      }, 1000);
+    function updateCountdown() {
+      timer -= 1000;
+      countdown.innerText = (timer / 1000) + "s";
+      if (timer <= 0) {
+        updatePrediction();
+      }
     }
 
     function switchTab(mode) {
@@ -184,22 +174,25 @@
       [...tabs].find(t => t.innerText === mode).classList.add("active");
 
       clearInterval(intervalId);
-      clearInterval(countdownId);
+      clearInterval(countdownInterval);
 
-      updatePrediction();
-
-      const intervalSeconds = {
-        "30s": 30,
-        "1m": 60,
-        "3m": 180
+      const intervalTimes = {
+        "30s": 30000,
+        "1m": 60000,
+        "3m": 180000
       };
 
-      startCountdown(intervalSeconds[mode]);
+      intervalTime = intervalTimes[mode];
+      updatePrediction();
+
+      intervalId = setInterval(updatePrediction, intervalTime);
+      countdownInterval = setInterval(updateCountdown, 1000);
     }
 
-    // Start default
+    // Start by default
     updatePrediction();
-    startCountdown(30);
+    intervalId = setInterval(updatePrediction, intervalTime);
+    countdownInterval = setInterval(updateCountdown, 1000);
   </script>
 </body>
 </html>
