@@ -3,70 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wingo Predictor Pro AI</title>
+  <title>WinGo Predictor Pro AI</title>
   <style>
     body {
       margin: 0;
-      background: #000;
       font-family: 'Segoe UI', sans-serif;
-      color: #fff;
+      background: linear-gradient(to bottom, #fff2cc, #f9e79f);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
+      justify-content: flex-start;
+      min-height: 100vh;
     }
 
-    .card {
-      background: linear-gradient(145deg, #111, #222);
-      border: 2px solid gold;
-      border-radius: 20px;
-      padding: 30px;
-      width: 340px;
-      box-shadow: 0 0 15px gold;
+    .header {
+      background: #000;
+      width: 100%;
+      padding: 15px 0;
       text-align: center;
     }
 
-    .title {
-      font-size: 1.4em;
+    .header h1 {
+      color: #ffd700;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      margin-top: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .input-label {
+      font-size: 1.2rem;
       margin-bottom: 15px;
-      color: gold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #333;
     }
 
-    .prediction {
-      font-size: 1.1em;
-      margin: 12px 0;
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 2px solid #ffd700;
+      border-radius: 8px;
+      outline: none;
+      margin-bottom: 20px;
     }
 
-    .label {
+    button {
+      background: linear-gradient(45deg, #ffd700, #ffb300);
+      border: none;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #000;
       font-weight: bold;
-      color: #ccc;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     }
 
-    .value {
-      font-size: 1.2em;
-      color: #fff;
+    .prediction-box {
+      margin-top: 25px;
+      background: #000;
+      color: #ffd700;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: left;
     }
 
-    .highlight {
-      color: gold;
+    .footer {
+      margin-top: auto;
+      padding: 20px 0;
+      font-size: 0.9rem;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title">🎯 Wingo AI Prediction</div>
-    
-    <div class="prediction"><span class="label">🔢 Number:</span> <span class="value highlight">7</span></div>
-    <div class="prediction"><span class="label">🎨 Colour:</span> <span class="value">🟥 Red</span></div>
-    <div class="prediction"><span class="label">📏 Size:</span> <span class="value">🔴 Big</span></div>
-    <div class="prediction"><span class="label">🧠 Confidence:</span> <span class="value">📊 91%</span></div>
+
+  <div class="header">
+    <h1>🎯 WinGo Predictor Pro</h1>
+  </div>
+
+  <div class="container">
+    <div class="input-label">🔢 Enter Previous Numbers:</div>
+    <input type="text" id="numbersInput" placeholder="e.g. 784563" />
+    <button onclick="predict()">🔮 Predict Result</button>
+
+    <div class="prediction-box" id="resultBox" style="display:none;">
+      <p><strong>🔢 Number:</strong> <span id="number"></span></p>
+      <p><strong>🎨 Colour:</strong> <span id="color"></span></p>
+      <p><strong>📏 Size:</strong> <span id="size"></span></p>
+      <p><strong>🧠 Confidence:</strong> <span id="confidence"></span></p>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2025 WinGo Predictor | Crafted with 💡 by @winner450
   </div>
 
   <script>
-    // Auto refresh every 15 seconds for new prediction
-    setTimeout(() => {
-      location.reload();
-    }, 15000);
+    function predict() {
+      const numbers = document.getElementById('numbersInput').value;
+
+      if (numbers.length < 3) {
+        alert("Please enter at least 3 digits to predict!");
+        return;
+      }
+
+      // Simple AI-like mock logic
+      const number = Math.floor(Math.random() * 10);
+      const colors = ['🟥 Red', '🟩 Green', '🟦 Blue'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const size = number > 4 ? '🔴 Big' : '🟢 Small';
+      const confidence = ['📊 76%', '📊 82%', '📊 88%', '📊 93%', '📊 97%'][Math.floor(Math.random() * 5)];
+
+      document.getElementById('number').innerText = number;
+      document.getElementById('color').innerText = color;
+      document.getElementById('size').innerText = size;
+      document.getElementById('confidence').innerText = confidence;
+
+      document.getElementById('resultBox').style.display = 'block';
+    }
   </script>
+
 </body>
 </html>
