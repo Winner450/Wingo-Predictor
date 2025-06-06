@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 Wingo Predictor Pro (AI Based)</title>
+  <title>🎯 Wingo Predictor Pro (Manual AI)</title>
   <style>
     body {
       margin: 0;
@@ -15,7 +15,6 @@
       align-items: center;
       padding: 30px;
     }
-
     .predict-box {
       background: linear-gradient(145deg, #1a1a1a, #111);
       border: 2px solid gold;
@@ -26,13 +25,11 @@
       text-align: center;
       margin-bottom: 30px;
     }
-
     .predict-box h2 {
       color: gold;
       font-size: 24px;
       margin-bottom: 20px;
     }
-
     .result {
       font-size: 22px;
       margin: 10px 0;
@@ -41,12 +38,10 @@
       border-radius: 12px;
       box-shadow: inset 0 0 10px #000;
     }
-
     .confidence {
       margin-top: 20px;
       font-size: 16px;
     }
-
     .confidence-bar {
       background: #333;
       border-radius: 10px;
@@ -54,20 +49,17 @@
       height: 14px;
       margin-top: 5px;
     }
-
     .bar-fill {
       height: 100%;
       background: linear-gradient(to right, gold, orange);
       width: 0%;
       transition: width 1s ease;
     }
-
     .footer {
       margin-top: 25px;
       font-size: 12px;
       color: gray;
     }
-
     .pattern-section {
       width: 95%;
       max-width: 800px;
@@ -76,19 +68,16 @@
       border-radius: 15px;
       box-shadow: 0 0 10px gold;
     }
-
     .pattern-section h3 {
       color: gold;
       text-align: center;
       margin-bottom: 20px;
     }
-
     .pattern-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 15px;
     }
-
     .pattern-card {
       background: #1e1e1e;
       border-left: 4px solid gold;
@@ -97,89 +86,88 @@
       font-size: 14px;
       box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
     }
-
     .pattern-title {
       color: #ffcc00;
       font-weight: bold;
       margin-bottom: 5px;
     }
+    button {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      background: gold;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 0 10px gold;
+    }
   </style>
 </head>
 <body>
 
+<button onclick="generatePrediction()">🔁 Refresh Prediction</button>
+
 <div class="predict-box">
   <h2>🔮 AI Prediction</h2>
-
   <div class="result" id="number">Number: --</div>
   <div class="result" id="color">Color: --</div>
   <div class="result" id="size">Size: --</div>
-
   <div class="confidence">
     Confidence:
     <div class="confidence-bar">
       <div class="bar-fill" id="confidenceFill"></div>
     </div>
   </div>
-
-  <div class="footer">Auto Refreshing AI Prediction</div>
+  <div class="footer">Manual AI Prediction (Offline)</div>
 </div>
 
 <div class="pattern-section">
   <h3>📊 Pattern Detection</h3>
-  <div class="pattern-grid" id="patternGrid">
-    <div class="pattern-card">
-      <div class="pattern-title">Zigzag Pattern</div>
-      <div id="zigzag">Detecting...</div>
-    </div>
-    <div class="pattern-card">
-      <div class="pattern-title">Reverse Pattern</div>
-      <div id="reverse">Detecting...</div>
-    </div>
-    <div class="pattern-card">
-      <div class="pattern-title">Continuation</div>
-      <div id="continuation">Detecting...</div>
-    </div>
-    <div class="pattern-card">
-      <div class="pattern-title">Hot Color</div>
-      <div id="hotcolor">Detecting...</div>
-    </div>
-    <div class="pattern-card">
-      <div class="pattern-title">Cold Color</div>
-      <div id="coldcolor">Detecting...</div>
-    </div>
-    <div class="pattern-card">
-      <div class="pattern-title">Last Color Trend</div>
-      <div id="trend">Detecting...</div>
-    </div>
+  <div class="pattern-grid">
+    <div class="pattern-card"><div class="pattern-title">Zigzag Pattern</div><div id="zigzag">--</div></div>
+    <div class="pattern-card"><div class="pattern-title">Reverse Pattern</div><div id="reverse">--</div></div>
+    <div class="pattern-card"><div class="pattern-title">Continuation</div><div id="continuation">--</div></div>
+    <div class="pattern-card"><div class="pattern-title">Hot Color</div><div id="hotcolor">--</div></div>
+    <div class="pattern-card"><div class="pattern-title">Cold Color</div><div id="coldcolor">--</div></div>
+    <div class="pattern-card"><div class="pattern-title">Last Color Trend</div><div id="trend">--</div></div>
   </div>
 </div>
 
 <script>
-  async function fetchPrediction() {
-    try {
-      // Replace this with your real backend URL
-      const res = await fetch("https://your-api-endpoint.com/predict");
-      const data = await res.json();
+function generatePrediction() {
+  const colors = ["Red", "Green", "Violet"];
+  const number = Math.floor(Math.random() * 10);
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const size = number >= 5 ? "Big" : "Small";
+  const confidence = Math.floor(Math.random() * 20) + 80;
 
-      document.getElementById('number').textContent = `Number: ${data.number}`;
-      document.getElementById('color').textContent = `Color: ${data.color}`;
-      document.getElementById('size').textContent = `Size: ${data.size}`;
-      document.getElementById('confidenceFill').style.width = data.confidence + "%";
+  document.getElementById("number").textContent = `Number: ${number}`;
+  document.getElementById("color").textContent = `Color: ${color}`;
+  document.getElementById("size").textContent = `Size: ${size}`;
+  document.getElementById("confidenceFill").style.width = confidence + "%";
 
-      // Example pattern data from backend:
-      document.getElementById('zigzag').textContent = data.patterns.zigzag || "No";
-      document.getElementById('reverse').textContent = data.patterns.reverse || "No";
-      document.getElementById('continuation').textContent = data.patterns.continuation || "No";
-      document.getElementById('hotcolor').textContent = data.patterns.hotcolor || "Green";
-      document.getElementById('coldcolor').textContent = data.patterns.coldcolor || "Violet";
-      document.getElementById('trend').textContent = data.patterns.trend || "Green → Red → Green";
-    } catch (error) {
-      console.log("Error fetching prediction:", error);
-    }
-  }
+  const trendPatterns = [
+    "Red → Green → Red",
+    "Green → Red → Green",
+    "Violet → Red → Green",
+    "Red → Violet → Green",
+    "Green → Green → Red"
+  ];
 
-  fetchPrediction();
-  setInterval(fetchPrediction, 20000);
+  // Smart Pattern AI Logic
+  const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
+  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
+  document.getElementById("zigzag").textContent = getYesNo();
+  document.getElementById("reverse").textContent = getYesNo();
+  document.getElementById("continuation").textContent = getYesNo();
+  document.getElementById("hotcolor").textContent = getRandomColor();
+  document.getElementById("coldcolor").textContent = getRandomColor();
+  document.getElementById("trend").textContent = trendPatterns[Math.floor(Math.random() * trendPatterns.length)];
+}
+
+generatePrediction();
 </script>
 
 </body>
