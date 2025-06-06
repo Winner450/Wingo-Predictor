@@ -8,74 +8,54 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
-      color: #fff;
+      background: #111;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.5rem;
+      padding: 2rem;
     }
 
     h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
       color: gold;
       text-shadow: 0 0 8px gold;
-      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
     }
 
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .tab {
-      padding: 0.5rem 1.5rem;
+    .prediction-box {
+      background: #1a1a1a;
       border: 2px solid gold;
-      border-radius: 999px;
-      cursor: pointer;
-      background-color: transparent;
-      color: gold;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .tab.active {
-      background-color: gold;
-      color: black;
-    }
-
-    .card {
-      background: #1e1e1e;
-      border: 2px solid gold;
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 1.5rem;
+      max-width: 400px;
       width: 100%;
-      max-width: 380px;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .line {
+    .row {
+      display: flex;
+      justify-content: space-between;
       font-size: 1.1rem;
-      margin: 0.7rem 0;
     }
 
     .label {
-      font-weight: bold;
-      color: #ffcc00;
+      color: #ffd700;
+      font-weight: 600;
     }
 
     .value {
-      font-weight: bold;
+      font-weight: 700;
       color: #00ffc3;
     }
 
-    .timer {
-      font-size: 1.2rem;
-      color: lightgreen;
-      text-align: center;
-      margin-top: 0.5rem;
+    .auto-refresh {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #aaa;
     }
 
     @media (max-width: 400px) {
@@ -89,109 +69,43 @@
 <body>
   <h1>🎯 WinGo Predictor Pro</h1>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('30s')">30s</button>
-    <button class="tab" onclick="switchTab('1m')">1m</button>
-    <button class="tab" onclick="switchTab('3m')">3m</button>
+  <div class="prediction-box" id="predictionBox">
+    <div class="row"><span class="label">🎨 Colour:</span> <span class="value" id="color">--</span></div>
+    <div class="row"><span class="label">🎲 Number:</span> <span class="value" id="number">--</span></div>
+    <div class="row"><span class="label">📏 Size:</span> <span class="value" id="size">--</span></div>
+    <div class="row"><span class="label">🧠 Confidence:</span> <span class="value" id="confidence">--%</span></div>
   </div>
 
-  <div class="card">
-    <div class="line"><span class="label">📏 Size:</span> <span class="value" id="sizeText">-</span></div>
-    <div class="line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
-    <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
-    <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
-    <div class="timer">⏳ Time Left: <span id="countdown">--</span></div>
-  </div>
+  <div class="auto-refresh">🔄 Auto refresh enabled (No delay)</div>
 
   <script>
-    const sizeText = document.getElementById("sizeText");
-    const colorText = document.getElementById("colorText");
-    const numberText = document.getElementById("numberText");
-    const confidenceText = document.getElementById("confidenceText");
-    const countdown = document.getElementById("countdown");
-    const tabs = document.querySelectorAll(".tab");
+    const colorEl = document.getElementById("color");
+    const numberEl = document.getElementById("number");
+    const sizeEl = document.getElementById("size");
+    const confidenceEl = document.getElementById("confidence");
 
-    let currentMode = '30s';
-    let intervalId = null;
-    let countdownInterval = null;
-    let timer = 30;
+    function getSmartPrediction() {
+      const n = Math.floor(Math.random() * 10);
+      const color = (n === 0 || n === 5) ? "VIOLET" : (n % 2 === 0 ? "GREEN" : "RED");
+      const size = n < 5 ? "SMALL" : "BIG";
+      const confidence = 90 + Math.floor(Math.random() * 7);
 
-    // AI Prediction Logic
-    const advancedAI = {
-      "30s": () => {
-        const n = Math.floor(Math.random() * 10);
-        return {
-          number: n,
-          color: n === 0 || n === 5 || n === 10 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
-          size: n <= 4 ? "SMALL" : "BIG",
-          confidence: 85 + Math.floor(Math.random() * 7)
-        };
-      },
-      "1m": () => {
-        const n = Math.floor(Math.random() * 10);
-        return {
-          number: n,
-          color: n % 2 === 0 ? "GREEN" : "RED",
-          size: n < 5 ? "SMALL" : "BIG",
-          confidence: 88 + Math.floor(Math.random() * 5)
-        };
-      },
-      "3m": () => {
-        const n = Math.floor(Math.random() * 10);
-        return {
-          number: n,
-          color: n === 0 || n === 5 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
-          size: n >= 5 ? "BIG" : "SMALL",
-          confidence: 90 + Math.floor(Math.random() * 6)
-        };
-      }
-    };
+      return { color, number: n, size, confidence };
+    }
 
     function updatePrediction() {
-      const result = advancedAI[currentMode]();
-      sizeText.innerText = result.size;
-      colorText.innerText = result.color;
-      numberText.innerText = result.number;
-      confidenceText.innerText = result.confidence + "%";
-      resetTimer();
+      const p = getSmartPrediction();
+      colorEl.textContent = p.color;
+      numberEl.textContent = p.number;
+      sizeEl.textContent = p.size;
+      confidenceEl.textContent = p.confidence + "%";
     }
 
-    function resetTimer() {
-      timer = {
-        '30s': 30,
-        '1m': 60,
-        '3m': 180
-      }[currentMode];
-    }
-
-    function updateCountdown() {
-      countdown.innerText = timer + "s";
-      timer--;
-      if (timer < 0) {
-        updatePrediction();
-      }
-    }
-
-    function switchTab(mode) {
-      currentMode = mode;
-      tabs.forEach(tab => tab.classList.remove("active"));
-      [...tabs].find(t => t.innerText === mode).classList.add("active");
-
-      clearInterval(intervalId);
-      clearInterval(countdownInterval);
-
-      updatePrediction();
-      intervalId = setInterval(updatePrediction, {
-        '30s': 30000,
-        '1m': 60000,
-        '3m': 180000
-      }[mode]);
-      countdownInterval = setInterval(updateCountdown, 1000);
-    }
-
+    // Initial update
     updatePrediction();
-    intervalId = setInterval(updatePrediction, 30000);
-    countdownInterval = setInterval(updateCountdown, 1000);
+
+    // Continuous auto-refresh every 1 second
+    setInterval(updatePrediction, 1000);
   </script>
 </body>
 </html>
