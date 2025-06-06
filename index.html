@@ -12,7 +12,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       min-height: 100vh;
     }
 
@@ -43,10 +42,6 @@
     .input-label {
       font-size: 1.2rem;
       margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
       color: #333;
     }
 
@@ -70,6 +65,11 @@
       color: #000;
       font-weight: bold;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.03);
     }
 
     .prediction-box {
@@ -77,8 +77,16 @@
       background: #000;
       color: #ffd700;
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 15px;
       text-align: left;
+      display: none;
+      animation: fadeIn 1s ease-in-out;
+      box-shadow: 0 0 10px #ffd700;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .footer {
@@ -86,6 +94,18 @@
       padding: 20px 0;
       font-size: 0.9rem;
       color: #555;
+    }
+
+    .loader {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #333;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
     }
   </style>
 </head>
@@ -100,7 +120,9 @@
     <input type="text" id="numbersInput" placeholder="e.g. 784563" />
     <button onclick="predict()">🔮 Predict Result</button>
 
-    <div class="prediction-box" id="resultBox" style="display:none;">
+    <div class="loader" id="loadingText" style="display: none;">⏳ AI is thinking...</div>
+
+    <div class="prediction-box" id="resultBox">
       <p><strong>🔢 Number:</strong> <span id="number"></span></p>
       <p><strong>🎨 Colour:</strong> <span id="color"></span></p>
       <p><strong>📏 Size:</strong> <span id="size"></span></p>
@@ -114,26 +136,34 @@
 
   <script>
     function predict() {
-      const numbers = document.getElementById('numbersInput').value;
+      const input = document.getElementById('numbersInput').value;
+      const resultBox = document.getElementById('resultBox');
+      const loadingText = document.getElementById('loadingText');
 
-      if (numbers.length < 3) {
+      if (input.length < 3) {
         alert("Please enter at least 3 digits to predict!");
         return;
       }
 
-      // Simple AI-like mock logic
-      const number = Math.floor(Math.random() * 10);
-      const colors = ['🟥 Red', '🟩 Green', '🟦 Blue'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const size = number > 4 ? '🔴 Big' : '🟢 Small';
-      const confidence = ['📊 76%', '📊 82%', '📊 88%', '📊 93%', '📊 97%'][Math.floor(Math.random() * 5)];
+      resultBox.style.display = 'none';
+      loadingText.style.display = 'block';
 
-      document.getElementById('number').innerText = number;
-      document.getElementById('color').innerText = color;
-      document.getElementById('size').innerText = size;
-      document.getElementById('confidence').innerText = confidence;
+      setTimeout(() => {
+        const number = Math.floor(Math.random() * 10);
+        const colors = ['🟥 Red', '🟩 Green', '🟦 Blue'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = number > 4 ? '🔴 Big' : '🟢 Small';
+        const confidenceOptions = ['📊 76%', '📊 82%', '📊 88%', '📊 93%', '📊 97%'];
+        const confidence = confidenceOptions[Math.floor(Math.random() * confidenceOptions.length)];
 
-      document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('number').innerText = number;
+        document.getElementById('color').innerText = color;
+        document.getElementById('size').innerText = size;
+        document.getElementById('confidence').innerText = confidence;
+
+        loadingText.style.display = 'none';
+        resultBox.style.display = 'block';
+      }, 3000); // 3 second delay
     }
   </script>
 
