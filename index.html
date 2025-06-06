@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo AI Auto Predictor</title>
+  <title>🎯 WinGo AI Predictor (Manual Mode)</title>
   <style>
     body {
       margin: 0;
@@ -39,7 +39,8 @@
       position: relative;
       padding: 60px 20px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
     }
 
     .prediction-box {
@@ -51,6 +52,7 @@
       max-width: 400px;
       box-shadow: 0 0 20px gold;
       backdrop-filter: blur(10px);
+      margin-bottom: 20px;
     }
 
     .prediction-title {
@@ -75,6 +77,22 @@
     .value {
       font-weight: bold;
       color: #fff;
+    }
+
+    button {
+      background: gold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #ffc107;
     }
   </style>
 </head>
@@ -102,10 +120,12 @@
       <div class="value" id="confidence">...</div>
     </div>
   </div>
+
+  <button onclick="predictFromHistory()">Predict Now</button>
 </div>
 
 <script>
-  // Generate stars animation
+  // Star animation background
   const starsContainer = document.getElementById('stars');
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
@@ -116,7 +136,7 @@
     starsContainer.appendChild(star);
   }
 
-  // Simulated past results
+  // 🛠️ MANUALLY EDIT YOUR PAST RESULTS HERE:
   const pastResults = [
     { color: 'Red', number: 6 },
     { color: 'Green', number: 1 },
@@ -130,12 +150,13 @@
     { color: 'Green', number: 5 }
   ];
 
-  function predictFromHistory(data) {
+  // 🧠 AI Logic
+  function predictFromHistory() {
     const colorCount = { Red: 0, Green: 0, Violet: 0 };
     const numberFreq = {};
     let big = 0, small = 0;
 
-    data.forEach(entry => {
+    pastResults.forEach(entry => {
       colorCount[entry.color]++;
       numberFreq[entry.number] = (numberFreq[entry.number] || 0) + 1;
       if (entry.number >= 5) big++; else small++;
@@ -144,7 +165,7 @@
     const mostColor = Object.keys(colorCount).reduce((a, b) => colorCount[a] > colorCount[b] ? a : b);
     const mostNumber = parseInt(Object.keys(numberFreq).reduce((a, b) => numberFreq[a] > numberFreq[b] ? a : b));
     const size = mostNumber >= 5 ? "Big" : "Small";
-    const confidence = Math.min(99, Math.floor((colorCount[mostColor] / data.length) * 100 + 20));
+    const confidence = Math.min(99, Math.floor((colorCount[mostColor] / pastResults.length) * 100 + 20));
 
     document.getElementById("size").innerText = size;
     document.getElementById("colour").innerText = mostColor;
@@ -152,13 +173,8 @@
     document.getElementById("confidence").innerText = confidence + "%";
   }
 
-  // Auto refresh every 5 seconds (can reduce to 2s or 1s)
-  setInterval(() => {
-    predictFromHistory(pastResults);
-  }, 5000);
-
-  // First load
-  predictFromHistory(pastResults);
+  // Optional: run once on page load
+  predictFromHistory();
 </script>
 
 </body>
