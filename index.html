@@ -2,39 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>WinGo Prediction Tool</title>
+  <title>Advanced WinGo Prediction Tool</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #e6e6e6; padding: 20px; }
-    h2 { color: #333; }
-    input, button, textarea { padding: 10px; margin-top: 10px; width: 100%; }
+    body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+    h2 { color: #222; }
+    input, button, textarea {
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      font-size: 16px;
+    }
+    .result { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; }
     .big { color: green; font-weight: bold; }
     .small { color: red; font-weight: bold; }
+    .color { font-weight: bold; }
+    .green { color: green; }
+    .red { color: red; }
+    .violet { color: purple; }
   </style>
 </head>
 <body>
-  <h2>WinGo Prediction Tool</h2>
-  <p>Enter last few numbers to predict the next result (Big/Small):</p>
-  <textarea id="numbersInput" rows="4" placeholder="e.g. 77456"></textarea><br />
-  <button onclick="predictNext()">Predict Next</button>
-  <div id="result"></div>
+  <h2>🔮 Advanced WinGo Prediction Tool</h2>
+  <p>Enter last few numbers (no spaces, e.g. 7745639):</p>
+  <textarea id="numbersInput" rows="3" placeholder="Example: 784512"></textarea>
+  <button onclick="predict()">Predict Next</button>
+  <div id="result" class="result"></div>
 
   <script>
-    function predictNext() {
+    function predict() {
       const input = document.getElementById("numbersInput").value.trim();
-      if (input.length < 2) {
-        document.getElementById("result").innerHTML = "<p>Please enter at least 2 numbers.</p>";
+      if (input.length < 3) {
+        document.getElementById("result").innerHTML = "<p>Please enter at least 3 digits.</p>";
         return;
       }
 
-      const lastChar = input[input.length - 1];
-      const secondLastChar = input[input.length - 2];
+      const numbers = input.split("").map(Number);
+      const last = numbers[numbers.length - 1];
+      const second = numbers[numbers.length - 2];
+      const third = numbers[numbers.length - 3];
 
-      const bigCount = [lastChar, secondLastChar].filter(n => parseInt(n) >= 5).length;
-      const smallCount = 2 - bigCount;
+      // Big / Small
+      let bs = (last >= 5) ? "Big" : "Small";
 
-      const prediction = bigCount > smallCount ? "Big" : "Small";
+      // Pattern detection
+      let pattern = "Random";
+      if (last > second && second > third) pattern = "Ascending";
+      else if (last < second && second < third) pattern = "Descending";
+      else if (last === second && second === third) pattern = "Constant";
+      else if (last !== second && second !== third && last !== third) pattern = "Zigzag";
 
-      document.getElementById("result").innerHTML = "<p>Prediction: <span class='" + (prediction === "Big" ? "big" : "small") + "'>" + prediction + "</span></p>";
+      // Predict next number (simple average logic)
+      const avg = Math.round((last + second + third) / 3);
+      const nextNum = (avg + Math.floor(Math.random() * 3 - 1)) % 10;
+
+      // Color prediction logic
+      let color = "Green";
+      if (nextNum % 2 === 0) color = "Red";
+      if (nextNum === 0 || nextNum === 5) color = "Violet";
+
+      document.getElementById("result").innerHTML = `
+        <p><strong>Prediction:</strong></p>
+        <p>Next Number: <strong>${nextNum}</strong></p>
+        <p>Big/Small: <span class="${bs === 'Big' ? 'big' : 'small'}">${bs}</span></p>
+        <p>Pattern Detected: <strong>${pattern}</strong></p>
+        <p>Color Prediction: <span class="color ${color.toLowerCase()}">${color}</span></p>
+      `;
     }
   </script>
 </body>
