@@ -1,179 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor Pro</title>
+  <title>🎯 Wingo Predictor Pro (AI-Based)</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
+      background: #111;
       color: #fff;
-      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
     }
-
-    .stars {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background: url('https://i.ibb.co/2thkNdg/stars.gif') repeat center;
-      opacity: 0.2;
-      animation: starsMove 100s linear infinite;
-      z-index: -1;
-    }
-    @keyframes starsMove {
-      from { background-position: 0 0; }
-      to { background-position: -4000px 3000px; }
-    }
-
     h1 {
-      text-align: center;
-      font-size: 1.8rem;
       color: gold;
       text-shadow: 0 0 8px gold;
-      margin: 1.5rem 0;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
     }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1.2rem;
-    }
-    .tab {
-      padding: 0.6rem 1.5rem;
-      border: 2px solid gold;
-      border-radius: 999px;
-      cursor: pointer;
-      background: transparent;
-      color: gold;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .tab.active {
-      background: gold;
-      color: black;
-    }
-
     .card {
-      background: rgba(30,30,30,0.8);
-      backdrop-filter: blur(8px);
+      background: #1a1a1a;
       border: 2px solid gold;
-      border-radius: 16px;
-      max-width: 380px;
-      padding: 2rem 1.5rem;
-      margin: 0 auto;
-      box-shadow: 0 0 30px rgba(255,215,0,0.4);
+      border-radius: 20px;
+      padding: 1.5rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
     }
     .row {
       display: flex;
       justify-content: space-between;
-      font-size: 1.3rem;
-      margin: 1rem 0;
-      font-weight: 600;
+      margin: 0.8rem 0;
+      font-size: 1.1rem;
     }
-    .label {
+    .label { color: #ffd700; font-weight: bold; }
+    .value { color: #00ffc3; font-weight: bold; }
+    .mode { margin-bottom: 1rem; }
+    .btn {
+      padding: 0.5rem 1.2rem;
+      border: 2px solid gold;
+      border-radius: 999px;
+      background: transparent;
       color: gold;
+      cursor: pointer;
+      margin-right: 0.8rem;
+      transition: 0.3s;
     }
-    .value {
-      color: #00ffc3;
-    }
-    .confidence {
-      color: lightgreen;
-    }
-
-    iframe {
-      width: 100%;
-      max-width: 600px;
-      height: 300px;
-      border: none;
-      margin: 2rem auto;
-      display: block;
-      box-shadow: 0 0 20px rgba(255,215,0,0.3);
-      border-radius: 12px;
-    }
-
-    @media (max-width: 420px) {
-      h1 { font-size: 1.5rem; }
-      .card { padding: 1.5rem 1rem; }
-      .row { font-size: 1.1rem; }
+    .btn.active, .btn:hover {
+      background: gold; color: black;
     }
   </style>
 </head>
 <body>
-  <div class="stars"></div>
+  <h1>🎯 Wingo Predictor Pro</h1>
 
-  <h1>🎯 WinGo Predictor Pro</h1>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('30s')">30s</button>
-    <button class="tab" onclick="switchTab('1m')">1m</button>
-    <button class="tab" onclick="switchTab('3m')">3m</button>
+  <div class="mode">
+    <button class="btn active" onclick="switchMode('30s')">30s</button>
+    <button class="btn" onclick="switchMode('1m')">1m</button>
+    <button class="btn" onclick="switchMode('3m')">3m</button>
   </div>
 
   <div class="card">
-    <div class="row"><div class="label">📏 Size:</div><div class="value" id="sizeText">--</div></div>
-    <div class="row"><div class="label">🎨 Color:</div><div class="value" id="colorText">--</div></div>
-    <div class="row"><div class="label">🎲 Number:</div><div class="value" id="numberText">--</div></div>
-    <div class="row"><div class="label">🧠 Confidence:</div><div class="confidence" id="confidenceText">--%</div></div>
+    <div class="row"><span class="label">📏 Size:</span><span class="value" id="size">-</span></div>
+    <div class="row"><span class="label">🎨 Colour:</span><span class="value" id="color">-</span></div>
+    <div class="row"><span class="label">🎲 Number:</span><span class="value" id="number">-</span></div>
+    <div class="row"><span class="label">🧠 Confidence:</span><span class="value" id="confidence">--%</span></div>
   </div>
 
-  <!-- ⭐ Live Chart from BDGOP.com -->
-  <iframe src="https://bdgop.com/embed/live-chart" title="Live WinGo Chart"></iframe>
-
   <script>
-    const colorText = document.getElementById("colorText");
-    const numberText = document.getElementById("numberText");
-    const sizeText = document.getElementById("sizeText");
-    const confidenceText = document.getElementById("confidenceText");
-    const tabs = document.querySelectorAll(".tab");
+    let mode = '30s';
 
-    let currentMode = '30s';
-    let intervalId = null;
-
-    const mockAI = {
-      "30s": () => ({
-        color: ["RED","GREEN","VIOLET"][Math.random()*3|0],
-        number: Math.random()*10|0,
-        size: Math.random()>0.5?"BIG":"SMALL",
-        confidence: 85 + Math.random()*10|0
-      }),
-      "1m": () => ({
-        color: ["GREEN","RED","VIOLET"][Math.random()*3|0],
-        number: 2 + Math.random()*8|0,
-        size: Math.random()>0.5?"SMALL":"BIG",
-        confidence: 88 + Math.random()*8|0
-      }),
-      "3m": () => ({
-        color: ["RED","VIOLET","GREEN"][Math.random()*3|0],
-        number: 1 + Math.random()*10|0,
-        size: Math.random()>0.5?"BIG":"SMALL",
-        confidence: 90 + Math.random()*6|0
-      })
-    };
-
-    function updatePrediction(){
-      const r = mockAI[currentMode]();
-      colorText.innerText = r.color;
-      numberText.innerText = r.number;
-      sizeText.innerText = r.size;
-      confidenceText.innerText = `${r.confidence}%`;
+    async function fetchPrediction() {
+      try {
+        const res = await fetch(`https://your-backend.com/predict?mode=${mode}`);
+        const d = await res.json();
+        document.getElementById('size').textContent = d.size;
+        document.getElementById('color').textContent = d.color;
+        document.getElementById('number').textContent = d.number;
+        document.getElementById('confidence').textContent = d.confidence + '%';
+      } catch(e) {
+        console.error(e);
+      }
     }
 
-    function switchTab(mode){
-      currentMode = mode;
-      tabs.forEach(t=>t.classList.remove("active"));
-      [...tabs].find(t=>t.innerText===mode).classList.add("active");
-      clearInterval(intervalId);
-      updatePrediction();
-      const times = {"30s":30000,"1m":60000,"3m":180000};
-      intervalId = setInterval(updatePrediction,times[mode]);
+    function switchMode(m) {
+      mode = m;
+      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      fetchPrediction();
     }
 
-    // initialize:
-    updatePrediction();
-    intervalId = setInterval(updatePrediction, 30000);
+    // Auto-update every period (same interval as mode)
+    setInterval(fetchPrediction, 30000);
+    fetchPrediction();
   </script>
 </body>
 </html>
