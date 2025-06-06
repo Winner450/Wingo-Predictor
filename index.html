@@ -54,4 +54,103 @@
       border: 2px solid gold;
       border-radius: 20px;
       padding: 1.5rem;
-      text-align
+      text-align: left;
+      max-width: 350px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+    }
+
+    .card h3 {
+      margin: 0.8rem 0;
+      font-size: 1.1rem;
+    }
+
+    .card h3 span {
+      color: #00ffc3;
+      font-weight: bold;
+    }
+
+    .confidence {
+      font-size: 1rem;
+      color: lightgreen;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.4rem;
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 WinGo Predictor Pro</h1>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('30s')">30s</button>
+    <button class="tab" onclick="switchTab('1m')">1m</button>
+    <button class="tab" onclick="switchTab('3m')">3m</button>
+  </div>
+
+  <div class="card" id="predictionCard">
+    <h3>📏 <b>Size:</b> <span id="sizeText">-</span></h3>
+    <h3>🎨 <b>Colour:</b> <span id="colorText">Loading...</span></h3>
+    <h3>🎲 <b>Number:</b> <span id="numberText">-</span></h3>
+    <h3>🧠 <b>Confidence:</b> <span id="confidenceText">--%</span></h3>
+  </div>
+
+  <script>
+    const colorText = document.getElementById("colorText");
+    const numberText = document.getElementById("numberText");
+    const sizeText = document.getElementById("sizeText");
+    const confidenceText = document.getElementById("confidenceText");
+    const tabs = document.querySelectorAll(".tab");
+
+    let currentMode = '30s';
+
+    const mockAI = {
+      "30s": () => ({
+        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
+        number: Math.floor(Math.random() * 10),
+        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(84 + Math.random() * 10)
+      }),
+      "1m": () => ({
+        color: ["GREEN", "RED", "VIOLET"][Math.floor(Math.random() * 3)],
+        number: Math.floor(3 + Math.random() * 6),
+        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
+        confidence: Math.floor(88 + Math.random() * 8)
+      }),
+      "3m": () => ({
+        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
+        number: Math.floor(1 + Math.random() * 10),
+        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(91 + Math.random() * 6)
+      })
+    };
+
+    function updatePrediction() {
+      const result = mockAI[currentMode]();
+      colorText.innerText = result.color;
+      numberText.innerText = result.number;
+      sizeText.innerText = result.bigSmall;
+      confidenceText.innerText = result.confidence + "%";
+    }
+
+    function switchTab(mode) {
+      currentMode = mode;
+      tabs.forEach(tab => tab.classList.remove("active"));
+      [...tabs].find(t => t.innerText === mode).classList.add("active");
+      updatePrediction();
+    }
+
+    setInterval(updatePrediction, 10000); // auto update every 10s
+    updatePrediction();
+  </script>
+</body>
+</html>
