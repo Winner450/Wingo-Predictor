@@ -1,170 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>WinGo Predictor Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
+      background: #000;
       color: #fff;
+      overflow: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: moveStars 30s linear infinite;
+    }
+
+    @keyframes moveStars {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
+      padding: 50px 20px;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: gold;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-shadow: 0 0 8px gold;
-      flex-wrap: wrap;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-
-    .tab {
-      padding: 0.5rem 1.5rem;
-      border: 2px solid gold;
-      border-radius: 999px;
-      cursor: pointer;
-      background-color: transparent;
-      color: gold;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .tab.active {
-      background-color: gold;
-      color: black;
-    }
-
-    .card {
-      background: linear-gradient(to bottom right, #1e1e1e, #292929);
+    .prediction-box {
+      background: rgba(255, 215, 0, 0.1);
       border: 2px solid gold;
       border-radius: 20px;
-      padding: 1.5rem;
-      text-align: left;
-      max-width: 350px;
-      width: 100%;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 15px gold;
+      backdrop-filter: blur(10px);
     }
 
-    .card h3 {
-      margin: 0.8rem 0;
-      font-size: 1.1rem;
+    .prediction-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+      color: gold;
     }
 
-    .card h3 b {
-      color: #00ffc3;
-    }
-
-    .confidence {
-      font-size: 1rem;
-      color: lightgreen;
-      margin-top: 1rem;
+    .prediction-item {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 18px;
     }
 
-    .emoji {
-      margin-right: 0.5rem;
+    .label {
+      color: #ddd;
     }
 
-    @media (max-width: 400px) {
-      h1 {
-        font-size: 1.4rem;
-        flex-direction: column;
-        text-align: center;
-      }
+    .value {
+      font-weight: bold;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <h1>🎯 WinGo Predictor Pro</h1>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('30s')">30s</button>
-    <button class="tab" onclick="switchTab('1m')">1m</button>
-    <button class="tab" onclick="switchTab('3m')">3m</button>
-  </div>
+  <div class="stars" id="stars"></div>
 
-  <div class="card" id="predictionCard">
-    <h3>🎨 Color: <b id="colorText">Loading...</b></h3>
-    <h3>🎲 Number: <b id="numberText">-</b></h3>
-    <h3>📏 Size: <b id="sizeText">-</b></h3>
-    <div class="confidence">🧠 Confidence: <span id="confidenceText">--%</span></div>
+  <div class="container">
+    <div class="prediction-box">
+      <div class="prediction-title">🎯 WinGo Prediction</div>
+      <div class="prediction-item">
+        <div class="label">Size:</div>
+        <div class="value" id="size">Loading...</div>
+      </div>
+      <div class="prediction-item">
+        <div class="label">Colour:</div>
+        <div class="value" id="colour">Loading...</div>
+      </div>
+      <div class="prediction-item">
+        <div class="label">Number:</div>
+        <div class="value" id="number">Loading...</div>
+      </div>
+      <div class="prediction-item">
+        <div class="label">Confidence:</div>
+        <div class="value" id="confidence">Loading...</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const colorText = document.getElementById("colorText");
-    const numberText = document.getElementById("numberText");
-    const sizeText = document.getElementById("sizeText");
-    const confidenceText = document.getElementById("confidenceText");
-    const tabs = document.querySelectorAll(".tab");
-
-    let currentMode = '30s';
-    let intervalId = null;
-
-    const mockAI = {
-      "30s": () => ({
-        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
-        number: Math.floor(Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(83 + Math.random() * 10)
-      }),
-      "1m": () => ({
-        color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(3 + Math.random() * 6),
-        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(86 + Math.random() * 10)
-      }),
-      "3m": () => ({
-        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(1 + Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(90 + Math.random() * 7)
-      })
-    };
-
-    function updatePrediction() {
-      const result = mockAI[currentMode]();
-      colorText.innerText = result.color;
-      numberText.innerText = result.number;
-      sizeText.innerText = result.bigSmall;
-      confidenceText.innerText = result.confidence + "%";
+    // Star Animation Generator
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.animationDuration = `${20 + Math.random() * 30}s`;
+      starsContainer.appendChild(star);
     }
 
-    function switchTab(mode) {
-      currentMode = mode;
-      tabs.forEach(tab => tab.classList.remove("active"));
-      [...tabs].find(t => t.innerText === mode).classList.add("active");
-      clearInterval(intervalId);
-      updatePrediction();
+    // Mock Last 10 Results
+    const previousResults = [
+      { color: 'Red', number: 6 },
+      { color: 'Green', number: 1 },
+      { color: 'Red', number: 9 },
+      { color: 'Violet', number: 0 },
+      { color: 'Green', number: 2 },
+      { color: 'Red', number: 7 },
+      { color: 'Green', number: 3 },
+      { color: 'Red', number: 6 },
+      { color: 'Violet', number: 0 },
+      { color: 'Green', number: 5 }
+    ];
 
-      const intervalTimes = {
-        "30s": 30000,
-        "1m": 60000,
-        "3m": 180000
-      };
+    // AI Logic
+    function getPrediction(data) {
+      const colorCount = { Red: 0, Green: 0, Violet: 0 };
+      const numberFreq = {};
+      let bigCount = 0;
+      let smallCount = 0;
 
-      intervalId = setInterval(updatePrediction, intervalTimes[mode]);
+      data.forEach(item => {
+        colorCount[item.color]++;
+        numberFreq[item.number] = (numberFreq[item.number] || 0) + 1;
+        if (item.number >= 5) bigCount++;
+        else smallCount++;
+      });
+
+      const nextColor = Object.entries(colorCount).sort((a, b) => b[1] - a[1])[0][0];
+      const nextNumber = parseInt(Object.entries(numberFreq).sort((a, b) => b[1] - a[1])[0][0]);
+      const nextSize = nextNumber >= 5 ? "Big" : "Small";
+      const confidence = Math.min(99, Math.floor((colorCount[nextColor] / data.length) * 100 + 20));
+
+      document.getElementById("size").innerText = nextSize;
+      document.getElementById("colour").innerText = nextColor;
+      document.getElementById("number").innerText = nextNumber;
+      document.getElementById("confidence").innerText = confidence + "%";
     }
 
-    // Start default
-    updatePrediction();
-    intervalId = setInterval(updatePrediction, 30000);
+    // Run on load
+    getPrediction(previousResults);
   </script>
 </body>
 </html>
