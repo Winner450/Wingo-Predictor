@@ -52,25 +52,8 @@
       padding: 25px;
       width: 400px;
       margin-top: 20px;
-      text-align: left;
-      box-shadow: 0 0 20px gold;
-    }
-    .prediction-result h4 {
-      color: gold;
-      margin-bottom: 10px;
       text-align: center;
-    }
-    .prediction-item {
-      margin: 10px 0;
-      font-size: 18px;
-    }
-    .prediction-label {
-      font-weight: bold;
-      color: #ccc;
-    }
-    .prediction-value {
-      float: right;
-      font-weight: bold;
+      box-shadow: 0 0 20px gold;
     }
     .confidence-bar {
       background: #333;
@@ -113,18 +96,17 @@
 <body>
 
   <h2>🎯 WinGo Predictor Pro AI</h2>
-  <textarea id="numbersInput" rows="4" placeholder="Enter last numbers like: 3,5,2,6"></textarea>
+  <textarea id="numbersInput" rows="4" placeholder="Enter at least 3 numbers, e.g. 2,5,3"></textarea>
   <button onclick="predict()">🔮 Predict Now</button>
 
   <div class="prediction-result" id="resultBox" style="display:none;">
-    <h4>Next AI Prediction</h4>
-    <div class="prediction-item"><span class="prediction-label">Size:</span> <span class="prediction-value" id="size"></span></div>
-    <div class="prediction-item"><span class="prediction-label">Colour:</span> <span class="prediction-value" id="color"></span></div>
-    <div class="prediction-item"><span class="prediction-label">Number:</span> <span class="prediction-value" id="number"></span></div>
-    <div class="prediction-item"><span class="prediction-label">Confidence:</span> 
-      <div class="confidence-bar">
-        <div class="bar-fill" id="confidenceBar"></div>
-      </div>
+    <div id="predictionText" style="font-size: 20px; margin-bottom: 10px;"></div>
+    <div>Size: <span id="size"></span></div>
+    <div>Colour: <span id="color"></span></div>
+    <div>Number: <span id="number"></span></div>
+    <div style="margin-top:10px;">Confidence:</div>
+    <div class="confidence-bar">
+      <div class="bar-fill" id="confidenceBar"></div>
     </div>
   </div>
 
@@ -146,32 +128,32 @@
       const numbers = input.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
       const resultBox = document.getElementById("resultBox");
 
-      if (numbers.length < 2) {
-        alert("Please enter at least 2 numbers.");
+      if (numbers.length < 3) {
+        alert("Please enter at least 3 numbers.");
+        resultBox.style.display = "none";
         return;
       }
 
       const last = numbers[numbers.length - 1];
       const secondLast = numbers[numbers.length - 2];
+      const thirdLast = numbers[numbers.length - 3];
+
       const isSmall = n => n < 5;
-
       const confidence = Math.floor(Math.random() * 20) + 80;
+
       document.getElementById("confidenceBar").style.width = confidence + "%";
+      document.getElementById("number").textContent = Math.floor(Math.random() * 10);
+      document.getElementById("color").textContent = ["Red", "Green", "Violet"][Math.floor(Math.random() * 3)];
 
-      const predictedSize = isSmall(last) && isSmall(secondLast) ? "Big" : "Small";
-      const colorOptions = ["Red", "Green", "Violet"];
-      const predictedColor = colorOptions[Math.floor(Math.random() * colorOptions.length)];
-      const predictedNumber = Math.floor(Math.random() * 10); // 0-9
+      const sizePrediction = isSmall(last) && isSmall(secondLast) && isSmall(thirdLast) ? "Big" : "Small";
+      document.getElementById("size").textContent = sizePrediction;
 
-      document.getElementById("size").textContent = predictedSize;
-      document.getElementById("color").textContent = predictedColor;
-      document.getElementById("number").textContent = predictedNumber;
-
+      document.getElementById("predictionText").innerHTML = `<b>Next Prediction:</b> ${sizePrediction}`;
       resultBox.style.display = "block";
 
-      // Smart Pattern AI
       const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
-      const getColor = () => colorOptions[Math.floor(Math.random() * colorOptions.length)];
+      const colors = ["Red", "Green", "Violet"];
+      const getColor = () => colors[Math.floor(Math.random() * colors.length)];
       const trends = [
         "Red → Green → Red",
         "Green → Violet → Red",
