@@ -3,29 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo Predictor Pro</title>
+  <title>WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #1c1c1c, #2c2c2c);
+      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
+      padding: 1rem;
     }
 
     h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
       color: gold;
-      text-shadow: 0 0 10px gold;
-      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 0 8px gold;
+      flex-wrap: wrap;
     }
 
     .tabs {
       display: flex;
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin: 1.5rem 0;
     }
 
     .tab {
@@ -33,10 +38,10 @@
       border: 2px solid gold;
       border-radius: 999px;
       cursor: pointer;
-      transition: all 0.3s;
       background-color: transparent;
       color: gold;
       font-weight: bold;
+      transition: 0.3s;
     }
 
     .tab.active {
@@ -45,36 +50,44 @@
     }
 
     .card {
-      background: rgba(255, 215, 0, 0.1);
-      border: 1px solid gold;
+      background: linear-gradient(to bottom right, #1e1e1e, #292929);
+      border: 2px solid gold;
       border-radius: 20px;
-      padding: 2rem;
-      text-align: center;
-      max-width: 400px;
+      padding: 1.5rem;
+      text-align: left;
+      max-width: 350px;
       width: 100%;
-      box-shadow: 0 0 20px gold;
-      animation: glow 2s infinite alternate;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
     }
 
-    @keyframes glow {
-      from {
-        box-shadow: 0 0 10px gold;
-      }
-      to {
-        box-shadow: 0 0 30px gold;
-      }
+    .card h3 {
+      margin: 0.8rem 0;
+      font-size: 1.1rem;
     }
 
-    .prediction {
-      font-size: 2rem;
-      margin: 1rem 0;
-      color: #00ffcc;
+    .card h3 b {
+      color: #00ffc3;
     }
 
     .confidence {
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: lightgreen;
       margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .emoji {
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.4rem;
+        flex-direction: column;
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -88,12 +101,16 @@
   </div>
 
   <div class="card" id="predictionCard">
-    <div class="prediction" id="predictionText">Loading prediction...</div>
-    <div class="confidence" id="confidenceText"></div>
+    <h3>🎨 Color: <b id="colorText">Loading...</b></h3>
+    <h3>🎲 Number: <b id="numberText">-</b></h3>
+    <h3>📏 Size: <b id="sizeText">-</b></h3>
+    <div class="confidence">🧠 Confidence: <span id="confidenceText">--%</span></div>
   </div>
 
   <script>
-    const predictionText = document.getElementById("predictionText");
+    const colorText = document.getElementById("colorText");
+    const numberText = document.getElementById("numberText");
+    const sizeText = document.getElementById("sizeText");
     const confidenceText = document.getElementById("confidenceText");
     const tabs = document.querySelectorAll(".tab");
 
@@ -105,36 +122,33 @@
         color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
         number: Math.floor(Math.random() * 10),
         bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(80 + Math.random() * 15)
+        confidence: Math.floor(83 + Math.random() * 10)
       }),
       "1m": () => ({
         color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(3 + Math.random() * 7),
+        number: Math.floor(3 + Math.random() * 6),
         bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(85 + Math.random() * 10)
+        confidence: Math.floor(86 + Math.random() * 10)
       }),
       "3m": () => ({
         color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
         number: Math.floor(1 + Math.random() * 10),
         bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(90 + Math.random() * 8)
+        confidence: Math.floor(90 + Math.random() * 7)
       })
     };
 
     function updatePrediction() {
       const result = mockAI[currentMode]();
-      predictionText.innerHTML = `
-        🎨 Color: <b>${result.color}</b><br>
-        🔢 Number: <b>${result.number}</b><br>
-        🔺 Size: <b>${result.bigSmall}</b>
-      `;
-      confidenceText.innerText = `🧠 Confidence: ${result.confidence}%`;
+      colorText.innerText = result.color;
+      numberText.innerText = result.number;
+      sizeText.innerText = result.bigSmall;
+      confidenceText.innerText = result.confidence + "%";
     }
 
     function switchTab(mode) {
       currentMode = mode;
       tabs.forEach(tab => tab.classList.remove("active"));
-      document.querySelector(`.tab:contains('${mode}')`);
       [...tabs].find(t => t.innerText === mode).classList.add("active");
       clearInterval(intervalId);
       updatePrediction();
@@ -148,7 +162,7 @@
       intervalId = setInterval(updatePrediction, intervalTimes[mode]);
     }
 
-    // Start on default mode
+    // Start default
     updatePrediction();
     intervalId = setInterval(updatePrediction, 30000);
   </script>
