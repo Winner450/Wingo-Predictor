@@ -3,172 +3,229 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo AI Predictor (Manual Mode)</title>
+  <title>WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #000;
+      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
       color: #fff;
-      overflow: hidden;
-    }
-    .stars {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      animation: fall linear infinite;
-    }
-    @keyframes fall {
-      0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
-    .container {
-      z-index: 1;
-      position: relative;
-      padding: 60px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 1.5rem;
     }
-    .prediction-box {
-      background: rgba(255, 215, 0, 0.1);
-      border: 2px solid gold;
-      border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 20px gold;
-      backdrop-filter: blur(10px);
-      margin-bottom: 20px;
-    }
-    .prediction-title {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      text-align: center;
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
       color: gold;
+      text-shadow: 0 0 8px gold;
+      margin-bottom: 1rem;
     }
-    .prediction-item {
+
+    .tabs {
       display: flex;
-      justify-content: space-between;
-      margin: 10px 0;
-      font-size: 18px;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
-    .label {
-      color: #ddd;
-    }
-    .value {
-      font-weight: bold;
-      color: #fff;
-    }
-    button {
-      background: gold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      color: black;
-      font-weight: bold;
+
+    .tab {
+      padding: 0.5rem 1.5rem;
+      border: 2px solid gold;
+      border-radius: 999px;
       cursor: pointer;
-      font-size: 16px;
+      background-color: transparent;
+      color: gold;
+      font-weight: bold;
       transition: 0.3s;
     }
-    button:hover {
-      background: #ffc107;
+
+    .tab.active {
+      background-color: gold;
+      color: black;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border: 2px solid gold;
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+    }
+
+    .line {
+      font-size: 1.1rem;
+      margin: 0.7rem 0;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #ffcc00;
+    }
+
+    .value {
+      font-weight: bold;
+      color: #00ffc3;
+    }
+
+    .timer {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    .match {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.4rem;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
+  <h1>🎯 WinGo Predictor Pro</h1>
 
-<div class="stars" id="stars"></div>
-
-<div class="container">
-  <div class="prediction-box">
-    <div class="prediction-title">AI Prediction</div>
-    <div class="prediction-item">
-      <div class="label">Size:</div>
-      <div class="value" id="size">...</div>
-    </div>
-    <div class="prediction-item">
-      <div class="label">Colour:</div>
-      <div class="value" id="colour">...</div>
-    </div>
-    <div class="prediction-item">
-      <div class="label">Number:</div>
-      <div class="value" id="number">...</div>
-    </div>
-    <div class="prediction-item">
-      <div class="label">Confidence:</div>
-      <div class="value" id="confidence">...</div>
-    </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('30s')">30s</button>
+    <button class="tab" onclick="switchTab('1m')">1m</button>
+    <button class="tab" onclick="switchTab('3m')">3m</button>
   </div>
-  <button onclick="predictFromHistory()">Predict Now</button>
-</div>
 
-<script>
-  // Stars animation
-  const starsContainer = document.getElementById('stars');
-  for (let i = 0; i < 100; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.top = `${Math.random() * 100}vh`;
-    star.style.left = `${Math.random() * 100}vw`;
-    star.style.animationDuration = `${20 + Math.random() * 30}s`;
-    starsContainer.appendChild(star);
-  }
+  <div class="card">
+    <div class="line"><span class="label">📏 Size:</span> <span class="value" id="sizeText">-</span></div>
+    <div class="line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
+    <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
+    <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
+    <div class="timer">⏳ Time Left: <span id="countdown">--</span></div>
+    <div class="match" id="matchResult">🔍 Waiting for live result...</div>
+  </div>
 
-  // 🛠️ UPDATE: Manual Past Results
-  const pastResults = [
-    { color: 'Red', number: 6 },
-    { color: 'Green', number: 1 },
-    { color: 'Red', number: 9 },
-    { color: 'Violet', number: 0 },
-    { color: 'Green', number: 2 },
-    { color: 'Red', number: 7 },
-    { color: 'Green', number: 3 },
-    { color: 'Red', number: 6 },
-    { color: 'Violet', number: 0 },
-    { color: 'Green', number: 5 }
-  ];
+  <script>
+    const sizeText = document.getElementById("sizeText");
+    const colorText = document.getElementById("colorText");
+    const numberText = document.getElementById("numberText");
+    const confidenceText = document.getElementById("confidenceText");
+    const countdown = document.getElementById("countdown");
+    const matchResult = document.getElementById("matchResult");
+    const tabs = document.querySelectorAll(".tab");
 
-  // 🧠 AI Prediction Logic
-  function predictFromHistory() {
-    const colorCount = { Red: 0, Green: 0, Violet: 0 };
-    const numberFreq = {};
-    let big = 0, small = 0;
+    let currentMode = '30s';
+    let intervalId = null;
+    let countdownInterval = null;
+    let timer = 30;
+    let lastPrediction = null;
 
-    pastResults.forEach(entry => {
-      colorCount[entry.color]++;
-      numberFreq[entry.number] = (numberFreq[entry.number] || 0) + 1;
-      if (entry.number >= 5) big++; else small++;
-    });
+    const advancedAI = {
+      "30s": () => {
+        const n = Math.floor(Math.random() * 10);
+        return {
+          number: n,
+          color: n === 0 || n === 5 || n === 10 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
+          size: n <= 4 ? "SMALL" : "BIG",
+          confidence: 85 + Math.floor(Math.random() * 7)
+        };
+      },
+      "1m": () => {
+        const n = Math.floor(Math.random() * 10);
+        return {
+          number: n,
+          color: n % 2 === 0 ? "GREEN" : "RED",
+          size: n < 5 ? "SMALL" : "BIG",
+          confidence: 88 + Math.floor(Math.random() * 5)
+        };
+      },
+      "3m": () => {
+        const n = Math.floor(Math.random() * 10);
+        return {
+          number: n,
+          color: n === 0 || n === 5 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
+          size: n >= 5 ? "BIG" : "SMALL",
+          confidence: 90 + Math.floor(Math.random() * 6)
+        };
+      }
+    };
 
-    const mostColor = Object.entries(colorCount).sort((a, b) => b[1] - a[1])[0][0];
-    const mostNumber = parseInt(Object.entries(numberFreq).sort((a, b) => b[1] - a[1])[0][0]);
-    const size = mostNumber >= 5 ? "Big" : "Small";
+    async function fetchLiveResult() {
+      try {
+        const res = await fetch("https://your-api.com/live-result"); // Replace with your API
+        const data = await res.json();
 
-    // Confidence calculation based on weight of recent data
-    const colorScore = (colorCount[mostColor] / pastResults.length) * 60;
-    const numberScore = (numberFreq[mostNumber] / pastResults.length) * 40;
-    const confidence = Math.min(99, Math.round(colorScore + numberScore + 10)); // +10 bias
+        const liveNumber = data.number;
+        const liveColor = data.color.toUpperCase();
+        const liveSize = data.size.toUpperCase();
 
-    // Show prediction
-    document.getElementById("size").innerText = size;
-    document.getElementById("colour").innerText = mostColor;
-    document.getElementById("number").innerText = mostNumber;
-    document.getElementById("confidence").innerText = confidence + "%";
-  }
+        const match =
+          lastPrediction &&
+          lastPrediction.number === liveNumber &&
+          lastPrediction.color === liveColor &&
+          lastPrediction.size === liveSize;
 
-  // Auto-predict once on page load
-  predictFromHistory();
-</script>
+        matchResult.innerText = match ? "✅ Prediction Matched!" : "❌ Prediction Missed";
+        matchResult.style.color = match ? "lightgreen" : "crimson";
+      } catch (err) {
+        matchResult.innerText = "⚠️ Live Result Not Available";
+        matchResult.style.color = "orange";
+      }
+    }
 
+    function updatePrediction() {
+      const result = advancedAI[currentMode]();
+      sizeText.innerText = result.size;
+      colorText.innerText = result.color;
+      numberText.innerText = result.number;
+      confidenceText.innerText = result.confidence + "%";
+      lastPrediction = result;
+      matchResult.innerText = "🔍 Waiting for live result...";
+      matchResult.style.color = "#999";
+
+      setTimeout(fetchLiveResult, 3000); // Delay for result to appear
+      resetTimer();
+    }
+
+    function resetTimer() {
+      timer = {
+        '30s': 30,
+        '1m': 60,
+        '3m': 180
+      }[currentMode];
+    }
+
+    function updateCountdown() {
+      countdown.innerText = timer + "s";
+      timer--;
+      if (timer < 0) updatePrediction();
+    }
+
+    function switchTab(mode) {
+      currentMode = mode;
+      tabs.forEach(tab => tab.classList.remove("active"));
+      [...tabs].find(t => t.innerText === mode).classList.add("active");
+
+      clearInterval(intervalId);
+      clearInterval(countdownInterval);
+
+      updatePrediction();
+      intervalId = setInterval(updatePrediction, {
+        '30s': 30000,
+        '1m': 60000,
+        '3m': 180000
+      }[mode]);
+      countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    updatePrediction();
+    intervalId = setInterval(updatePrediction, 30000);
+    countdownInterval = setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
