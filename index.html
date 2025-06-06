@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #FFF9DB;
+      background: linear-gradient(to bottom right, #1a1a1a, #000000);
       color: #fff;
       text-align: center;
     }
@@ -16,12 +16,13 @@
     header {
       background: #000;
       padding: 16px 0;
+      box-shadow: 0 2px 8px #FFD700;
     }
 
     header h1 {
       margin: 0;
       font-size: 28px;
-      color: gold;
+      color: #FFD700;
     }
 
     .container {
@@ -50,7 +51,7 @@
     }
 
     .result-box {
-      background-color: #000;
+      background-color: #111;
       color: #FFD700;
       padding: 20px;
       border-radius: 16px;
@@ -59,6 +60,7 @@
       font-size: 18px;
       box-shadow: 0 0 15px #ffc107;
       text-align: left;
+      display: none;
     }
 
     .result-box p {
@@ -84,38 +86,46 @@
       <button onclick="predictResult()">🔮 Predict Result</button>
     </div>
 
-    <div class="result-box" id="resultBox" style="display: none;">
-      <p><span class="label">📏 Size:</span> 🔴 Big</p>
-      <p><span class="label">🎨 Colour:</span> 🟥 Red</p>
-      <p><span class="label">🔢 Number:</span> 5</p>
-      <p><span class="label">🧠 Confidence:</span> 81%</p>
-    </div>
+    <div class="result-box" id="resultBox"></div>
   </div>
 
   <script>
+    let lastInput = "";
+
     function predictResult() {
-      const input = document.getElementById("inputNumbers").value;
-      
+      const input = document.getElementById("inputNumbers").value.trim();
+      const resultBox = document.getElementById("resultBox");
+
       if (!input) {
         alert("Please enter a number.");
         return;
       }
 
-      // Placeholder AI prediction logic (you can link to backend later)
-      let number = Math.floor(Math.random() * 10);
-      let color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
-      let size = (number >= 5) ? "🔴 Big" : "🟢 Small";
-      let confidence = Math.floor(Math.random() * 21) + 80; // 80–100%
+      if (input === lastInput) {
+        alert("⚠️ Please enter a new number!");
+        return;
+      }
 
-      const resultHTML = `
-        <p><span class="label">📏 Size:</span> ${size}</p>
-        <p><span class="label">🎨 Colour:</span> ${color}</p>
-        <p><span class="label">🔢 Number:</span> ${number}</p>
-        <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
-      `;
+      lastInput = input;
+      resultBox.style.display = "none";
 
-      document.getElementById("resultBox").innerHTML = resultHTML;
-      document.getElementById("resultBox").style.display = "block";
+      // Wait 3 seconds before showing prediction
+      setTimeout(() => {
+        const number = Math.floor(Math.random() * 10);
+        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
+        const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
+        const confidence = Math.floor(Math.random() * 21) + 80;
+
+        const resultHTML = `
+          <p><span class="label">📏 Size:</span> ${size}</p>
+          <p><span class="label">🎨 Colour:</span> ${color}</p>
+          <p><span class="label">🔢 Number:</span> ${number}</p>
+          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
+        `;
+
+        resultBox.innerHTML = resultHTML;
+        resultBox.style.display = "block";
+      }, 3000);
     }
   </script>
 
