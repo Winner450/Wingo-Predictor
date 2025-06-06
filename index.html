@@ -73,15 +73,9 @@
 
     .timer {
       font-size: 1.2rem;
+      color: lightgreen;
       text-align: center;
       margin-top: 0.5rem;
-    }
-
-    .match {
-      font-size: 1.2rem;
-      margin-top: 1rem;
-      text-align: center;
-      font-weight: bold;
     }
 
     @media (max-width: 400px) {
@@ -107,7 +101,6 @@
     <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
     <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
     <div class="timer">⏳ Time Left: <span id="countdown">--</span></div>
-    <div class="match" id="matchResult">🔍 Waiting for live result...</div>
   </div>
 
   <script>
@@ -116,15 +109,14 @@
     const numberText = document.getElementById("numberText");
     const confidenceText = document.getElementById("confidenceText");
     const countdown = document.getElementById("countdown");
-    const matchResult = document.getElementById("matchResult");
     const tabs = document.querySelectorAll(".tab");
 
     let currentMode = '30s';
     let intervalId = null;
     let countdownInterval = null;
     let timer = 30;
-    let lastPrediction = null;
 
+    // AI Prediction Logic
     const advancedAI = {
       "30s": () => {
         const n = Math.floor(Math.random() * 10);
@@ -155,40 +147,12 @@
       }
     };
 
-    async function fetchLiveResult() {
-      try {
-        const res = await fetch("https://your-api.com/live-result"); // Replace with your API
-        const data = await res.json();
-
-        const liveNumber = data.number;
-        const liveColor = data.color.toUpperCase();
-        const liveSize = data.size.toUpperCase();
-
-        const match =
-          lastPrediction &&
-          lastPrediction.number === liveNumber &&
-          lastPrediction.color === liveColor &&
-          lastPrediction.size === liveSize;
-
-        matchResult.innerText = match ? "✅ Prediction Matched!" : "❌ Prediction Missed";
-        matchResult.style.color = match ? "lightgreen" : "crimson";
-      } catch (err) {
-        matchResult.innerText = "⚠️ Live Result Not Available";
-        matchResult.style.color = "orange";
-      }
-    }
-
     function updatePrediction() {
       const result = advancedAI[currentMode]();
       sizeText.innerText = result.size;
       colorText.innerText = result.color;
       numberText.innerText = result.number;
       confidenceText.innerText = result.confidence + "%";
-      lastPrediction = result;
-      matchResult.innerText = "🔍 Waiting for live result...";
-      matchResult.style.color = "#999";
-
-      setTimeout(fetchLiveResult, 3000); // Delay for result to appear
       resetTimer();
     }
 
@@ -203,7 +167,9 @@
     function updateCountdown() {
       countdown.innerText = timer + "s";
       timer--;
-      if (timer < 0) updatePrediction();
+      if (timer < 0) {
+        updatePrediction();
+      }
     }
 
     function switchTab(mode) {
