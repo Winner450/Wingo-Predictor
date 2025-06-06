@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #000;
+      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
       color: #fff;
       overflow-x: hidden;
     }
@@ -17,16 +17,14 @@
       position: fixed;
       width: 100%;
       height: 100%;
-      background: url('https://i.ibb.co/2thkNdg/stars.gif') repeat top center;
-      background-size: cover;
-      z-index: -1;
+      background: url('https://i.ibb.co/2thkNdg/stars.gif') repeat center;
       opacity: 0.2;
       animation: starsMove 100s linear infinite;
+      z-index: -1;
     }
-
     @keyframes starsMove {
       from { background-position: 0 0; }
-      to { background-position: -5000px 3000px; }
+      to { background-position: -4000px 3000px; }
     }
 
     h1 {
@@ -34,147 +32,148 @@
       font-size: 1.8rem;
       color: gold;
       text-shadow: 0 0 8px gold;
-      margin-top: 1.5rem;
+      margin: 1.5rem 0;
     }
 
     .tabs {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin: 1.2rem 0;
+      margin-bottom: 1.2rem;
     }
-
     .tab {
       padding: 0.6rem 1.5rem;
       border: 2px solid gold;
       border-radius: 999px;
+      cursor: pointer;
       background: transparent;
       color: gold;
       font-weight: bold;
-      cursor: pointer;
       transition: 0.3s;
     }
-
     .tab.active {
       background: gold;
       color: black;
     }
 
     .card {
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
+      background: rgba(30,30,30,0.8);
+      backdrop-filter: blur(8px);
       border: 2px solid gold;
       border-radius: 16px;
       max-width: 380px;
-      margin: 2rem auto;
       padding: 2rem 1.5rem;
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+      margin: 0 auto;
+      box-shadow: 0 0 30px rgba(255,215,0,0.4);
     }
-
     .row {
       display: flex;
       justify-content: space-between;
-      margin: 1.1rem 0;
       font-size: 1.3rem;
+      margin: 1rem 0;
       font-weight: 600;
     }
-
     .label {
       color: gold;
     }
-
     .value {
       color: #00ffc3;
     }
-
     .confidence {
       color: lightgreen;
     }
 
+    iframe {
+      width: 100%;
+      max-width: 600px;
+      height: 300px;
+      border: none;
+      margin: 2rem auto;
+      display: block;
+      box-shadow: 0 0 20px rgba(255,215,0,0.3);
+      border-radius: 12px;
+    }
+
     @media (max-width: 420px) {
       h1 { font-size: 1.5rem; }
-      .card { margin: 1rem; padding: 1.5rem 1rem; }
+      .card { padding: 1.5rem 1rem; }
       .row { font-size: 1.1rem; }
     }
   </style>
 </head>
 <body>
+  <div class="stars"></div>
 
-<div class="stars"></div>
+  <h1>🎯 WinGo Predictor Pro</h1>
 
-<h1>🎯 WinGo Predictor Pro</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('30s')">30s</button>
+    <button class="tab" onclick="switchTab('1m')">1m</button>
+    <button class="tab" onclick="switchTab('3m')">3m</button>
+  </div>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('30s')">30s</button>
-  <button class="tab" onclick="switchTab('1m')">1m</button>
-  <button class="tab" onclick="switchTab('3m')">3m</button>
-</div>
+  <div class="card">
+    <div class="row"><div class="label">📏 Size:</div><div class="value" id="sizeText">--</div></div>
+    <div class="row"><div class="label">🎨 Color:</div><div class="value" id="colorText">--</div></div>
+    <div class="row"><div class="label">🎲 Number:</div><div class="value" id="numberText">--</div></div>
+    <div class="row"><div class="label">🧠 Confidence:</div><div class="confidence" id="confidenceText">--%</div></div>
+  </div>
 
-<div class="card">
-  <div class="row"><div class="label">📏 Size:</div><div class="value" id="sizeText">--</div></div>
-  <div class="row"><div class="label">🎨 Color:</div><div class="value" id="colorText">--</div></div>
-  <div class="row"><div class="label">🎲 Number:</div><div class="value" id="numberText">--</div></div>
-  <div class="row"><div class="label">🧠 Confidence:</div><div class="confidence" id="confidenceText">--%</div></div>
-</div>
+  <!-- ⭐ Live Chart from BDGOP.com -->
+  <iframe src="https://bdgop.com/embed/live-chart" title="Live WinGo Chart"></iframe>
 
-<script>
-  const colorText = document.getElementById("colorText");
-  const numberText = document.getElementById("numberText");
-  const sizeText = document.getElementById("sizeText");
-  const confidenceText = document.getElementById("confidenceText");
-  const tabs = document.querySelectorAll(".tab");
+  <script>
+    const colorText = document.getElementById("colorText");
+    const numberText = document.getElementById("numberText");
+    const sizeText = document.getElementById("sizeText");
+    const confidenceText = document.getElementById("confidenceText");
+    const tabs = document.querySelectorAll(".tab");
 
-  let currentMode = '30s';
-  let intervalId = null;
+    let currentMode = '30s';
+    let intervalId = null;
 
-  const mockAI = {
-    "30s": () => ({
-      color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
-      number: Math.floor(Math.random() * 10),
-      size: Math.random() > 0.5 ? "BIG" : "SMALL",
-      confidence: Math.floor(85 + Math.random() * 10)
-    }),
-    "1m": () => ({
-      color: ["GREEN", "RED", "VIOLET"][Math.floor(Math.random() * 3)],
-      number: Math.floor(2 + Math.random() * 8),
-      size: Math.random() > 0.5 ? "SMALL" : "BIG",
-      confidence: Math.floor(88 + Math.random() * 8)
-    }),
-    "3m": () => ({
-      color: ["RED", "VIOLET", "GREEN"][Math.floor(Math.random() * 3)],
-      number: Math.floor(1 + Math.random() * 10),
-      size: Math.random() > 0.5 ? "BIG" : "SMALL",
-      confidence: Math.floor(90 + Math.random() * 6)
-    })
-  };
-
-  function updatePrediction() {
-    const result = mockAI[currentMode]();
-    colorText.innerText = result.color;
-    numberText.innerText = result.number;
-    sizeText.innerText = result.size;
-    confidenceText.innerText = result.confidence + "%";
-  }
-
-  function switchTab(mode) {
-    currentMode = mode;
-    tabs.forEach(tab => tab.classList.remove("active"));
-    [...tabs].find(t => t.innerText === mode).classList.add("active");
-    clearInterval(intervalId);
-    updatePrediction();
-
-    const intervalTimes = {
-      "30s": 30000,
-      "1m": 60000,
-      "3m": 180000
+    const mockAI = {
+      "30s": () => ({
+        color: ["RED","GREEN","VIOLET"][Math.random()*3|0],
+        number: Math.random()*10|0,
+        size: Math.random()>0.5?"BIG":"SMALL",
+        confidence: 85 + Math.random()*10|0
+      }),
+      "1m": () => ({
+        color: ["GREEN","RED","VIOLET"][Math.random()*3|0],
+        number: 2 + Math.random()*8|0,
+        size: Math.random()>0.5?"SMALL":"BIG",
+        confidence: 88 + Math.random()*8|0
+      }),
+      "3m": () => ({
+        color: ["RED","VIOLET","GREEN"][Math.random()*3|0],
+        number: 1 + Math.random()*10|0,
+        size: Math.random()>0.5?"BIG":"SMALL",
+        confidence: 90 + Math.random()*6|0
+      })
     };
 
-    intervalId = setInterval(updatePrediction, intervalTimes[mode]);
-  }
+    function updatePrediction(){
+      const r = mockAI[currentMode]();
+      colorText.innerText = r.color;
+      numberText.innerText = r.number;
+      sizeText.innerText = r.size;
+      confidenceText.innerText = `${r.confidence}%`;
+    }
 
-  updatePrediction();
-  intervalId = setInterval(updatePrediction, 30000);
-</script>
+    function switchTab(mode){
+      currentMode = mode;
+      tabs.forEach(t=>t.classList.remove("active"));
+      [...tabs].find(t=>t.innerText===mode).classList.add("active");
+      clearInterval(intervalId);
+      updatePrediction();
+      const times = {"30s":30000,"1m":60000,"3m":180000};
+      intervalId = setInterval(updatePrediction,times[mode]);
+    }
 
+    // initialize:
+    updatePrediction();
+    intervalId = setInterval(updatePrediction, 30000);
+  </script>
 </body>
 </html>
