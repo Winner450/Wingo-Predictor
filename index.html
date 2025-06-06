@@ -1,73 +1,180 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WinGo Predictor Pro (Advanced)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #0e0e0e;
+      background: #000;
+      overflow-x: hidden;
       color: #fff;
+    }
+
+    .stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: transparent url('https://i.ibb.co/2thkNdg/stars.gif') repeat top center;
+      z-index: -1;
+      opacity: 0.2;
+      animation: starsMove 100s linear infinite;
+    }
+
+    @keyframes starsMove {
+      from { background-position: 0 0; }
+      to { background-position: -10000px 5000px; }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: gold;
+      text-shadow: 0 0 8px gold;
+      margin-top: 1rem;
+    }
+
+    .tabs {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .tab {
+      padding: 0.6rem 1.5rem;
+      border: 2px solid gold;
+      border-radius: 999px;
+      background: transparent;
+      color: gold;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .tab.active {
+      background: gold;
+      color: black;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 2px solid gold;
+      border-radius: 16px;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 1.8rem 1.2rem;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+    }
+
+    .card .row {
+      font-size: 1.2rem;
+      margin: 0.8rem 0;
+      display: flex;
       align-items: center;
-      padding: 2rem;
-    }h1 {
-  font-size: 1.8rem;
-  color: gold;
-  text-shadow: 0 0 10px gold;
-  margin-bottom: 1.5rem;
-}
+    }
 
-.card {
-  background: #1a1a1a;
-  border: 2px solid gold;
-  border-radius: 16px;
-  padding: 1.5rem;
-  max-width: 450px;
-  width: 100%;
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-}
+    .label {
+      width: 130px;
+      font-weight: bold;
+      color: #ffc107;
+    }
 
-.line {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.1rem;
-  margin: 0.7rem 0;
-}
+    .value {
+      font-weight: bold;
+      color: #00ffc3;
+    }
 
-.label {
-  font-weight: bold;
-  color: #ffd700;
-}
+    .confidence {
+      color: lightgreen;
+    }
 
-.value {
-  font-weight: bold;
-  color: #00ffc3;
-}
-
-.result-match {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
-  color: #aaa;
-}
-
-.match-pass {
-  color: #00ff00;
-}
-
-.match-fail {
-  color: red;
-}
-
+    @media (max-width: 420px) {
+      h1 { font-size: 1.4rem; }
+      .label { width: 100px; }
+    }
   </style>
 </head>
 <body>
-  <h1>🎯 WinGo Predictor Pro (v2.0)</h1>
-  <div class="card">
-    <div class="line"><span class="label">Period:</span> <span class="value" id="period">--</span></div>
-    <div class="line"><span class="label">Color:</span> <span class="value" id="color">--</span></div>
-    <div class="line"><span class="label">Number:</span> <span class="value" id="number">--</span></div>
-    <div class="line"><span class="label">Size:</span> <span class="value" id="size">--</span
+
+<div class="stars"></div>
+
+<h1>🎯 WinGo Predictor Pro</h1>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('30s')">30s</button>
+  <button class="tab" onclick="switchTab('1m')">1m</button>
+  <button class="tab" onclick="switchTab('3m')">3m</button>
+</div>
+
+<div class="card">
+  <div class="row"><div class="label">📏 Size:</div><div class="value" id="sizeText">-</div></div>
+  <div class="row"><div class="label">🎨 Color:</div><div class="value" id="colorText">-</div></div>
+  <div class="row"><div class="label">🎲 Number:</div><div class="value" id="numberText">-</div></div>
+  <div class="row"><div class="label">🧠 Confidence:</div><div class="confidence" id="confidenceText">--%</div></div>
+</div>
+
+<script>
+  const colorText = document.getElementById("colorText");
+  const numberText = document.getElementById("numberText");
+  const sizeText = document.getElementById("sizeText");
+  const confidenceText = document.getElementById("confidenceText");
+  const tabs = document.querySelectorAll(".tab");
+
+  let currentMode = '30s';
+  let intervalId = null;
+
+  const mockAI = {
+    "30s": () => ({
+      color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
+      number: Math.floor(Math.random() * 10),
+      size: Math.random() > 0.5 ? "BIG" : "SMALL",
+      confidence: Math.floor(85 + Math.random() * 10)
+    }),
+    "1m": () => ({
+      color: ["GREEN", "RED", "VIOLET"][Math.floor(Math.random() * 3)],
+      number: Math.floor(2 + Math.random() * 8),
+      size: Math.random() > 0.5 ? "SMALL" : "BIG",
+      confidence: Math.floor(88 + Math.random() * 8)
+    }),
+    "3m": () => ({
+      color: ["RED", "VIOLET", "GREEN"][Math.floor(Math.random() * 3)],
+      number: Math.floor(1 + Math.random() * 10),
+      size: Math.random() > 0.5 ? "BIG" : "SMALL",
+      confidence: Math.floor(90 + Math.random() * 6)
+    })
+  };
+
+  function updatePrediction() {
+    const result = mockAI[currentMode]();
+    colorText.innerText = result.color;
+    numberText.innerText = result.number;
+    sizeText.innerText = result.size;
+    confidenceText.innerText = result.confidence + "%";
+  }
+
+  function switchTab(mode) {
+    currentMode = mode;
+    tabs.forEach(tab => tab.classList.remove("active"));
+    [...tabs].find(t => t.innerText === mode).classList.add("active");
+    clearInterval(intervalId);
+    updatePrediction();
+
+    const intervalTimes = {
+      "30s": 30000,
+      "1m": 60000,
+      "3m": 180000
+    };
+
+    intervalId = setInterval(updatePrediction, intervalTimes[mode]);
+  }
+
+  updatePrediction();
+  intervalId = setInterval(updatePrediction, 30000);
+</script>
+
+</body>
+</html>
