@@ -102,11 +102,32 @@
       cursor: pointer;
       box-shadow: 0 0 10px gold;
     }
+    .previous-results {
+      width: 350px;
+      margin-bottom: 20px;
+    }
+    .previous-results h4 {
+      color: orange;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .prev-item {
+      background: #1b1b1b;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 5px;
+      border-left: 4px solid orange;
+    }
   </style>
 </head>
 <body>
 
-<button onclick="generatePrediction()">🔁 Refresh Prediction</button>
+<button onclick="generatePrediction()">🔁 Predict Now</button>
+
+<div class="previous-results" id="previousResults">
+  <h4>Previous Predictions</h4>
+</div>
 
 <div class="predict-box">
   <h2>🔮 AI Prediction</h2>
@@ -119,7 +140,7 @@
       <div class="bar-fill" id="confidenceFill"></div>
     </div>
   </div>
-  <div class="footer">Manual AI Prediction (Offline)</div>
+  <div class="footer">Manual AI Prediction</div>
 </div>
 
 <div class="pattern-section">
@@ -135,27 +156,30 @@
 </div>
 
 <script>
+const colors = ["Red", "Green", "Violet"];
+const trendPatterns = [
+  "Red → Green → Red",
+  "Green → Red → Green",
+  "Violet → Red → Green",
+  "Red → Violet → Green",
+  "Green → Green → Red"
+];
+
+let previousResults = [];
+
 function generatePrediction() {
-  const colors = ["Red", "Green", "Violet"];
   const number = Math.floor(Math.random() * 10);
   const color = colors[Math.floor(Math.random() * colors.length)];
   const size = number >= 5 ? "Big" : "Small";
   const confidence = Math.floor(Math.random() * 20) + 80;
 
+  // Show prediction
   document.getElementById("number").textContent = `Number: ${number}`;
   document.getElementById("color").textContent = `Color: ${color}`;
   document.getElementById("size").textContent = `Size: ${size}`;
   document.getElementById("confidenceFill").style.width = confidence + "%";
 
-  const trendPatterns = [
-    "Red → Green → Red",
-    "Green → Red → Green",
-    "Violet → Red → Green",
-    "Red → Violet → Green",
-    "Green → Green → Red"
-  ];
-
-  // Smart Pattern AI Logic
+  // Pattern predictions
   const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
   const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
@@ -165,8 +189,18 @@ function generatePrediction() {
   document.getElementById("hotcolor").textContent = getRandomColor();
   document.getElementById("coldcolor").textContent = getRandomColor();
   document.getElementById("trend").textContent = trendPatterns[Math.floor(Math.random() * trendPatterns.length)];
+
+  // Save to previous results
+  const newResult = `Number: ${number} | Color: ${color} | Size: ${size}`;
+  previousResults.unshift(newResult);
+  if (previousResults.length > 3) previousResults.pop();
+
+  // Update UI
+  const prevDiv = document.getElementById("previousResults");
+  prevDiv.innerHTML = `<h4>Previous Predictions</h4>` + previousResults.map(r => `<div class="prev-item">${r}</div>`).join('');
 }
 
+// Auto-generate once on page load
 generatePrediction();
 </script>
 
