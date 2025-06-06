@@ -3,168 +3,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor Pro</title>
+  <title>🎯 Wingo Predictor Pro (AI Based)</title>
   <style>
     body {
       margin: 0;
+      background: #0b0b0b;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
-      color: #fff;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
+      padding: 30px;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: gold;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-shadow: 0 0 8px gold;
-      flex-wrap: wrap;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-
-    .tab {
-      padding: 0.5rem 1.5rem;
-      border: 2px solid gold;
-      border-radius: 999px;
-      cursor: pointer;
-      background-color: transparent;
-      color: gold;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .tab.active {
-      background-color: gold;
-      color: black;
-    }
-
-    .card {
-      background: linear-gradient(to bottom right, #1e1e1e, #292929);
+    .predict-box {
+      background: linear-gradient(145deg, #1a1a1a, #111);
       border: 2px solid gold;
       border-radius: 20px;
-      padding: 1.5rem;
-      text-align: left;
-      max-width: 350px;
-      width: 100%;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      padding: 30px;
+      width: 350px;
+      box-shadow: 0 0 20px gold;
+      text-align: center;
+      margin-bottom: 30px;
     }
 
-    .card h3 {
-      margin: 0.8rem 0;
-      font-size: 1.1rem;
+    .predict-box h2 {
+      color: gold;
+      font-size: 24px;
+      margin-bottom: 20px;
     }
 
-    .card h3 b {
-      color: #00ffc3;
+    .result {
+      font-size: 22px;
+      margin: 10px 0;
+      background: #222;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: inset 0 0 10px #000;
     }
 
     .confidence {
-      font-size: 1rem;
-      color: lightgreen;
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      margin-top: 20px;
+      font-size: 16px;
     }
 
-    .emoji {
-      margin-right: 0.5rem;
+    .confidence-bar {
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 14px;
+      margin-top: 5px;
     }
 
-    @media (max-width: 400px) {
-      h1 {
-        font-size: 1.4rem;
-        flex-direction: column;
-        text-align: center;
-      }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, gold, orange);
+      width: 0%;
+      transition: width 1s ease;
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: gray;
+    }
+
+    .pattern-section {
+      width: 95%;
+      max-width: 800px;
+      background: #121212;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px gold;
+    }
+
+    .pattern-section h3 {
+      color: gold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .pattern-card {
+      background: #1e1e1e;
+      border-left: 4px solid gold;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    }
+
+    .pattern-title {
+      color: #ffcc00;
+      font-weight: bold;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>🎯 WinGo Predictor Pro</h1>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('30s')">30s</button>
-    <button class="tab" onclick="switchTab('1m')">1m</button>
-    <button class="tab" onclick="switchTab('3m')">3m</button>
+<div class="predict-box">
+  <h2>🔮 AI Prediction</h2>
+
+  <div class="result" id="number">Number: --</div>
+  <div class="result" id="color">Color: --</div>
+  <div class="result" id="size">Size: --</div>
+
+  <div class="confidence">
+    Confidence:
+    <div class="confidence-bar">
+      <div class="bar-fill" id="confidenceFill"></div>
+    </div>
   </div>
 
-  <div class="card" id="predictionCard">
-    <h3>🎨 Color: <b id="colorText">Loading...</b></h3>
-    <h3>🎲 Number: <b id="numberText">-</b></h3>
-    <h3>📏 Size: <b id="sizeText">-</b></h3>
-    <div class="confidence">🧠 Confidence: <span id="confidenceText">--%</span></div>
+  <div class="footer">Auto Refreshing AI Prediction</div>
+</div>
+
+<div class="pattern-section">
+  <h3>📊 Pattern Detection</h3>
+  <div class="pattern-grid" id="patternGrid">
+    <div class="pattern-card">
+      <div class="pattern-title">Zigzag Pattern</div>
+      <div id="zigzag">Detecting...</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">Reverse Pattern</div>
+      <div id="reverse">Detecting...</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">Continuation</div>
+      <div id="continuation">Detecting...</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">Hot Color</div>
+      <div id="hotcolor">Detecting...</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">Cold Color</div>
+      <div id="coldcolor">Detecting...</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">Last Color Trend</div>
+      <div id="trend">Detecting...</div>
+    </div>
   </div>
+</div>
 
-  <script>
-    const colorText = document.getElementById("colorText");
-    const numberText = document.getElementById("numberText");
-    const sizeText = document.getElementById("sizeText");
-    const confidenceText = document.getElementById("confidenceText");
-    const tabs = document.querySelectorAll(".tab");
+<script>
+  async function fetchPrediction() {
+    try {
+      // Replace this with your real backend URL
+      const res = await fetch("https://your-api-endpoint.com/predict");
+      const data = await res.json();
 
-    let currentMode = '30s';
-    let intervalId = null;
+      document.getElementById('number').textContent = `Number: ${data.number}`;
+      document.getElementById('color').textContent = `Color: ${data.color}`;
+      document.getElementById('size').textContent = `Size: ${data.size}`;
+      document.getElementById('confidenceFill').style.width = data.confidence + "%";
 
-    const mockAI = {
-      "30s": () => ({
-        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
-        number: Math.floor(Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(83 + Math.random() * 10)
-      }),
-      "1m": () => ({
-        color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(3 + Math.random() * 6),
-        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(86 + Math.random() * 10)
-      }),
-      "3m": () => ({
-        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(1 + Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(90 + Math.random() * 7)
-      })
-    };
-
-    function updatePrediction() {
-      const result = mockAI[currentMode]();
-      colorText.innerText = result.color;
-      numberText.innerText = result.number;
-      sizeText.innerText = result.bigSmall;
-      confidenceText.innerText = result.confidence + "%";
+      // Example pattern data from backend:
+      document.getElementById('zigzag').textContent = data.patterns.zigzag || "No";
+      document.getElementById('reverse').textContent = data.patterns.reverse || "No";
+      document.getElementById('continuation').textContent = data.patterns.continuation || "No";
+      document.getElementById('hotcolor').textContent = data.patterns.hotcolor || "Green";
+      document.getElementById('coldcolor').textContent = data.patterns.coldcolor || "Violet";
+      document.getElementById('trend').textContent = data.patterns.trend || "Green → Red → Green";
+    } catch (error) {
+      console.log("Error fetching prediction:", error);
     }
+  }
 
-    function switchTab(mode) {
-      currentMode = mode;
-      tabs.forEach(tab => tab.classList.remove("active"));
-      [...tabs].find(t => t.innerText === mode).classList.add("active");
-      clearInterval(intervalId);
-      updatePrediction();
+  fetchPrediction();
+  setInterval(fetchPrediction, 20000);
+</script>
 
-      const intervalTimes = {
-        "30s": 30000,
-        "1m": 60000,
-        "3m": 180000
-      };
-
-      intervalId = setInterval(updatePrediction, intervalTimes[mode]);
-    }
-
-    // Start default
-    updatePrediction();
-    intervalId = setInterval(updatePrediction, 30000);
-  </script>
 </body>
 </html>
