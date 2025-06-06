@@ -3,133 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor Pro</title>
+  <title>🎯 WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #fff8dc;
-      color: #000;
-    }
-
-    .header {
-      background: #000;
-      padding: 15px;
+      background: #FFF9DB;
+      color: #fff;
       text-align: center;
     }
 
-    .header h1 {
-      color: #ffd700;
-      font-size: 24px;
+    header {
+      background: #000;
+      padding: 16px 0;
+    }
+
+    header h1 {
       margin: 0;
+      font-size: 28px;
+      color: gold;
     }
 
     .container {
       padding: 30px 20px;
-      text-align: center;
     }
 
-    .input-label {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-
-    input[type="text"] {
+    .input-section input {
       padding: 10px;
-      font-size: 16px;
+      border: 2px solid gold;
+      border-radius: 10px;
       width: 80%;
-      border-radius: 8px;
-      border: 2px solid #ffd700;
-      margin-bottom: 20px;
+      font-size: 18px;
+      margin-top: 10px;
     }
 
-    button {
-      background: #ffc107;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 8px;
+    .input-section button {
+      margin-top: 15px;
+      background-color: gold;
       border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 16px;
       cursor: pointer;
-      font-weight: bold;
+      color: black;
+      box-shadow: 0 0 10px gold;
     }
 
     .result-box {
-      background: #000;
-      color: #ffd700;
+      background-color: #000;
+      color: #FFD700;
       padding: 20px;
-      border-radius: 15px;
-      max-width: 400px;
-      margin: 30px auto 0;
-      box-shadow: 0 0 10px #ffd700;
+      border-radius: 16px;
+      width: fit-content;
+      margin: 30px auto;
+      font-size: 18px;
+      box-shadow: 0 0 15px #ffc107;
       text-align: left;
     }
 
     .result-box p {
-      font-size: 16px;
       margin: 10px 0;
     }
 
-    .result-box span.label {
+    .label {
       font-weight: 600;
-      color: #ffd700;
-    }
-
-    .loading {
-      margin-top: 15px;
-      color: #000;
-      font-size: 14px;
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 1; }
+      margin-right: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="header">
+
+  <header>
     <h1>🎯 WinGo Predictor Pro</h1>
-  </div>
+  </header>
 
   <div class="container">
-    <div class="input-label">🔢 Enter Previous Numbers:</div>
-    <input type="text" id="numbersInput" placeholder="e.g. 283" />
-    <br />
-    <button onclick="predictResult()">🔮 Predict Result</button>
+    <div class="input-section">
+      <label for="inputNumbers">🔢 Enter Previous Numbers:</label><br/>
+      <input type="text" id="inputNumbers" placeholder="e.g., 282"/><br/>
+      <button onclick="predictResult()">🔮 Predict Result</button>
+    </div>
 
-    <div id="loading" class="loading" style="display:none;">⏳ AI is predicting...</div>
-
-    <div id="resultBox" class="result-box" style="display:none;">
-      <p><span class="label">🔢 Number:</span> <span id="predNumber"></span></p>
-      <p><span class="label">🎨 Colour:</span> <span id="predColor"></span></p>
-      <p><span class="label">✏️ Size:</span> <span id="predSize"></span></p>
-      <p><span class="label">🧠 Confidence:</span> <span id="predConfidence"></span></p>
+    <div class="result-box" id="resultBox" style="display: none;">
+      <p><span class="label">📏 Size:</span> 🔴 Big</p>
+      <p><span class="label">🎨 Colour:</span> 🟥 Red</p>
+      <p><span class="label">🔢 Number:</span> 5</p>
+      <p><span class="label">🧠 Confidence:</span> 81%</p>
     </div>
   </div>
 
   <script>
     function predictResult() {
-      const resultBox = document.getElementById('resultBox');
-      const loading = document.getElementById('loading');
-      const number = Math.floor(Math.random() * 10);
-      const color = Math.random() > 0.5 ? '🟥 Red' : '🟩 Green'; // Blue removed
-      const size = number >= 5 ? '🔴 Big' : '🟢 Small';
-      const confidence = Math.floor(80 + Math.random() * 15); // 80% - 95%
+      const input = document.getElementById("inputNumbers").value;
+      
+      if (!input) {
+        alert("Please enter a number.");
+        return;
+      }
 
-      loading.style.display = 'block';
-      resultBox.style.display = 'none';
+      // Placeholder AI prediction logic (you can link to backend later)
+      let number = Math.floor(Math.random() * 10);
+      let color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
+      let size = (number >= 5) ? "🔴 Big" : "🟢 Small";
+      let confidence = Math.floor(Math.random() * 21) + 80; // 80–100%
 
-      setTimeout(() => {
-        document.getElementById('predNumber').textContent = number;
-        document.getElementById('predColor').textContent = color;
-        document.getElementById('predSize').textContent = size;
-        document.getElementById('predConfidence').textContent = confidence + "%";
+      const resultHTML = `
+        <p><span class="label">📏 Size:</span> ${size}</p>
+        <p><span class="label">🎨 Colour:</span> ${color}</p>
+        <p><span class="label">🔢 Number:</span> ${number}</p>
+        <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
+      `;
 
-        loading.style.display = 'none';
-        resultBox.style.display = 'block';
-      }, 2000);
+      document.getElementById("resultBox").innerHTML = resultHTML;
+      document.getElementById("resultBox").style.display = "block";
     }
   </script>
+
 </body>
 </html>
