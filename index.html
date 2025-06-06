@@ -3,31 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor Pro</title>
+  <title>🎯 WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
+      background: linear-gradient(to right, #1c1c1c, #2c2c2c);
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.5rem;
+      padding: 2rem;
     }
 
     h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
       color: gold;
-      text-shadow: 0 0 8px gold;
+      text-shadow: 0 0 10px gold;
       margin-bottom: 1rem;
     }
 
     .tabs {
       display: flex;
       gap: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .tab {
@@ -35,10 +33,10 @@
       border: 2px solid gold;
       border-radius: 999px;
       cursor: pointer;
+      transition: all 0.3s;
       background-color: transparent;
       color: gold;
       font-weight: bold;
-      transition: 0.3s;
     }
 
     .tab.active {
@@ -47,35 +45,36 @@
     }
 
     .card {
-      background: #1e1e1e;
-      border: 2px solid gold;
-      border-radius: 16px;
-      padding: 1.5rem;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid gold;
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
       width: 100%;
-      max-width: 380px;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 20px gold;
+      animation: glow 2s infinite alternate;
     }
 
-    .line {
-      font-size: 1.1rem;
-      margin: 0.7rem 0;
-    }
-
-    .label {
-      font-weight: bold;
-      color: #ffcc00;
-    }
-
-    .value {
-      font-weight: bold;
-      color: #00ffc3;
-    }
-
-    @media (max-width: 400px) {
-      h1 {
-        font-size: 1.4rem;
-        text-align: center;
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px gold;
       }
+      to {
+        box-shadow: 0 0 30px gold;
+      }
+    }
+
+    .prediction {
+      font-size: 2rem;
+      margin: 1rem 0;
+      color: #00ffcc;
+    }
+
+    .confidence {
+      font-size: 1.2rem;
+      color: lightgreen;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -88,73 +87,70 @@
     <button class="tab" onclick="switchTab('3m')">3m</button>
   </div>
 
-  <div class="card">
-    <div class="line"><span class="label">📏 Size:</span> <span class="value" id="sizeText">-</span></div>
-    <div class="line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
-    <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
-    <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
+  <div class="card" id="predictionCard">
+    <div class="prediction" id="predictionText">Loading prediction...</div>
+    <div class="confidence" id="confidenceText"></div>
   </div>
 
   <script>
-    const sizeText = document.getElementById("sizeText");
-    const colorText = document.getElementById("colorText");
-    const numberText = document.getElementById("numberText");
+    const predictionText = document.getElementById("predictionText");
     const confidenceText = document.getElementById("confidenceText");
     const tabs = document.querySelectorAll(".tab");
 
     let currentMode = '30s';
     let intervalId = null;
 
-    const advancedAI = {
-      "30s": () => {
-        const n = Math.floor(Math.random() * 10);
-        return {
-          number: n,
-          color: n === 0 || n === 5 || n === 10 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
-          size: n <= 4 ? "SMALL" : "BIG",
-          confidence: 85 + Math.floor(Math.random() * 7)
-        };
-      },
-      "1m": () => {
-        const n = Math.floor(Math.random() * 10);
-        return {
-          number: n,
-          color: n % 2 === 0 ? "GREEN" : "RED",
-          size: n < 5 ? "SMALL" : "BIG",
-          confidence: 88 + Math.floor(Math.random() * 5)
-        };
-      },
-      "3m": () => {
-        const n = Math.floor(Math.random() * 10);
-        return {
-          number: n,
-          color: n === 0 || n === 5 ? "VIOLET" : n % 2 === 0 ? "GREEN" : "RED",
-          size: n >= 5 ? "BIG" : "SMALL",
-          confidence: 90 + Math.floor(Math.random() * 6)
-        };
-      }
+    const mockAI = {
+      "30s": () => ({
+        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
+        number: Math.floor(Math.random() * 10),
+        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(80 + Math.random() * 15)
+      }),
+      "1m": () => ({
+        color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
+        number: Math.floor(3 + Math.random() * 7),
+        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
+        confidence: Math.floor(85 + Math.random() * 10)
+      }),
+      "3m": () => ({
+        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
+        number: Math.floor(1 + Math.random() * 10),
+        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(90 + Math.random() * 8)
+      })
     };
 
     function updatePrediction() {
-      const result = advancedAI[currentMode]();
-      sizeText.innerText = result.size;
-      colorText.innerText = result.color;
-      numberText.innerText = result.number;
-      confidenceText.innerText = result.confidence + "%";
+      const result = mockAI[currentMode]();
+      predictionText.innerHTML = `
+        🎨 Color: <b>${result.color}</b><br>
+        🔢 Number: <b>${result.number}</b><br>
+        🔺 Size: <b>${result.bigSmall}</b>
+      `;
+      confidenceText.innerText = `🧠 Confidence: ${result.confidence}%`;
     }
 
     function switchTab(mode) {
       currentMode = mode;
       tabs.forEach(tab => tab.classList.remove("active"));
+      document.querySelector(`.tab:contains('${mode}')`);
       [...tabs].find(t => t.innerText === mode).classList.add("active");
-
       clearInterval(intervalId);
       updatePrediction();
-      intervalId = setInterval(updatePrediction, 3000); // Every 3 seconds
+
+      const intervalTimes = {
+        "30s": 30000,
+        "1m": 60000,
+        "3m": 180000
+      };
+
+      intervalId = setInterval(updatePrediction, intervalTimes[mode]);
     }
 
+    // Start on default mode
     updatePrediction();
-    intervalId = setInterval(updatePrediction, 3000); // Auto-refresh
+    intervalId = setInterval(updatePrediction, 30000);
   </script>
 </body>
 </html>
