@@ -1,101 +1,170 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 Wingo Predictor Pro (AI-Based)</title>
+  <title>WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #111;
+      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
+      padding: 1rem;
     }
+
     h1 {
-      color: gold;
-      text-shadow: 0 0 8px gold;
-      margin-bottom: 1.5rem;
       font-size: 1.8rem;
+      font-weight: 700;
+      color: gold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 0 8px gold;
+      flex-wrap: wrap;
     }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .tab {
+      padding: 0.5rem 1.5rem;
+      border: 2px solid gold;
+      border-radius: 999px;
+      cursor: pointer;
+      background-color: transparent;
+      color: gold;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .tab.active {
+      background-color: gold;
+      color: black;
+    }
+
     .card {
-      background: #1a1a1a;
+      background: linear-gradient(to bottom right, #1e1e1e, #292929);
       border: 2px solid gold;
       border-radius: 20px;
       padding: 1.5rem;
-      max-width: 400px;
+      text-align: left;
+      max-width: 350px;
       width: 100%;
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
     }
-    .row {
-      display: flex;
-      justify-content: space-between;
+
+    .card h3 {
       margin: 0.8rem 0;
       font-size: 1.1rem;
     }
-    .label { color: #ffd700; font-weight: bold; }
-    .value { color: #00ffc3; font-weight: bold; }
-    .mode { margin-bottom: 1rem; }
-    .btn {
-      padding: 0.5rem 1.2rem;
-      border: 2px solid gold;
-      border-radius: 999px;
-      background: transparent;
-      color: gold;
-      cursor: pointer;
-      margin-right: 0.8rem;
-      transition: 0.3s;
+
+    .card h3 b {
+      color: #00ffc3;
     }
-    .btn.active, .btn:hover {
-      background: gold; color: black;
+
+    .confidence {
+      font-size: 1rem;
+      color: lightgreen;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .emoji {
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.4rem;
+        flex-direction: column;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>🎯 Wingo Predictor Pro</h1>
+  <h1>🎯 WinGo Predictor Pro</h1>
 
-  <div class="mode">
-    <button class="btn active" onclick="switchMode('30s')">30s</button>
-    <button class="btn" onclick="switchMode('1m')">1m</button>
-    <button class="btn" onclick="switchMode('3m')">3m</button>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('30s')">30s</button>
+    <button class="tab" onclick="switchTab('1m')">1m</button>
+    <button class="tab" onclick="switchTab('3m')">3m</button>
   </div>
 
-  <div class="card">
-    <div class="row"><span class="label">📏 Size:</span><span class="value" id="size">-</span></div>
-    <div class="row"><span class="label">🎨 Colour:</span><span class="value" id="color">-</span></div>
-    <div class="row"><span class="label">🎲 Number:</span><span class="value" id="number">-</span></div>
-    <div class="row"><span class="label">🧠 Confidence:</span><span class="value" id="confidence">--%</span></div>
+  <div class="card" id="predictionCard">
+    <h3>🎨 Color: <b id="colorText">Loading...</b></h3>
+    <h3>🎲 Number: <b id="numberText">-</b></h3>
+    <h3>📏 Size: <b id="sizeText">-</b></h3>
+    <div class="confidence">🧠 Confidence: <span id="confidenceText">--%</span></div>
   </div>
 
   <script>
-    let mode = '30s';
+    const colorText = document.getElementById("colorText");
+    const numberText = document.getElementById("numberText");
+    const sizeText = document.getElementById("sizeText");
+    const confidenceText = document.getElementById("confidenceText");
+    const tabs = document.querySelectorAll(".tab");
 
-    async function fetchPrediction() {
-      try {
-        const res = await fetch(`https://your-backend.com/predict?mode=${mode}`);
-        const d = await res.json();
-        document.getElementById('size').textContent = d.size;
-        document.getElementById('color').textContent = d.color;
-        document.getElementById('number').textContent = d.number;
-        document.getElementById('confidence').textContent = d.confidence + '%';
-      } catch(e) {
-        console.error(e);
-      }
+    let currentMode = '30s';
+    let intervalId = null;
+
+    const mockAI = {
+      "30s": () => ({
+        color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
+        number: Math.floor(Math.random() * 10),
+        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(83 + Math.random() * 10)
+      }),
+      "1m": () => ({
+        color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
+        number: Math.floor(3 + Math.random() * 6),
+        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
+        confidence: Math.floor(86 + Math.random() * 10)
+      }),
+      "3m": () => ({
+        color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
+        number: Math.floor(1 + Math.random() * 10),
+        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(90 + Math.random() * 7)
+      })
+    };
+
+    function updatePrediction() {
+      const result = mockAI[currentMode]();
+      colorText.innerText = result.color;
+      numberText.innerText = result.number;
+      sizeText.innerText = result.bigSmall;
+      confidenceText.innerText = result.confidence + "%";
     }
 
-    function switchMode(m) {
-      mode = m;
-      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      fetchPrediction();
+    function switchTab(mode) {
+      currentMode = mode;
+      tabs.forEach(tab => tab.classList.remove("active"));
+      [...tabs].find(t => t.innerText === mode).classList.add("active");
+      clearInterval(intervalId);
+      updatePrediction();
+
+      const intervalTimes = {
+        "30s": 30000,
+        "1m": 60000,
+        "3m": 180000
+      };
+
+      intervalId = setInterval(updatePrediction, intervalTimes[mode]);
     }
 
-    // Auto-update every period (same interval as mode)
-    setInterval(fetchPrediction, 30000);
-    fetchPrediction();
+    // Start default
+    updatePrediction();
+    intervalId = setInterval(updatePrediction, 30000);
   </script>
 </body>
 </html>
