@@ -13,7 +13,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
+      padding: 1.5rem;
     }
 
     h1 {
@@ -56,14 +56,14 @@
       box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
     }
 
-    .prediction-line {
-      margin: 0.8rem 0;
-      font-size: 1.2rem;
+    .line {
+      font-size: 1.1rem;
+      margin: 0.7rem 0;
     }
 
     .label {
       font-weight: bold;
-      color: gold;
+      color: #ffcc00;
     }
 
     .value {
@@ -71,19 +71,18 @@
       color: #00ffc3;
     }
 
-    .next-period {
+    .period {
       margin-top: 1rem;
       font-size: 1rem;
-      color: #aaa;
       text-align: center;
+      color: #ccc;
     }
 
-    .countdown {
-      font-size: 1.3rem;
+    .timer {
+      font-size: 1.2rem;
       color: lightgreen;
-      margin-top: 0.5rem;
-      font-weight: bold;
       text-align: center;
+      margin-top: 0.5rem;
     }
 
     @media (max-width: 400px) {
@@ -104,48 +103,58 @@
   </div>
 
   <div class="card">
-    <div class="prediction-line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
-    <div class="prediction-line"><span class="label">📏 Size:</span> <span class="value" id="sizeText">-</span></div>
-    <div class="prediction-line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
-    <div class="prediction-line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
-    <div class="next-period">⏱️ Next Period: <span id="nextPeriod">Loading...</span></div>
-    <div class="countdown">⏳ Time Left: <span id="countdown">--</span></div>
+    <div class="line"><span class="label">📏 Size:</span> <span class="value" id="sizeText">-</span></div>
+    <div class="line"><span class="label">🎨 Colour:</span> <span class="value" id="colorText">-</span></div>
+    <div class="line"><span class="label">🎲 Number:</span> <span class="value" id="numberText">-</span></div>
+    <div class="line"><span class="label">🧠 Confidence:</span> <span class="value" id="confidenceText">--%</span></div>
+    <div class="period">🆔 Period: <span id="periodNumber">Loading...</span></div>
+    <div class="timer">⏳ Time Left: <span id="countdown">--</span></div>
   </div>
 
   <script>
+    const sizeText = document.getElementById("sizeText");
     const colorText = document.getElementById("colorText");
     const numberText = document.getElementById("numberText");
-    const sizeText = document.getElementById("sizeText");
     const confidenceText = document.getElementById("confidenceText");
-    const nextPeriod = document.getElementById("nextPeriod");
     const countdown = document.getElementById("countdown");
+    const periodNumber = document.getElementById("periodNumber");
     const tabs = document.querySelectorAll(".tab");
 
     let currentMode = '30s';
-    let intervalTime = 30000;
-    let timer = intervalTime;
     let intervalId = null;
     let countdownInterval = null;
-    let periodBase = 2025060610005200;
+    let timer = 30000;
+
+    // Starting point close to bdgop.com format (live time synced logic)
+    function getCurrentPeriod() {
+      const now = new Date();
+      const offset = {
+        '30s': 30 * 1000,
+        '1m': 60 * 1000,
+        '3m': 180 * 1000
+      }[currentMode];
+      const base = Math.floor(now.getTime() / offset);
+      return 2400000 + base; // Random base logic like bdgop pattern
+    }
 
     const mockAI = {
       "30s": () => ({
         color: ["RED", "GREEN", "VIOLET"][Math.floor(Math.random() * 3)],
         number: Math.floor(Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(83 + Math.random() * 10)
+        size: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(84 + Math.random() * 10)
       }),
       "1m": () => ({
         color: ["GREEN", "RED", "GREEN"][Math.floor(Math.random() * 3)],
-        number: Math.floor(3 + Math.random() * 6),
-        bigSmall: Math.random() > 0.5 ? "SMALL" : "BIG",
-        confidence: Math.floor(86 + Math.random() * 10)
+        number: Math.floor(2 + Math.random() * 7),
+        size: Math.random() > 0.5 ? "SMALL" : "BIG",
+        confidence: Math.floor(87 + Math.random() * 10)
       }),
       "3m": () => ({
         color: ["VIOLET", "RED", "GREEN"][Math.floor(Math.random() * 3)],
         number: Math.floor(1 + Math.random() * 10),
-        bigSmall: Math.random() > 0.5 ? "BIG" : "SMALL",
-        confidence: Math.floor(90 + Math.random() * 7)
+        size: Math.random() > 0.5 ? "BIG" : "SMALL",
+        confidence: Math.floor(91 + Math.random() * 6)
       })
     };
 
@@ -153,17 +162,24 @@
       const result = mockAI[currentMode]();
       colorText.innerText = result.color;
       numberText.innerText = result.number;
-      sizeText.innerText = result.bigSmall;
+      sizeText.innerText = result.size;
       confidenceText.innerText = result.confidence + "%";
-      periodBase++;
-      nextPeriod.innerText = periodBase;
-      timer = intervalTime;
+      periodNumber.innerText = getCurrentPeriod();
+      resetTimer();
+    }
+
+    function resetTimer() {
+      timer = {
+        '30s': 30,
+        '1m': 60,
+        '3m': 180
+      }[currentMode];
     }
 
     function updateCountdown() {
-      timer -= 1000;
-      countdown.innerText = (timer / 1000) + "s";
-      if (timer <= 0) {
+      countdown.innerText = timer + "s";
+      timer--;
+      if (timer < 0) {
         updatePrediction();
       }
     }
@@ -176,22 +192,17 @@
       clearInterval(intervalId);
       clearInterval(countdownInterval);
 
-      const intervalTimes = {
-        "30s": 30000,
-        "1m": 60000,
-        "3m": 180000
-      };
-
-      intervalTime = intervalTimes[mode];
       updatePrediction();
-
-      intervalId = setInterval(updatePrediction, intervalTime);
+      intervalId = setInterval(updatePrediction, {
+        '30s': 30000,
+        '1m': 60000,
+        '3m': 180000
+      }[mode]);
       countdownInterval = setInterval(updateCountdown, 1000);
     }
 
-    // Start by default
     updatePrediction();
-    intervalId = setInterval(updatePrediction, intervalTime);
+    intervalId = setInterval(updatePrediction, 30000);
     countdownInterval = setInterval(updateCountdown, 1000);
   </script>
 </body>
