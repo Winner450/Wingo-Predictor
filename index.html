@@ -185,3 +185,51 @@ function generatePrediction() {
 
 </body>
 </html>
+<script>
+function generatePrediction() {
+  const input = document.getElementById("lastResults").value.trim();
+  let values = [];
+
+  // 👇 Fix: If user entered digits without comma (like "035"), split into characters
+  if (/^\d{3}$/.test(input)) {
+    values = input.split('').map(Number);
+  } else {
+    values = input.split(",").map(v => parseInt(v.trim())).filter(n => !isNaN(n));
+  }
+
+  if (values.length !== 3) {
+    alert("Please enter exactly 3 numbers (e.g. 1,2,3 or 123).");
+    return;
+  }
+
+  const colors = ["Red", "Green", "Violet"];
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const predictedNumber = Math.floor((avg + Math.random() * 2) % 10);
+  const predictedColor = colors[predictedNumber % colors.length];
+  const predictedSize = predictedNumber >= 5 ? "Big" : "Small";
+  const confidence = Math.floor(Math.random() * 15) + 85;
+
+  document.getElementById("number").textContent = `Number: ${predictedNumber}`;
+  document.getElementById("color").textContent = `Color: ${predictedColor}`;
+  document.getElementById("size").textContent = `Size: ${predictedSize}`;
+  document.getElementById("confidenceFill").style.width = confidence + "%";
+
+  const trendPatterns = [
+    "Red → Green → Red",
+    "Green → Red → Green",
+    "Violet → Red → Green",
+    "Red → Violet → Green",
+    "Green → Green → Red"
+  ];
+
+  const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
+  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
+
+  document.getElementById("zigzag").textContent = getYesNo();
+  document.getElementById("reverse").textContent = getYesNo();
+  document.getElementById("continuation").textContent = getYesNo();
+  document.getElementById("hotcolor").textContent = getRandomColor();
+  document.getElementById("coldcolor").textContent = getRandomColor();
+  document.getElementById("trend").textContent = trendPatterns[Math.floor(Math.random() * trendPatterns.length)];
+}
+</script>
