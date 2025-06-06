@@ -2,234 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 Wingo Predictor Pro (AI Based)</title>
+  <title>WinGo Prediction Tool</title>
   <style>
     body {
-      margin: 0;
-      background: #0b0b0b;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
-    }
-    .predict-box {
-      background: linear-gradient(145deg, #1a1a1a, #111);
-      border: 2px solid gold;
-      border-radius: 20px;
-      padding: 30px;
-      width: 350px;
-      box-shadow: 0 0 20px gold;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .predict-box h2 {
-      color: gold;
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    .result {
-      font-size: 22px;
-      margin: 10px 0;
-      background: #222;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: inset 0 0 10px #000;
-    }
-    .confidence {
-      margin-top: 20px;
-      font-size: 16px;
-    }
-    .confidence-bar {
-      background: #333;
-      border-radius: 10px;
-      overflow: hidden;
-      height: 14px;
-      margin-top: 5px;
-    }
-    .bar-fill {
-      height: 100%;
-      background: linear-gradient(to right, gold, orange);
-      width: 0%;
-      transition: width 1s ease;
-    }
-    .footer {
-      margin-top: 25px;
-      font-size: 12px;
-      color: gray;
-    }
-    .pattern-section {
-      width: 95%;
-      max-width: 800px;
-      background: #121212;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px gold;
+      background: #f0f4f8;
     }
-    .pattern-section h3 {
-      color: gold;
-      text-align: center;
-      margin-bottom: 20px;
+    h2 {
+      color: #333;
     }
-    .pattern-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-    }
-    .pattern-card {
-      background: #1e1e1e;
-      border-left: 4px solid gold;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 14px;
-      box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
-    }
-    .pattern-title {
-      color: #ffcc00;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    input, button {
+    input, button, textarea {
       padding: 10px;
-      margin-bottom: 20px;
+      margin: 5px 0;
       font-size: 16px;
-      border-radius: 10px;
-      border: none;
+      width: 100%;
+      max-width: 500px;
     }
-    input {
-      width: 280px;
-      text-align: center;
-    }
-    button {
-      background: gold;
-      color: black;
+    .big {
+      color: green;
       font-weight: bold;
-      box-shadow: 0 0 10px gold;
-      cursor: pointer;
+    }
+    .small {
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-<input type="text" id="lastResults" placeholder="Enter last 3 numbers (e.g. 3,6,1)" />
-<button onclick="generatePrediction()">🔁 Predict Now</button>
+  <h2>WinGo Prediction Tool</h2>
+  <p>Enter last few numbers to predict the next result (Big/Small):</p>
+  <textarea id="numbersInput" rows="3" placeholder="Enter numbers like: 2,5,3 or 253"></textarea><br>
+  <button onclick="predictNext()">Predict Next</button>
 
-<div class="predict-box">
-  <h2>🔮 AI Prediction</h2>
-  <div class="result" id="number">Number: --</div>
-  <div class="result" id="color">Color: --</div>
-  <div class="result" id="size">Size: --</div>
-  <div class="confidence">
-    Confidence:
-    <div class="confidence-bar">
-      <div class="bar-fill" id="confidenceFill"></div>
-    </div>
-  </div>
-  <div class="footer">Manual AI Prediction</div>
-</div>
+  <h3 id="prediction"></h3>
 
-<div class="pattern-section">
-  <h3>📊 Pattern Detection</h3>
-  <div class="pattern-grid">
-    <div class="pattern-card"><div class="pattern-title">Zigzag Pattern</div><div id="zigzag">--</div></div>
-    <div class="pattern-card"><div class="pattern-title">Reverse Pattern</div><div id="reverse">--</div></div>
-    <div class="pattern-card"><div class="pattern-title">Continuation</div><div id="continuation">--</div></div>
-    <div class="pattern-card"><div class="pattern-title">Hot Color</div><div id="hotcolor">--</div></div>
-    <div class="pattern-card"><div class="pattern-title">Cold Color</div><div id="coldcolor">--</div></div>
-    <div class="pattern-card"><div class="pattern-title">Last Color Trend</div><div id="trend">--</div></div>
-  </div>
-</div>
+  <script>
+    function predictNext() {
+      const input = document.getElementById("numbersInput").value.trim();
+      let numbers = [];
 
-<script>
-function generatePrediction() {
-  const input = document.getElementById("lastResults").value;
-  const values = input.split(",").map(v => parseInt(v.trim())).filter(n => !isNaN(n));
-  if (values.length < 3) {
-    alert("Please enter exactly 3 numbers.");
-    return;
-  }
+      // If input is like "123", split each digit
+      if (/^\d{2,}$/.test(input) && !input.includes(",")) {
+        numbers = input.split('').map(n => parseInt(n));
+      } else {
+        // Split by comma, clean spaces, parse
+        numbers = input.split(",").map(num => parseInt(num.trim())).filter(n => !isNaN(n));
+      }
 
-  const colors = ["Red", "Green", "Violet"];
-  const avg = values.reduce((a, b) => a + b, 0) / values.length;
-  const predictedNumber = Math.floor((avg + Math.random() * 2) % 10);
-  const predictedColor = colors[predictedNumber % colors.length];
-  const predictedSize = predictedNumber >= 5 ? "Big" : "Small";
-  const confidence = Math.floor(Math.random() * 15) + 85;
+      if (numbers.length < 2) {
+        document.getElementById("prediction").innerText = "Please enter at least 2 valid numbers.";
+        return;
+      }
 
-  document.getElementById("number").textContent = `Number: ${predictedNumber}`;
-  document.getElementById("color").textContent = `Color: ${predictedColor}`;
-  document.getElementById("size").textContent = `Size: ${predictedSize}`;
-  document.getElementById("confidenceFill").style.width = confidence + "%";
+      const last = numbers[numbers.length - 1];
+      const secondLast = numbers[numbers.length - 2];
 
-  const trendPatterns = [
-    "Red → Green → Red",
-    "Green → Red → Green",
-    "Violet → Red → Green",
-    "Red → Violet → Green",
-    "Green → Green → Red"
-  ];
+      const isSmall = n => n < 5;
 
-  const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
-  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
-
-  document.getElementById("zigzag").textContent = getYesNo();
-  document.getElementById("reverse").textContent = getYesNo();
-  document.getElementById("continuation").textContent = getYesNo();
-  document.getElementById("hotcolor").textContent = getRandomColor();
-  document.getElementById("coldcolor").textContent = getRandomColor();
-  document.getElementById("trend").textContent = trendPatterns[Math.floor(Math.random() * trendPatterns.length)];
-}
-</script>
+      if (isSmall(last) && isSmall(secondLast)) {
+        document.getElementById("prediction").innerHTML = "<span class='big'>Next Prediction: Big</span>";
+      } else {
+        document.getElementById("prediction").innerHTML = "<span class='small'>Next Prediction: Small</span>";
+      }
+    }
+  </script>
 
 </body>
 </html>
-<script>
-function generatePrediction() {
-  const input = document.getElementById("lastResults").value.trim();
-  let values = [];
-
-  // 👇 Fix: If user entered digits without comma (like "035"), split into characters
-  if (/^\d{3}$/.test(input)) {
-    values = input.split('').map(Number);
-  } else {
-    values = input.split(",").map(v => parseInt(v.trim())).filter(n => !isNaN(n));
-  }
-
-  if (values.length !== 3) {
-    alert("Please enter exactly 3 numbers (e.g. 1,2,3 or 123).");
-    return;
-  }
-
-  const colors = ["Red", "Green", "Violet"];
-  const avg = values.reduce((a, b) => a + b, 0) / values.length;
-  const predictedNumber = Math.floor((avg + Math.random() * 2) % 10);
-  const predictedColor = colors[predictedNumber % colors.length];
-  const predictedSize = predictedNumber >= 5 ? "Big" : "Small";
-  const confidence = Math.floor(Math.random() * 15) + 85;
-
-  document.getElementById("number").textContent = `Number: ${predictedNumber}`;
-  document.getElementById("color").textContent = `Color: ${predictedColor}`;
-  document.getElementById("size").textContent = `Size: ${predictedSize}`;
-  document.getElementById("confidenceFill").style.width = confidence + "%";
-
-  const trendPatterns = [
-    "Red → Green → Red",
-    "Green → Red → Green",
-    "Violet → Red → Green",
-    "Red → Violet → Green",
-    "Green → Green → Red"
-  ];
-
-  const getYesNo = () => Math.random() > 0.5 ? "Yes" : "No";
-  const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
-
-  document.getElementById("zigzag").textContent = getYesNo();
-  document.getElementById("reverse").textContent = getYesNo();
-  document.getElementById("continuation").textContent = getYesNo();
-  document.getElementById("hotcolor").textContent = getRandomColor();
-  document.getElementById("coldcolor").textContent = getRandomColor();
-  document.getElementById("trend").textContent = trendPatterns[Math.floor(Math.random() * trendPatterns.length)];
-}
-</script>
