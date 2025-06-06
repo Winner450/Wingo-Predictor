@@ -3,70 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WinGo Predictor - Smart Game Analysis</title>
+  <title>WinGo Predictor Pro</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #fceabb, #f8b500);
+      background: linear-gradient(to right, #fdf6e3, #fbe9b7);
       color: #333;
-      padding: 0;
     }
+
     header {
-      background: #222;
-      color: #fff;
-      padding: 20px;
+      background: #1c1c1c;
+      color: #ffd700;
+      padding: 25px;
       text-align: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
     }
+
     header h1 {
+      font-size: 2.5rem;
       margin: 0;
-      font-size: 2rem;
     }
+
+    header p {
+      margin: 5px 0 0;
+      font-style: italic;
+      color: #ddd;
+    }
+
     .container {
       max-width: 600px;
-      background: white;
-      margin: 30px auto;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
+
+    h2 {
+      text-align: center;
+      color: #d4a400;
+    }
+
     textarea, button {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       font-size: 16px;
-      margin-top: 10px;
-      border-radius: 8px;
+      margin-top: 15px;
+      border-radius: 10px;
       border: 1px solid #ccc;
     }
+
     button {
-      background: #f77f00;
+      background: linear-gradient(45deg, #f9c900, #ffb300);
       color: white;
       font-weight: bold;
       border: none;
       cursor: pointer;
       transition: 0.3s ease;
     }
+
     button:hover {
-      background: #d35400;
+      background: linear-gradient(45deg, #ffb300, #cc9a00);
     }
+
     .result {
       margin-top: 20px;
-      padding: 15px;
-      background: #f4f4f4;
-      border-radius: 8px;
+      padding: 20px;
+      background: #fffbea;
+      border-radius: 12px;
+      border: 1px solid #e0c776;
       font-size: 18px;
+      min-height: 60px;
     }
+
     .big { color: green; font-weight: bold; }
     .small { color: red; font-weight: bold; }
     .green { color: green; font-weight: bold; }
     .red { color: red; font-weight: bold; }
     .violet { color: purple; font-weight: bold; }
+
+    .typing {
+      border-right: .1em solid #000;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
     footer {
       text-align: center;
-      margin-top: 40px;
-      padding: 20px;
-      font-size: 14px;
+      margin: 40px 10px;
+      font-size: 13px;
       color: #555;
     }
   </style>
@@ -74,61 +100,67 @@
 <body>
 
   <header>
-    <h1>🎯 WinGo Predictor Tool</h1>
-    <p>Smart Prediction | Big/Small | Color | Pattern</p>
+    <h1>🎯 WinGo Predictor Pro</h1>
+    <p>AI Powered Number & Color Prediction</p>
   </header>
 
   <div class="container">
-    <h2>🔢 Enter Your Numbers:</h2>
+    <h2>🔢 Enter Last Game Numbers:</h2>
     <textarea id="numbersInput" rows="3" placeholder="e.g. 784563"></textarea>
-    <button onclick="predict()">Predict Result</button>
-    <div id="result" class="result"></div>
+    <button onclick="predict()">🔮 Predict Result</button>
+    <div id="result" class="result">Awaiting input...</div>
   </div>
 
   <footer>
-    &copy; 2025 WinGo Predictor | Designed with 💡 by @winner450
+    &copy; 2025 WinGo Predictor | Powered by @winner450
   </footer>
 
   <script>
     function predict() {
       const input = document.getElementById("numbersInput").value.trim();
+      const resultDiv = document.getElementById("result");
       if (input.length < 3) {
-        document.getElementById("result").innerHTML = "<p>Please enter at least 3 digits.</p>";
+        resultDiv.innerHTML = "⚠️ Please enter at least 3 digits.";
         return;
       }
 
-      const numbers = input.split("").map(Number);
-      const last = numbers[numbers.length - 1];
-      const second = numbers[numbers.length - 2];
-      const third = numbers[numbers.length - 3];
+      resultDiv.innerHTML = "⏳ Processing...";
+      
+      setTimeout(() => {
+        const digits = input.split('').map(Number);
+        const last = digits[digits.length - 1];
 
-      // Big / Small
-      let bs = (last >= 5) ? "Big" : "Small";
+        // Big or Small
+        const size = last >= 5 ? "Big" : "Small";
 
-      // Pattern detection
-      let pattern = "Random";
-      if (last > second && second > third) pattern = "Ascending";
-      else if (last < second && second < third) pattern = "Descending";
-      else if (last === second && second === third) pattern = "Constant";
-      else if (last !== second && second !== third && last !== third) pattern = "Zigzag";
+        // Color Prediction
+        let color = "";
+        if (last === 0 || last === 5) color = "violet";
+        else if (last % 2 === 0) color = "red";
+        else color = "green";
 
-      // Predict next number
-      const avg = Math.round((last + second + third) / 3);
-      const nextNum = (avg + Math.floor(Math.random() * 3 - 1)) % 10;
+        // Number Prediction (very simple pattern example)
+        const predictedNumber = (last + Math.floor(Math.random() * 5)) % 10;
 
-      // Color prediction logic
-      let color = "Green";
-      if (nextNum % 2 === 0) color = "Red";
-      if (nextNum === 0 || nextNum === 5) color = "Violet";
+        const resultHTML = `
+          🎲 Predicted Number: <strong>${predictedNumber}</strong><br>
+          📊 Size: <span class="${size.toLowerCase()}">${size}</span><br>
+          🎨 Color: <span class="${color}">${color.charAt(0).toUpperCase() + color.slice(1)}</span>
+        `;
 
-      document.getElementById("result").innerHTML = `
-        <p>🔮 <strong>Next Number:</strong> ${nextNum}</p>
-        <p>📏 <strong>Big/Small:</strong> <span class="${bs.toLowerCase()}">${bs}</span></p>
-        <p>📈 <strong>Pattern:</strong> ${pattern}</p>
-        <p>🎨 <strong>Color Prediction:</strong> <span class="${color.toLowerCase()}">${color}</span></p>
-      `;
+        animateTyping(resultDiv, resultHTML, 20);
+      }, 3000); // 3 seconds delay
+    }
+
+    function animateTyping(element, text, speed) {
+      let i = 0;
+      element.innerHTML = '';
+      const interval = setInterval(() => {
+        element.innerHTML += text.charAt(i);
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, speed);
     }
   </script>
-
 </body>
 </html>
