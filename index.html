@@ -3,153 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo Predictor Pro</title>
+  <title>🎯 WinGo Predictor Pro AI</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f0f0f, #000000);
-      color: #fff;
+      background: linear-gradient(to bottom right, #111, #000);
+      color: white;
       text-align: center;
     }
 
     header {
-      background: #000;
-      padding: 16px 0;
-      box-shadow: 0 2px 8px #FFD700;
+      background: black;
+      padding: 20px 0;
+      box-shadow: 0 0 15px gold;
     }
 
     header h1 {
       margin: 0;
       font-size: 28px;
-      color: #FFD700;
+      color: gold;
     }
 
-    .container {
-      padding: 30px 20px;
-    }
-
-    .input-section input {
-      padding: 10px;
-      border: 2px solid gold;
-      border-radius: 10px;
-      width: 80%;
+    input, button {
+      margin-top: 20px;
+      padding: 14px;
       font-size: 18px;
-      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    input {
+      width: 70%;
+      border: 2px solid gold;
       background-color: #000;
-      color: #fff;
+      color: white;
       text-align: center;
     }
 
-    .input-section button {
-      margin-top: 15px;
+    button {
       background-color: gold;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
       color: black;
+      border: none;
+      cursor: pointer;
       box-shadow: 0 0 10px gold;
-    }
-
-    .result-box {
-      background-color: #111;
-      color: #FFD700;
-      padding: 28px;
-      border-radius: 20px;
-      width: 85%;
-      max-width: 400px;
-      margin: 30px auto;
-      font-size: 20px;
-      box-shadow: 0 0 15px #ffc107;
-      text-align: left;
-      display: none;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .result-box p {
-      margin: 12px 0;
-      font-weight: 600;
     }
 
     .thinking {
       font-size: 18px;
-      color: #FFEB3B;
       margin-top: 20px;
+      color: yellow;
       animation: blink 1s infinite;
     }
 
     @keyframes blink {
-      0% { opacity: 0.2; }
+      0%, 100% { opacity: 0.2; }
       50% { opacity: 1; }
-      100% { opacity: 0.2; }
     }
 
-    .label {
-      font-weight: bold;
-      margin-right: 6px;
-      color: #fff;
+    .result {
+      background-color: #111;
+      margin-top: 30px;
+      padding: 25px;
+      border: 2px solid gold;
+      border-radius: 15px;
+      width: 85%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      font-size: 20px;
+    }
+
+    .result strong {
+      display: block;
+      margin: 10px 0;
+      font-size: 22px;
+      color: gold;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🎯 WinGo Predictor Pro</h1>
+    <h1>🎯 WinGo Predictor Pro AI</h1>
   </header>
 
   <div class="container">
-    <div class="input-section">
-      <label for="inputNumbers">🔢 <b>Enter Previous Numbers:</b></label><br/>
-      <input type="text" id="inputNumbers" placeholder="e.g., 274"/><br/>
-      <button onclick="predictResult()">🔮 Predict Result</button>
-    </div>
+    <p><b>Enter previous numbers (comma separated):</b></p>
+    <input type="text" id="numbers" placeholder="e.g., 234, 112, 543" />
+    <br/>
+    <button onclick="predict()">🔍 Predict</button>
 
-    <div id="thinking" class="thinking" style="display: none;">🤖 AI Thinking...</div>
-    <div class="result-box" id="resultBox"></div>
+    <div id="thinking" class="thinking" style="display:none;">🤖 AI is thinking...</div>
+
+    <div class="result" id="result">
+      <strong>📏 Size: <span id="size"></span></strong>
+      <strong>🎨 Colour: <span id="color"></span></strong>
+      <strong>🔢 Number: <span id="number"></span></strong>
+      <strong>🧠 Confidence: <span id="confidence"></span>%</strong>
+    </div>
   </div>
 
   <script>
-    let lastInput = "";
-
-    function predictResult() {
-      const input = document.getElementById("inputNumbers").value.trim();
-      const resultBox = document.getElementById("resultBox");
+    async function predict() {
+      const input = document.getElementById("numbers").value.trim();
+      const resultBox = document.getElementById("result");
       const thinking = document.getElementById("thinking");
 
       if (!input) {
-        alert("Please enter a number.");
+        alert("⚠️ Please enter numbers first.");
         return;
       }
 
-      if (input === lastInput) {
-        alert("⚠️ Please enter a new number!");
-        return;
-      }
+      const numbers = input.split(",").map(num => parseInt(num.trim())).filter(n => !isNaN(n));
 
-      lastInput = input;
-      resultBox.style.display = "none";
       thinking.style.display = "block";
+      resultBox.style.display = "none";
 
-      // 3 seconds delay to simulate AI thinking
-      setTimeout(() => {
-        const number = Math.floor(Math.random() * 10);
-        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
-        const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
-        const confidence = Math.floor(Math.random() * 16) + 85;
+      try {
+        const response = await fetch("https://wingo-ai-predictor-5b2e.onrender.com/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: numbers })
+        });
 
-        const resultHTML = `
-          <p><span class="label">📏 Size:</span> ${size}</p>
-          <p><span class="label">🎨 Colour:</span> ${color}</p>
-          <p><span class="label">🔢 Number:</span> ${number}</p>
-          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
-        `;
+        const data = await response.json();
+
+        document.getElementById("size").innerText = data.size;
+        document.getElementById("color").innerText = data.color;
+        document.getElementById("number").innerText = data.number;
+        document.getElementById("confidence").innerText = data.confidence;
 
         thinking.style.display = "none";
-        resultBox.innerHTML = resultHTML;
         resultBox.style.display = "block";
-      }, 3000);
+      } catch (err) {
+        thinking.style.display = "none";
+        alert("❌ AI Server not responding. Please try again later.");
+      }
     }
   </script>
 
