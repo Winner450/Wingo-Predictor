@@ -91,13 +91,6 @@
       margin-right: 6px;
       color: #fff;
     }
-
-    .alert {
-      color: #FF4444;
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
@@ -120,7 +113,7 @@
   <script>
     let lastInput = "";
 
-    async function predictResult() {
+    function predictResult() {
       const input = document.getElementById("inputNumbers").value.trim();
       const resultBox = document.getElementById("resultBox");
       const thinking = document.getElementById("thinking");
@@ -139,20 +132,14 @@
       resultBox.style.display = "none";
       thinking.style.display = "block";
 
-      try {
-        const response = await fetch("https://your-api-url.com/predict", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ input })
-        });
-
-        const data = await response.json();
-        const { size, color, number, confidence, high_alert } = data;
+      // 3 seconds delay to simulate AI thinking
+      setTimeout(() => {
+        const number = Math.floor(Math.random() * 10);
+        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
+        const size = (number >= 5) ? "Big" : "Small";  // Removed color icon
+        const confidence = Math.floor(Math.random() * 16) + 85;
 
         const resultHTML = `
-          ${high_alert ? '<div class="alert">🚨 Emergency High Probability Signal!</div>' : ''}
           <p><span class="label">📏 Size :</span> ${size}</p>
           <p><span class="label">🎨 Colour :</span> ${color}</p>
           <p><span class="label">🔢 Number :</span> ${number}</p>
@@ -162,11 +149,7 @@
         thinking.style.display = "none";
         resultBox.innerHTML = resultHTML;
         resultBox.style.display = "block";
-
-      } catch (error) {
-        thinking.style.display = "none";
-        alert("Server Error: Unable to fetch prediction.");
-      }
+      }, 3000);
     }
   </script>
 
