@@ -102,7 +102,7 @@
       resultBox.style.display = "none";
 
       try {
-        const res = await fetch("https://your-api-endpoint.com/predict", {
+        const res = await fetch("https://wingo-ai-predictor.onrender.com/predict", {  // ✅ CHANGE THIS to your actual Flask API URL
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -119,7 +119,7 @@
 
         resultBox.style.display = "block";
       } catch (error) {
-        alert("AI server responding.");
+        alert("❌ AI server not responding.");
       } finally {
         loader.style.display = "none";
       }
