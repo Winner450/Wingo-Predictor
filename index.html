@@ -56,17 +56,21 @@
     .result-box {
       background-color: #111;
       color: #FFD700;
-      padding: 24px;
+      padding: 28px;
       border-radius: 20px;
-      width: 90%;
-      max-width: 450px;
+      width: 85%;
+      max-width: 400px;
       margin: 30px auto;
-      font-size: 18px;
+      font-size: 20px;
       box-shadow: 0 0 15px #ffc107;
       text-align: left;
       display: none;
       transition: all 0.3s ease-in-out;
-      line-height: 1.6;
+    }
+
+    .result-box p {
+      margin: 12px 0;
+      font-weight: 600;
     }
 
     .thinking {
@@ -84,7 +88,15 @@
 
     .label {
       font-weight: bold;
-      color: #FFD700;
+      margin-right: 6px;
+      color: #fff;
+    }
+
+    .alert {
+      color: #FF4444;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -108,7 +120,7 @@
   <script>
     let lastInput = "";
 
-    function predictResult() {
+    async function predictResult() {
       const input = document.getElementById("inputNumbers").value.trim();
       const resultBox = document.getElementById("resultBox");
       const thinking = document.getElementById("thinking");
@@ -127,24 +139,34 @@
       resultBox.style.display = "none";
       thinking.style.display = "block";
 
-      // 3 seconds delay to simulate AI thinking
-      setTimeout(() => {
-        const number = Math.floor(Math.random() * 10);
-        const color = (number % 2 === 0) ? "Red" : "Green";
-        const size = (number >= 5) ? "Big" : "Small";
-        const confidence = Math.floor(Math.random() * 16) + 85;
+      try {
+        const response = await fetch("https://your-api-url.com/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ input })
+        });
+
+        const data = await response.json();
+        const { size, color, number, confidence, high_alert } = data;
 
         const resultHTML = `
-          <p><span class="label">📏 Size:</span> ${size}</p>
-          <p><span class="label">🎨 Colour:</span> ${color}</p>
-          <p><span class="label">🔢 Number:</span> ${number}</p>
-          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
+          ${high_alert ? '<div class="alert">🚨 Emergency High Probability Signal!</div>' : ''}
+          <p><span class="label">📏 Size :</span> ${size}</p>
+          <p><span class="label">🎨 Colour :</span> ${color}</p>
+          <p><span class="label">🔢 Number :</span> ${number}</p>
+          <p><span class="label">🧠 Confidence :</span> ${confidence}%</p>
         `;
 
         thinking.style.display = "none";
         resultBox.innerHTML = resultHTML;
         resultBox.style.display = "block";
-      }, 3000);
+
+      } catch (error) {
+        thinking.style.display = "none";
+        alert("Server Error: Unable to fetch prediction.");
+      }
     }
   </script>
 
