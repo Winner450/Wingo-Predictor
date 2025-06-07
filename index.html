@@ -56,21 +56,16 @@
     .result-box {
       background-color: #111;
       color: #FFD700;
-      padding: 28px;
+      padding: 24px;
       border-radius: 20px;
-      width: 85%;
-      max-width: 400px;
+      width: 90%;
+      max-width: 450px;
       margin: 30px auto;
-      font-size: 20px;
+      font-size: 18px;
       box-shadow: 0 0 15px #ffc107;
-      text-align: left;
+      text-align: center;
       display: none;
       transition: all 0.3s ease-in-out;
-    }
-
-    .result-box p {
-      margin: 12px 0;
-      font-weight: 600;
     }
 
     .thinking {
@@ -86,9 +81,16 @@
       100% { opacity: 0.2; }
     }
 
+    .result-line {
+      font-weight: 600;
+      font-size: 20px;
+      color: #FFD700;
+      display: inline-block;
+      padding: 10px;
+      line-height: 1.6;
+    }
+
     .label {
-      font-weight: bold;
-      margin-right: 6px;
       color: #fff;
     }
   </style>
@@ -135,15 +137,17 @@
       // 3 seconds delay to simulate AI thinking
       setTimeout(() => {
         const number = Math.floor(Math.random() * 10);
-        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
-        const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
+        const color = (number % 2 === 0) ? "Red" : "Green";
+        const size = (number >= 5) ? "Big" : "Small";
         const confidence = Math.floor(Math.random() * 16) + 85;
 
         const resultHTML = `
-          <p><span class="label">📏 Size :</span> ${size}</p>
-          <p><span class="label">🎨 Colour :</span> ${color}</p>
-          <p><span class="label">🔢 Number :</span> ${number}</p>
-          <p><span class="label">🧠 Confidence :</span> ${confidence}%</p>
+          <div class="result-line">
+            <span class="label">📏 Size:</span> ${size} &nbsp; | 
+            <span class="label">🎨 Colour:</span> ${color} &nbsp; | 
+            <span class="label">🔢 Number:</span> ${number} &nbsp; | 
+            <span class="label">🧠 Confidence:</span> ${confidence}%
+          </div>
         `;
 
         thinking.style.display = "none";
