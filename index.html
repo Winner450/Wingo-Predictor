@@ -63,9 +63,10 @@
       margin: 30px auto;
       font-size: 18px;
       box-shadow: 0 0 15px #ffc107;
-      text-align: center;
+      text-align: left;
       display: none;
       transition: all 0.3s ease-in-out;
+      line-height: 1.6;
     }
 
     .thinking {
@@ -81,17 +82,9 @@
       100% { opacity: 0.2; }
     }
 
-    .result-line {
-      font-weight: 600;
-      font-size: 20px;
-      color: #FFD700;
-      display: inline-block;
-      padding: 10px;
-      line-height: 1.6;
-    }
-
     .label {
-      color: #fff;
+      font-weight: bold;
+      color: #FFD700;
     }
   </style>
 </head>
@@ -142,12 +135,10 @@
         const confidence = Math.floor(Math.random() * 16) + 85;
 
         const resultHTML = `
-          <div class="result-line">
-            <span class="label">📏 Size:</span> ${size} &nbsp; | 
-            <span class="label">🎨 Colour:</span> ${color} &nbsp; | 
-            <span class="label">🔢 Number:</span> ${number} &nbsp; | 
-            <span class="label">🧠 Confidence:</span> ${confidence}%
-          </div>
+          <p><span class="label">📏 Size:</span> ${size}</p>
+          <p><span class="label">🎨 Colour:</span> ${color}</p>
+          <p><span class="label">🔢 Number:</span> ${number}</p>
+          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
         `;
 
         thinking.style.display = "none";
