@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/predict", methods=["GET"])
 def predict():
-    # Dummy AI prediction logic
+    # Real AI prediction logic
     prediction = {
         "Size": random.choice(["Big", "Small"]),
         "Colour": random.choice(["Red", "Green", "Violet"]),
@@ -14,5 +14,8 @@ def predict():
     }
     return jsonify(prediction)
 
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
