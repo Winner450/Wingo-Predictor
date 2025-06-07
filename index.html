@@ -3,151 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo Predictor Pro</title>
+  <title>🎯 WinGo AI Predictor</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f0f0f, #000000);
-      color: #fff;
-      text-align: center;
-    }
-
-    header {
       background: #000;
-      padding: 16px 0;
-      box-shadow: 0 2px 8px #FFD700;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #FFD700;
-    }
-
-    .container {
-      padding: 30px 20px;
-    }
-
-    .input-section input {
-      padding: 10px;
-      border: 2px solid gold;
-      border-radius: 10px;
-      width: 80%;
-      font-size: 18px;
-      margin-top: 10px;
-      background-color: #000;
       color: #fff;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
     }
 
-    .input-section button {
-      margin-top: 15px;
-      background-color: gold;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      color: black;
-      box-shadow: 0 0 10px gold;
+    h1 {
+      color: gold;
+      margin-bottom: 30px;
+      font-size: 28px;
     }
 
-    .result-box {
-      background-color: #111;
-      color: #FFD700;
-      padding: 28px;
-      border-radius: 20px;
-      width: 85%;
+    .prediction-box {
+      background: #111;
+      border: 2px solid gold;
+      border-radius: 16px;
+      padding: 20px 30px;
+      width: 90%;
       max-width: 400px;
-      margin: 30px auto;
-      font-size: 20px;
-      box-shadow: 0 0 15px #ffc107;
-      text-align: left;
-      display: none;
-      transition: all 0.3s ease-in-out;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+      animation: glow 2s ease-in-out infinite alternate;
     }
 
-    .result-box p {
-      margin: 12px 0;
-      font-weight: 600;
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px gold;
+      }
+      to {
+        box-shadow: 0 0 20px orange;
+      }
     }
 
-    .thinking {
+    .result {
       font-size: 18px;
-      color: #FFEB3B;
-      margin-top: 20px;
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0% { opacity: 0.2; }
-      50% { opacity: 1; }
-      100% { opacity: 0.2; }
+      line-height: 1.8;
     }
 
     .label {
       font-weight: bold;
-      margin-right: 6px;
-      color: #fff;
+      color: #FFD700;
     }
   </style>
 </head>
 <body>
-
-  <header>
-    <h1>🎯 WinGo Predictor Pro</h1>
-  </header>
-
-  <div class="container">
-    <div class="input-section">
-      <label for="inputNumbers">🔢 <b>Enter Previous Numbers:</b></label><br/>
-      <input type="text" id="inputNumbers" placeholder="e.g., 274"/><br/>
-      <button onclick="predictResult()">🔮 Predict Result</button>
+  <h1>🎯 WinGo AI Prediction</h1>
+  <div class="prediction-box">
+    <div class="result">
+      <div><span class="label">Size:</span> <span id="size">Loading...</span></div>
+      <div><span class="label">Colour:</span> <span id="colour">Loading...</span></div>
+      <div><span class="label">Number:</span> <span id="number">Loading...</span></div>
+      <div><span class="label">Confidence:</span> <span id="confidence">Loading...</span></div>
     </div>
-
-    <div id="thinking" class="thinking" style="display: none;">🤖 AI Thinking...</div>
-    <div class="result-box" id="resultBox"></div>
   </div>
 
   <script>
-    async function predictResult() {
-      const input = document.getElementById("inputNumbers").value.trim();
-      const resultBox = document.getElementById("resultBox");
-      const thinking = document.getElementById("thinking");
-
-      if (!input) return alert("Please enter a number.");
-
-      resultBox.style.display = "none";
-      thinking.style.display = "block";
-
-      try {
-        const res = await fetch("https://your-api-url.onrender.com/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ number: input })
-        });
-
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
-
-        const resultHTML = `
-          <p><span class="label">📏 Size:</span> ${data.size}</p>
-          <p><span class="label">🎨 Colour:</span> ${data.color}</p>
-          <p><span class="label">🔢 Number:</span> ${data.number}</p>
-          <p><span class="label">🧠 Confidence:</span> ${data.confidence}</p>
-        `;
-
-        thinking.style.display = "none";
-        resultBox.innerHTML = resultHTML;
-        resultBox.style.display = "block";
-
-      } catch (err) {
-        thinking.style.display = "none";
-        alert("Prediction failed: " + err.message);
-      }
-    }
+    fetch("https://wingo-ai-predictor-5b2e.onrender.com/predict")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("size").textContent = data.Size;
+        document.getElementById("colour").textContent = data.Colour;
+        document.getElementById("number").textContent = data.Number;
+        document.getElementById("confidence").textContent = data.Confidence;
+      })
+      .catch(err => {
+        document.getElementById("size").textContent = "Error";
+        document.getElementById("colour").textContent = "Error";
+        document.getElementById("number").textContent = "Error";
+        document.getElementById("confidence").textContent = "Error";
+      });
   </script>
-
 </body>
 </html>
