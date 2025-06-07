@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+i<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,122 +8,150 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f0f0f, #000000);
+      color: #fff;
+      text-align: center;
+    }
+
+    header {
+      background: #000;
+      padding: 16px 0;
+      box-shadow: 0 2px 8px #FFD700;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #FFD700;
+    }
+
+    .container {
+      padding: 30px 20px;
+    }
+
+    .input-section input {
+      padding: 10px;
+      border: 2px solid gold;
+      border-radius: 10px;
+      width: 80%;
+      font-size: 18px;
+      margin-top: 10px;
       background-color: #000;
       color: #fff;
       text-align: center;
-      padding: 20px;
     }
 
-    h1 {
-      font-size: 28px;
-      color: gold;
-      margin-top: 30px;
-    }
-
-    input {
-      padding: 12px;
-      font-size: 20px;
-      border-radius: 10px;
-      border: 2px solid gold;
-      width: 60%;
-      margin-top: 20px;
-      background-color: black;
-      color: white;
-      text-align: center;
-    }
-
-    button {
-      padding: 12px 25px;
-      font-size: 18px;
-      margin-top: 20px;
+    .input-section button {
+      margin-top: 15px;
+      background-color: gold;
       border: none;
-      background: gold;
-      color: black;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #result {
-      margin-top: 30px;
-      font-size: 22px;
-      background: rgba(255, 215, 0, 0.1);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid gold;
-      display: none;
-    }
-
-    #result strong {
-      display: block;
-      margin: 8px 0;
-      font-size: 24px;
-    }
-
-    .loader {
-      margin-top: 20px;
-      display: none;
+      padding: 12px 24px;
+      border-radius: 10px;
       font-size: 16px;
-      color: gray;
+      cursor: pointer;
+      color: black;
+      box-shadow: 0 0 10px gold;
+    }
+
+    .result-box {
+      background-color: #111;
+      color: #FFD700;
+      padding: 28px;
+      border-radius: 20px;
+      width: 85%;
+      max-width: 400px;
+      margin: 30px auto;
+      font-size: 20px;
+      box-shadow: 0 0 15px #ffc107;
+      text-align: left;
+      display: none;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .result-box p {
+      margin: 12px 0;
+      font-weight: 600;
+    }
+
+    .thinking {
+      font-size: 18px;
+      color: #FFEB3B;
+      margin-top: 20px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+
+    .label {
+      font-weight: bold;
+      margin-right: 6px;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <h1>🎯 WinGo Predictor Pro</h1>
 
-  <div>
-    <label for="numbers">🔢 Enter Previous Numbers:</label><br/>
-    <input type="text" id="numbers" placeholder="e.g., 123, 456, 789" />
-    <br/>
-    <button onclick="predict()">🔍 Predict Result</button>
-    <div class="loader" id="loader">⏳ Analyzing with AI...</div>
-  </div>
+  <header>
+    <h1>🎯 WinGo Predictor Pro</h1>
+  </header>
 
-  <div id="result">
-    <strong>Size: <span id="size"></span></strong>
-    <strong>Colour: <span id="color"></span></strong>
-    <strong>Number: <span id="number"></span></strong>
-    <strong>Confidence: <span id="confidence"></span>%</strong>
+  <div class="container">
+    <div class="input-section">
+      <label for="inputNumbers">🔢 <b>Enter Previous Numbers:</b></label><br/>
+      <input type="text" id="inputNumbers" placeholder="e.g., 274"/><br/>
+      <button onclick="predictResult()">🔮 Predict Result</button>
+    </div>
+
+    <div id="thinking" class="thinking" style="display: none;">🤖 AI Thinking...</div>
+    <div class="result-box" id="resultBox"></div>
   </div>
 
   <script>
-    async function predict() {
-      const input = document.getElementById("numbers").value.trim();
-      const loader = document.getElementById("loader");
-      const resultBox = document.getElementById("result");
+    let lastInput = "";
+
+    function predictResult() {
+      const input = document.getElementById("inputNumbers").value.trim();
+      const resultBox = document.getElementById("resultBox");
+      const thinking = document.getElementById("thinking");
 
       if (!input) {
-        alert("❗ Please enter at least one number.");
+        alert("Please enter a number.");
         return;
       }
 
-      const inputArray = input.split(",").map(num => parseInt(num.trim())).filter(n => !isNaN(n));
-
-      loader.style.display = "block";
-      resultBox.style.display = "none";
-
-      try {
-        const res = await fetch("https://wingo-ai-predictor.onrender.com/predict", {  // ✅ CHANGE THIS to your actual Flask API URL
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ input: inputArray })
-        });
-
-        const data = await res.json();
-
-        document.getElementById("size").innerText = data.size;
-        document.getElementById("color").innerText = data.color;
-        document.getElementById("number").innerText = data.number;
-        document.getElementById("confidence").innerText = data.confidence;
-
-        resultBox.style.display = "block";
-      } catch (error) {
-        alert("❌ AI server not responding.");
-      } finally {
-        loader.style.display = "none";
+      if (input === lastInput) {
+        alert("⚠️ Please enter a new number!");
+        return;
       }
+
+      lastInput = input;
+      resultBox.style.display = "none";
+      thinking.style.display = "block";
+
+      // 3 seconds delay to simulate AI thinking
+      setTimeout(() => {
+        const number = Math.floor(Math.random() * 10);
+        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
+        const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
+        const confidence = Math.floor(Math.random() * 16) + 85;
+
+        const resultHTML = 
+          <p><span class="label">📏 Size:</span> ${size}</p>
+          <p><span class="label">🎨 Colour:</span> ${color}</p>
+          <p><span class="label">🔢 Number:</span> ${number}</p>
+          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
+        ;
+
+        thinking.style.display = "none";
+        resultBox.innerHTML = resultHTML;
+        resultBox.style.display = "block";
+      }, 3000);
     }
   </script>
+
 </body>
 </html>
