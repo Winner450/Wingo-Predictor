@@ -135,15 +135,15 @@
       // 3 seconds delay to simulate AI thinking
       setTimeout(() => {
         const number = Math.floor(Math.random() * 10);
-        const color = (number % 2 === 0) ? "🔴 Red" : "🟢 Green";
-        const size = (number >= 5) ? " Big" : " Small";
+        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
+        const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
         const confidence = Math.floor(Math.random() * 16) + 85;
 
         const resultHTML = `
-          <p><span class="label">📏 Size:</span> ${size}</p>
-          <p><span class="label">🎨 Colour:</span> ${color}</p>
-          <p><span class="label">🔢 Number:</span> ${number}</p>
-          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
+          <p><span class="label">📏 Size :</span> ${size}</p>
+          <p><span class="label">🎨 Colour :</span> ${color}</p>
+          <p><span class="label">🔢 Number :</span> ${number}</p>
+          <p><span class="label">🧠 Confidence :</span> ${confidence}%</p>
         `;
 
         thinking.style.display = "none";
