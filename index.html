@@ -111,45 +111,49 @@
   </div>
 
   <script>
-    let lastInput = "";
-
-    function predictResult() {
+    async function predictResult() {
       const input = document.getElementById("inputNumbers").value.trim();
       const resultBox = document.getElementById("resultBox");
       const thinking = document.getElementById("thinking");
 
-      if (!input) {
-        alert("Please enter a number.");
+      if (!input || input.length < 3) {
+        alert("⚠️ Please enter at least 3 digits (e.g., 274)");
         return;
       }
 
-      if (input === lastInput) {
-        alert("⚠️ Please enter a new number!");
-        return;
-      }
-
-      lastInput = input;
+      const inputNums = input.slice(-3).split('').map(Number);
       resultBox.style.display = "none";
       thinking.style.display = "block";
 
-      // 3 seconds delay to simulate AI thinking
-      setTimeout(() => {
-        const number = Math.floor(Math.random() * 10);
-        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
-        const size = (number >= 5) ? "🔴 Big" : "🟢 Small";
-        const confidence = Math.floor(Math.random() * 16) + 85;
+      try {
+        const res = await fetch("http://localhost:5000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: inputNums })
+        });
+
+        const data = await res.json();
+        thinking.style.display = "none";
+
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
 
         const resultHTML = `
-          <p><span class="label">📏 Size:</span> ${size}</p>
-          <p><span class="label">🎨 Colour:</span> ${color}</p>
-          <p><span class="label">🔢 Number:</span> ${number}</p>
-          <p><span class="label">🧠 Confidence:</span> ${confidence}%</p>
+          <p><span class="label">📏 Size:</span> ${data.size}</p>
+          <p><span class="label">🎨 Colour:</span> ${data.color}</p>
+          <p><span class="label">🔢 Number:</span> ${data.number}</p>
+          <p><span class="label">🧠 Confidence:</span> ${data.confidence}%</p>
         `;
 
-        thinking.style.display = "none";
         resultBox.innerHTML = resultHTML;
         resultBox.style.display = "block";
-      }, 3000);
+
+      } catch (err) {
+        thinking.style.display = "none";
+        alert("❌ AI server not responding.");
+      }
     }
   </script>
 
