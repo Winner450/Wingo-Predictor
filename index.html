@@ -4,55 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🎯 WinGo Predictor Pro</title>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root{
-      --gold:#FFD700; --gold-soft:#f5d46b;
-      --bg1:#0f0f0f; --bg2:#000;
-      --card:#111; --muted:#9ca3af; --danger:#f87171; --ok:#22c55e;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:'Segoe UI',system-ui,sans-serif;
-      background:linear-gradient(to bottom right,var(--bg1),var(--bg2)); color:#fff; text-align:center;
-    }
-    header{background:#000; padding:16px 0; box-shadow:0 2px 8px var(--gold)}
-    header h1{margin:0; font-size:28px; color:var(--gold)}
-    .container{padding:26px 16px; max-width:1100px; margin:0 auto}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-    @media (max-width:900px){ .row{grid-template-columns:1fr} }
-    .card{
-      background:var(--card); border:1px solid rgba(255,255,255,.08);
-      border-radius:18px; padding:18px; text-align:left; box-shadow:0 0 15px rgba(0,0,0,.35)
-    }
-    label{font-weight:600}
-    input{
-      margin-top:8px; width:100%; padding:12px; border-radius:10px;
-      border:2px solid var(--gold); background:#000; color:#fff; text-align:center; font-size:18px;
-    }
-    .btn{
-      margin-top:12px; background:var(--gold); color:#000; border:0; border-radius:10px;
-      padding:12px 18px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold)
-    }
-    .btn.secondary{background:#1f2937; color:#fff; box-shadow:none; border:1px solid #333}
-    .meta{font-size:13px; color:var(--muted); margin-top:6px}
-    .result-box{
-      background:#0b0b0b; border:1px solid #1f2937; border-radius:14px; padding:16px; display:none
-    }
-    .line{height:8px; background:#222; border-radius:6px; overflow:hidden; margin-top:8px}
-    .bar{height:8px; background:linear-gradient(90deg,var(--gold-soft),var(--gold)); width:0%}
-    .kv{display:flex; justify-content:space-between; gap:12px}
-    .kv div{flex:1}
-    .val{font-weight:800; color:var(--gold)}
-    .thinking{margin-top:10px; color:#FFEB3B; animation:blink 1s infinite}
-    @keyframes blink{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
-    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-    @media (max-width:900px){ .grid2{grid-template-columns:1fr} }
-    .tag{display:inline-block; padding:4px 8px; border:1px solid #333; border-radius:999px; font-size:12px; color:#ddd}
-    .history{font-size:12px; color:#cbd5e1; max-height:160px; overflow:auto}
-    .danger{color:var(--danger)}
-    .ok{color:var(--ok)}
+    :root{ --gold:#FFD700; --gold-soft:#f5d46b; --bg1:#0f0f0f; --bg2:#000;
+           --card:#111; --muted:#9ca3af; --danger:#f87171; --ok:#22c55e; }
+    *{ box-sizing:border-box }
+    body{ margin:0; font-family:'Segoe UI',system-ui,sans-serif;
+          background:linear-gradient(to bottom right,var(--bg1),var(--bg2)); color:#fff; text-align:center; }
+    header{ background:#000; padding:16px 0; box-shadow:0 2px 8px var(--gold) }
+    header h1{ margin:0; font-size:28px; color:var(--gold) }
+    .container{ padding:26px 16px; max-width:1100px; margin:0 auto }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:16px }
+    @media (max-width:900px){ .row{ grid-template-columns:1fr } }
+    .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:18px; text-align:left;
+           box-shadow:0 0 15px rgba(0,0,0,.35) }
+    label{ font-weight:600 }
+    input{ margin-top:8px; width:100%; padding:12px; border-radius:10px;
+           border:2px solid var(--gold); background:#000; color:#fff; text-align:center; font-size:18px; }
+    .btn{ margin-top:12px; background:var(--gold); color:#000; border:0; border-radius:10px;
+          padding:12px 18px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold) }
+    .btn.secondary{ background:#1f2937; color:#fff; box-shadow:none; border:1px solid #333 }
+    .meta{ font-size:13px; color:var(--muted); margin-top:6px }
+    .result-box{ background:#0b0b0b; border:1px solid #1f2937; border-radius:14px; padding:16px; display:none }
+    .line{ height:8px; background:#222; border-radius:6px; overflow:hidden; margin-top:8px }
+    .bar{ height:8px; background:linear-gradient(90deg,var(--gold-soft),var(--gold)); width:0% }
+    .kv{ display:flex; justify-content:space-between; gap:12px }
+    .kv div{ flex:1 }
+    .val{ font-weight:800; color:var(--gold) }
+    .thinking{ margin-top:10px; color:#FFEB3B; animation:blink 1s infinite }
+    @keyframes blink{ 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }
+    .tag{ display:inline-block; padding:4px 8px; border:1px solid #333; border-radius:999px; font-size:12px; color:#ddd }
+    .history{ font-size:12px; color:#cbd5e1; max-height:160px; overflow:auto }
+    .danger{ color:var(--danger) } .ok{ color:var(--ok) }
   </style>
 </head>
 <body>
@@ -111,8 +94,8 @@
 
   <script>
     // ====== CONFIG ======
-    // यदि आपका Flask API अलग डोमेन पर है तो यहाँ URL दें, वरना खाली रखें (relative /predict)
-    const API_BASE = "";  // जैसे: "https://wingo-api.onrender.com"
+    // अगर Flask API अलग डोमेन पर है, यहाँ URL दें; वरना खाली (relative /predict)
+    const API_BASE = "";  // e.g. "https://wingo-api.onrender.com"
     // =====================
 
     let lastInput = "";
@@ -123,45 +106,55 @@
 
     function parseInput(str){
       if(!str) return [];
-      return str.replace(/,/g,' ').split(/\s+/).filter(Boolean).map(v => {
-        let n = parseInt(v,10);
-        if(Number.isNaN(n)) n = 0;
+      return str.replace(/,/g,' ').split(/\s+/).filter(Boolean).map(v=>{
+        let n = parseInt(v,10); if(Number.isNaN(n)) n = 0;
         return Math.max(0, Math.min(9, n));
       });
     }
 
-    function freqMap(arr){
-      const f = Array(10).fill(0);
-      arr.forEach(n => f[n]++);
-      return f;
-    }
+    function freqMap(arr){ const f = Array(10).fill(0); arr.forEach(n=>f[n]++); return f; }
 
+    // ---- FIXED SMART FALLBACK (no more constant 7/Big) ----
     function smartFallback(history){
-      // Frequency + recent bias fallback (no server)
-      const f = freqMap(history);
-      const total = history.length || 1;
-      let probs = f.map(c => c/total);
+      const alpha = 0.5;          // Laplace smoothing (prevents zeros)
+      const decay = 0.93;         // exponential decay for recency
+      const f = Array(10).fill(alpha);
 
-      // light recency bump for last 3 values
-      const L = history.slice(-3);
-      L.forEach((v,idx)=>{ probs[v] += 0.05*(idx+1); });
-      // normalize
-      const sum = probs.reduce((a,b)=>a+b,0) || 1;
-      probs = probs.map(p => p/sum);
+      const n = history.length;
+      for(let i=0;i<n;i++){
+        const d = history[i];
+        const age = n-1-i;              // 0 for latest
+        const w = Math.pow(decay, age); // 1, 0.93, 0.93^2, ...
+        f[d] += w;
+      }
+
+      // normalize to probabilities
+      let sum = f.reduce((a,b)=>a+b,0) || 1;
+      let probs = f.map(x => x/sum);
+
+      // mild temperature to avoid peaky single-digit dominance
+      const temp = 1.2; // >1 => flatter
+      probs = probs.map(p => Math.pow(p, 1/temp));
+      const s2 = probs.reduce((a,b)=>a+b,0) || 1;
+      probs = probs.map(p => p/s2);
 
       const predicted = probs.indexOf(Math.max(...probs));
       const pBig = probs.slice(5,10).reduce((a,b)=>a+b,0);
-      const pSmall = probs.slice(0,5).reduce((a,b)=>a+b,0);
+      const pSmall = 1 - pBig;
       const confidence = Math.max(...probs);
 
-      // backup opposite
-      const pickIdx = (arr,off,lim)=> off + arr.slice(off,lim).indexOf(Math.max(...arr.slice(off,lim)));
-      const backup = predicted>=5 ? pickIdx(probs,0,5) : pickIdx(probs,5,10);
+      // backup: best on opposite side (ensure valid index)
+      const argmaxRange = (arr, a, b)=>{
+        let best=a, bv=-1;
+        for(let i=a;i<b;i++){ if(arr[i]>bv){ bv=arr[i]; best=i; } }
+        return best;
+      };
+      const backup = predicted>=5 ? argmaxRange(probs,0,5) : argmaxRange(probs,5,10);
       return {predicted, probs, big:pBig, small:pSmall, confidence, backup};
     }
+    // -------------------------------------------------------
 
     function renderCharts(probs, big, small){
-      // Prob chart
       const labels = [...Array(10).keys()].map(String);
       const data = probs.map(p => Math.round(p*1000)/10);
       const pctx = el('probChart').getContext('2d');
@@ -169,17 +162,18 @@
       probChart = new Chart(pctx,{
         type:'bar',
         data:{ labels, datasets:[{ label:'Probability (%)', data }] },
-        options:{
-          responsive:true,
-          scales:{ y:{ beginAtZero:true, title:{display:true,text:'%'} }, x:{ title:{display:true,text:'Digit'} } }
+        options:{ responsive:true,
+          scales:{ y:{ beginAtZero:true, title:{display:true,text:'%'} },
+                   x:{ title:{display:true,text:'Digit'} } }
         }
       });
-      // Big/Small chart
+
       const bctx = el('bsChart').getContext('2d');
       if (bsChart) bsChart.destroy();
       bsChart = new Chart(bctx,{
         type:'doughnut',
-        data:{ labels:['Big','Small'], datasets:[{ data:[Math.round(big*100), Math.round(small*100)] }] },
+        data:{ labels:['Big','Small'],
+               datasets:[{ data:[Math.round(big*100), Math.round(small*100)] }] },
         options:{ responsive:true, cutout:'60%' }
       });
     }
@@ -193,9 +187,8 @@
       el('vBig').textContent = fmtPct(resp.big);
       el('vSmall').textContent = fmtPct(resp.small);
       renderCharts(resp.probs, resp.big, resp.small);
-      // history feed
       const stamp = new Date().toLocaleTimeString();
-      const line = `⏱ ${stamp} → #${resp.predicted} (${(resp.predicted>=5?'Big':'Small')}) • conf ${Math.round(resp.confidence*100)}% • backup ${resp.backup}`;
+      const line = `⏱ ${stamp} → #${resp.predicted} (${resp.predicted>=5?'Big':'Small'}) • conf ${Math.round(resp.confidence*100)}% • backup ${resp.backup}`;
       const h = el('hist');
       h.innerHTML = (h.innerHTML==='—'?'':h.innerHTML)+'<div>'+line+'</div>';
     }
@@ -203,25 +196,20 @@
     async function callServer(history){
       const payload = { numbers: history.join(',') };
       const url = (API_BASE || '') + '/predict';
-      const res = await fetch(url,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(payload)
-      });
+      const res = await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       if(!res.ok) throw new Error((await res.json()).error || 'Server error');
       const data = await res.json();
-      // Convert server schema -> UI schema
-      const probsArr = Array.isArray(data.probs) ? data.probs :
-        // if server not sending probs, derive a peaky dist around predicted
-        Array.from({length:10},(_,i)=> i===data.predicted_number ? 0.4 : 0.6/9);
+
+      const probsArr = Array.isArray(data.probs) ? data.probs
+        : Array.from({length:10},(_,i)=> i===data.predicted_number ? 0.35 : 0.65/9);
       const predicted = (data.predicted ?? data.predicted_number);
       const big = clamp01((data.big_small?.big) ?? data.big_probability ?? 0.5);
       const small = clamp01((data.big_small?.small) ?? data.small_probability ?? (1-big));
       const confidence = clamp01(data.confidence ?? Math.max(...probsArr));
-      const backup = (data.backup_opposite ?? ((predicted>=5)
+      const oppIdx = predicted>=5
         ? probsArr.slice(0,5).indexOf(Math.max(...probsArr.slice(0,5)))
-        : 5+probsArr.slice(5,10).indexOf(Math.max(...probsArr.slice(5,10)))) );
-      return {predicted, probs:probsArr, big, small, confidence, backup};
+        : 5 + probsArr.slice(5,10).indexOf(Math.max(...probsArr.slice(5,10)));
+      return { predicted, probs:probsArr, big, small, confidence, backup: oppIdx };
     }
 
     function summarizeInput(arr){
@@ -230,12 +218,10 @@
       const max = Math.max(...f), min = Math.min(...f);
       const hot = f.map((c,i)=>[c,i]).filter(([c])=>c===max).map(([,i])=>i).join(', ');
       const cold = f.map((c,i)=>[c,i]).filter(([c])=>c===min).map(([,i])=>i).join(', ');
-      el('summary').innerHTML =
-        `Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b><br/>
-         Hot: <b>${hot||'—'}</b> • Cold: <b>${cold||'—'}</b>`;
+      el('summary').innerHTML = `Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b><br/>Hot: <b>${hot||'—'}</b> • Cold: <b>${cold||'—'}</b>`;
     }
 
-    // ---- UI handlers ----
+    // UI handlers
     el('btnPredict').addEventListener('click', async ()=>{
       const raw = el('inputNumbers').value.trim();
       const hist = parseInput(raw);
@@ -248,18 +234,15 @@
       el('thinking').style.display='block';
 
       try{
-        // Try server first
-        const useServer = true;
         let resp;
         try{
           resp = await callServer(hist);
           el('apiStatus').textContent = 'API: server';
-          el('apiStatus').className='tag ok';
+          el('apiStatus').className = 'tag ok';
         }catch(_e){
-          // Fallback to client
           resp = smartFallback(hist);
           el('apiStatus').textContent = 'API: fallback';
-          el('apiStatus').className='tag danger';
+          el('apiStatus').className = 'tag danger';
         }
         renderResult(resp);
       }catch(err){
@@ -270,17 +253,14 @@
     });
 
     el('btnClear').addEventListener('click', ()=>{
-      el('inputNumbers').value='';
-      el('resultBox').style.display='none';
-      el('summary').textContent='—';
+      el('inputNumbers').value=''; el('resultBox').style.display='none'; el('summary').textContent='—';
     });
 
     el('btnCopy').addEventListener('click', async ()=>{
-      const n = el('vNum').textContent;
-      if(!n || n==='–'){ alert('पहले Predict करें'); return; }
+      const n = el('vNum').textContent; if(!n || n==='–'){ alert('पहले Predict करें'); return; }
       const text = `Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}`;
       try{ await navigator.clipboard.writeText(text); alert('Copied!'); }catch{ alert('Copy failed'); }
     });
   </script>
 </body>
-  </html>
+</html>
