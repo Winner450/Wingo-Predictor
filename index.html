@@ -13,17 +13,18 @@
           background:linear-gradient(to bottom right,var(--bg1),var(--bg2)); color:#fff; text-align:center; }
     header{ background:#000; padding:16px 0; box-shadow:0 2px 8px var(--gold) }
     header h1{ margin:0; font-size:28px; color:var(--gold) }
-    .container{ padding:26px 16px; max-width:1100px; margin:0 auto }
+    .container{ padding:26px 16px; max-width:1150px; margin:0 auto }
     .row{ display:grid; grid-template-columns:1fr 1fr; gap:16px }
-    @media (max-width:900px){ .row{ grid-template-columns:1fr } }
+    @media (max-width:980px){ .row{ grid-template-columns:1fr } }
     .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:18px; text-align:left;
            box-shadow:0 0 15px rgba(0,0,0,.35) }
     label{ font-weight:600 }
-    input{ margin-top:8px; width:100%; padding:12px; border-radius:10px;
-           border:2px solid var(--gold); background:#000; color:#fff; text-align:center; font-size:18px; }
-    .btn{ margin-top:12px; background:var(--gold); color:#000; border:0; border-radius:10px;
-          padding:12px 18px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold) }
+    input, select{ margin-top:8px; width:100%; padding:10px 12px; border-radius:10px;
+           border:2px solid var(--gold); background:#000; color:#fff; font-size:16px; }
+    .btn{ margin-top:10px; background:var(--gold); color:#000; border:0; border-radius:10px;
+          padding:10px 16px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold) }
     .btn.secondary{ background:#1f2937; color:#fff; box-shadow:none; border:1px solid #333 }
+    .btn.inline{ margin-left:8px }
     .meta{ font-size:13px; color:var(--muted); margin-top:6px }
     .result-box{ background:#0b0b0b; border:1px solid #1f2937; border-radius:14px; padding:16px; display:none }
     .line{ height:8px; background:#222; border-radius:6px; overflow:hidden; margin-top:8px }
@@ -36,57 +37,104 @@
     .tag{ display:inline-block; padding:4px 8px; border:1px solid #333; border-radius:999px; font-size:12px; color:#ddd }
     .history{ font-size:12px; color:#cbd5e1; max-height:160px; overflow:auto }
     .danger{ color:var(--danger) } .ok{ color:var(--ok) }
+    .grid3{ display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px }
+    @media (max-width:980px){ .grid3{ grid-template-columns:1fr } }
   </style>
 </head>
 <body>
   <header><h1>🎯 WinGo Predictor Pro</h1></header>
 
   <div class="container">
+    <!-- CONTROLS -->
     <div class="card">
       <label for="inputNumbers">🔢 <b>Enter Previous Numbers</b> (comma or space separated)</label>
       <input id="inputNumbers" placeholder="e.g. 3,7,1,9,4,0,2,8,6,5" />
-      <div class="meta">Tip: कम से कम 10 हालिया ड्रॉ डालें ताकि मॉडल को सही संदर्भ मिले</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap">
-        <button class="btn" id="btnPredict">🔮 Predict Result</button>
+      <div class="meta">Tip: कम से कम 40–50 हालिया ड्रॉ डालें या Auto-Fetch चालू करें।</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+        <button class="btn" id="btnPredict">🔮 Predict</button>
         <button class="btn secondary" id="btnClear">Clear</button>
         <button class="btn secondary" id="btnCopy">Copy Result</button>
         <span class="tag" id="apiStatus">API: auto</span>
+        <span class="tag" id="autoStatus">Auto: off</span>
       </div>
       <div id="thinking" class="thinking" style="display:none">🤖 AI Thinking...</div>
-
-      <div class="result-box" id="resultBox">
-        <div class="kv">
-          <div>🔢 Number<br><span class="val" id="vNum">–</span></div>
-          <div>📏 Size<br><span class="val" id="vSize">–</span></div>
-          <div>🎯 Opposite backup<br><span class="val" id="vBackup">–</span></div>
-        </div>
-        <div style="margin-top:10px">🧠 Confidence</div>
-        <div class="line"><div class="bar" id="confBar"></div></div>
-        <div class="kv" style="margin-top:10px">
-          <div>🟩 Big<br><span class="val" id="vBig">–</span></div>
-          <div>🟥 Small<br><span class="val" id="vSmall">–</span></div>
-        </div>
-      </div>
     </div>
 
+    <!-- AUTO FETCH SETTINGS -->
+    <div class="card" style="margin-top:16px">
+      <h3 style="margin:0 0 8px">⚙️ Auto-Fetch Settings</h3>
+      <div class="grid3">
+        <div>
+          <label>Results API URL</label>
+          <input id="afUrl" placeholder="https://example.com/api/wingo/latest?limit=60" />
+          <div class="meta">JSON: {"results":[...]} या CSV: "3,7,1,..."</div>
+        </div>
+        <div>
+          <label>Format</label>
+          <select id="afFmt">
+            <option value="json" selected>JSON</option>
+            <option value="csv">CSV</option>
+          </select>
+          <label style="margin-top:8px">JSON Key</label>
+          <input id="afKey" value="results" />
+        </div>
+        <div>
+          <label>Fetch Count</label>
+          <input id="afCount" type="number" min="10" max="200" value="50" />
+          <label style="margin-top:8px">Poll (sec)</label>
+          <input id="afPoll" type="number" min="2" max="30" value="5" />
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:12px">
+        <div>
+          <label>Period (sec) — optional</label>
+          <input id="afPeriod" type="number" min="30" max="300" placeholder="e.g. 60" />
+        </div>
+        <div>
+          <label>Lead (sec) — optional</label>
+          <input id="afLead" type="number" min="1" max="20" placeholder="e.g. 10" />
+        </div>
+        <div style="display:flex; align-items:end; gap:8px">
+          <button class="btn" id="btnAutoToggle">▶ Start Auto-Fetch</button>
+          <button class="btn secondary" id="btnPredictNow">Predict Now</button>
+        </div>
+      </div>
+      <div class="meta">“On New Result” मोड: आख़िरी नंबर बदलते ही Predict। Period+Lead देने पर अगला राउंड शुरू होने से Lead सेकंड पहले Predict शेड्यूल होगा।</div>
+    </div>
+
+    <!-- RESULT -->
     <div class="row" style="margin-top:16px">
+      <div class="card">
+        <div class="result-box" id="resultBox">
+          <div class="kv">
+            <div>🔢 Number<br><span class="val" id="vNum">–</span></div>
+            <div>📏 Size<br><span class="val" id="vSize">–</span></div>
+            <div>🎯 Opposite backup<br><span class="val" id="vBackup">–</span></div>
+          </div>
+          <div style="margin-top:10px">🧠 Confidence</div>
+          <div class="line"><div class="bar" id="confBar"></div></div>
+          <div class="kv" style="margin-top:10px">
+            <div>🟩 Big<br><span class="val" id="vBig">–</span></div>
+            <div>🟥 Small<br><span class="val" id="vSmall">–</span></div>
+          </div>
+        </div>
+      </div>
       <div class="card">
         <h3 style="margin:0 0 8px">📊 Probability (0–9)</h3>
-        <canvas id="probChart" height="200"></canvas>
-      </div>
-      <div class="card">
-        <h3 style="margin:0 0 8px">⚖️ Big vs Small</h3>
-        <canvas id="bsChart" height="200"></canvas>
+        <canvas id="probChart" height="210"></canvas>
       </div>
     </div>
 
     <div class="row" style="margin-top:16px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">⚖️ Big vs Small</h3>
+        <canvas id="bsChart" height="210"></canvas>
+      </div>
       <div class="card">
         <h3 style="margin:0 0 8px">🧾 Input Summary</h3>
         <div id="summary" class="meta">—</div>
-      </div>
-      <div class="card">
-        <h3 style="margin:0 0 8px">🕘 Recent Predictions</h3>
+        <h3 style="margin:16px 0 8px">🕘 Recent Predictions</h3>
         <div id="hist" class="history">—</div>
       </div>
     </div>
@@ -103,6 +151,7 @@
     const clamp01 = x => Math.max(0, Math.min(1, x));
     const fmtPct = x => (x*100).toFixed(1) + '%';
 
+    // ---------- parsing & utils ----------
     function parseInput(str){
       if(!str) return [];
       return str.replace(/,/g,' ').split(/\s+/).filter(Boolean).map(v=>{
@@ -110,87 +159,42 @@
         return Math.max(0, Math.min(9, n));
       });
     }
-
     function freqMap(arr){ const f = Array(10).fill(0); arr.forEach(n=>f[n]++); return f; }
 
     // ========= ADVANCED SMART FALLBACK =========
     function smartFallback(history){
       const n = history.length;
-      // A) unigram with Laplace smoothing + recency decay
-      const alpha = 0.6;           // smoothing
-      const decay = 0.95;          // recency weight
+      const alpha = 0.6, decay = 0.95;
       const uni = Array(10).fill(alpha);
-      for(let i=0;i<n;i++){
-        const age = n-1-i;                 // 0 for latest
-        uni[history[i]] += Math.pow(decay, age);
-      }
-      const uniSum = uni.reduce((a,b)=>a+b,0) || 1;
-      let pUni = uni.map(x => x/uniSum);
+      for(let i=0;i<n;i++){ uni[history[i]] += Math.pow(decay, n-1-i); }
+      const uS = uni.reduce((a,b)=>a+b,0)||1; let pUni = uni.map(x=>x/uS);
 
-      // B) 1st-order Markov transitions with smoothing + recency decay
       const trans = Array.from({length:10},()=>Array(10).fill(alpha/10));
-      for(let i=1;i<n;i++){
-        const prev = history[i-1], curr = history[i];
-        const age = n-1-i;                 // transition ending at i
-        trans[prev][curr] += Math.pow(decay, age);
-      }
-      // row for last symbol
+      for(let i=1;i<n;i++){ const age=n-1-i; trans[history[i-1]][history[i]] += Math.pow(decay, age); }
       const last = history[n-1] ?? 0;
-      let row = trans[last].slice();
-      const rowSum = row.reduce((a,b)=>a+b,0) || 1;
-      row = row.map(x => x/rowSum);
+      let row = trans[last].slice(); const rS=row.reduce((a,b)=>a+b,0)||1; row=row.map(x=>x/rS);
 
-      // C) Backoff mixing: more data => more Markov weight
-      const lambda = Math.min(0.85, 0.40 + 0.45*(n/(n+8))); // 0.4..0.85
+      const lambda = Math.min(0.85, 0.40 + 0.45*(n/(n+8)));
       let probs = row.map((r,i)=> lambda*r + (1-lambda)*pUni[i]);
 
-      // D) Recent Big/Small bias (last K)
-      const K = Math.min(6, n);
-      if(K>=2){
+      const K=Math.min(6,n); if(K>=2){
         const recent = history.slice(-K);
-        const bigRatio = recent.filter(v=>v>=5).length / K; // 0..1
-        const scaleBig  = 0.9 + 0.25*bigRatio;
-        const scaleSmall= 0.9 + 0.25*(1-bigRatio);
-        for(let i=0;i<10;i++){
-          probs[i] *= (i>=5? scaleBig : scaleSmall);
-        }
+        const br = recent.filter(v=>v>=5).length / K;
+        const sB=0.9+0.25*br, sS=0.9+0.25*(1-br);
+        for(let i=0;i<10;i++) probs[i]*=(i>=5?sB:sS);
       }
+      let streak=1; for(let i=n-1;i>0&&history[i]===history[i-1];i--) streak++;
+      if(streak>2){ const factor=Math.max(0.85,1-0.04*(streak-2)); probs[last]*=factor; }
 
-      // E) Repeat-streak penalty (avoid locking on same digit)
-      let streak = 1;
-      for(let i=n-1;i>0 && history[i]===history[i-1]; i--) streak++;
-      if(streak>2){
-        const factor = Math.max(0.85, 1 - 0.04*(streak-2)); // cap penalty
-        probs[last] *= factor;
-      }
+      const temp=1.07; probs=probs.map(p=>Math.pow(p,1/temp));
+      const s=probs.reduce((a,b)=>a+b,0)||1; probs=probs.map(p=>p/s);
 
-      // F) Temperature to control peakiness
-      const temp = 1.07; // small flatten
-      probs = probs.map(p => Math.pow(p, 1/temp));
-      const s = probs.reduce((a,b)=>a+b,0) || 1;
-      probs = probs.map(p => p/s);
-
-      // Outputs
       const predicted = probs.indexOf(Math.max(...probs));
-      const pBig = probs.slice(5,10).reduce((a,b)=>a+b,0);
-      const pSmall = 1 - pBig;
-
-      // Entropy-based confidence (0..1)
-      const log10 = Math.log(10);
-      let H = 0;
-      for(const p of probs){ if(p>0) H += -p*Math.log(p); }
-      H = H / (log10);                // natural->log10
-      const confidence = 1 - (H / 1); // normalized (log10(10)=1)
-
-      // Opposite backup
-      const argmaxRange = (arr, a, b)=>{
-        let best=a, bv=-1;
-        for(let i=a;i<b;i++){ if(arr[i]>bv){ bv=arr[i]; best=i; } }
-        return best;
-      };
+      const pBig = probs.slice(5,10).reduce((a,b)=>a+b,0); const pSmall=1-pBig;
+      let H=0; for(const p of probs){ if(p>0) H+=-p*Math.log(p); } const confidence=clamp01(1-(H/Math.log(10)));
+      const argmaxRange=(arr,a,b)=>{ let best=a,bv=-1; for(let i=a;i<b;i++) if(arr[i]>bv){bv=arr[i];best=i;} return best; };
       const backup = predicted>=5 ? argmaxRange(probs,0,5) : argmaxRange(probs,5,10);
-
-      return {predicted, probs, big:pBig, small:pSmall, confidence:clamp01(confidence), backup};
+      return {predicted, probs, big:pBig, small:pSmall, confidence, backup};
     }
     // ===========================================
 
@@ -199,21 +203,14 @@
       const data = probs.map(p => Math.round(p*1000)/10);
       const pctx = el('probChart').getContext('2d');
       if (probChart) probChart.destroy();
-      probChart = new Chart(pctx,{
-        type:'bar',
+      probChart = new Chart(pctx,{ type:'bar',
         data:{ labels, datasets:[{ label:'Probability (%)', data }] },
-        options:{ responsive:true,
-          scales:{ y:{ beginAtZero:true, title:{display:true,text:'%'} },
-                   x:{ title:{display:true,text:'Digit'} } }
-        }
+        options:{ responsive:true, scales:{ y:{ beginAtZero:true, title:{display:true,text:'%'} }, x:{ title:{display:true,text:'Digit'} } } }
       });
-
       const bctx = el('bsChart').getContext('2d');
       if (bsChart) bsChart.destroy();
-      bsChart = new Chart(bctx,{
-        type:'doughnut',
-        data:{ labels:['Big','Small'],
-               datasets:[{ data:[Math.round(big*100), Math.round(small*100)] }] },
+      bsChart = new Chart(bctx,{ type:'doughnut',
+        data:{ labels:['Big','Small'], datasets:[{ data:[Math.round(big*100), Math.round(small*100)] }] },
         options:{ responsive:true, cutout:'60%' }
       });
     }
@@ -229,8 +226,7 @@
       renderCharts(resp.probs, resp.big, resp.small);
       const stamp = new Date().toLocaleTimeString();
       const line = `⏱ ${stamp} → #${resp.predicted} (${resp.predicted>=5?'Big':'Small'}) • conf ${Math.round(resp.confidence*100)}% • backup ${resp.backup}`;
-      const h = el('hist');
-      h.innerHTML = (h.innerHTML==='—'?'':h.innerHTML)+'<div>'+line+'</div>';
+      const h = el('hist'); h.innerHTML = (h.innerHTML==='—'?'':h.innerHTML)+'<div>'+line+'</div>';
     }
 
     async function callServer(history){
@@ -239,7 +235,6 @@
       const res = await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       if(!res.ok) throw new Error((await res.json()).error || 'Server error');
       const data = await res.json();
-
       const probsArr = Array.isArray(data.probs) ? data.probs
         : Array.from({length:10},(_,i)=> i===data.predicted_number ? 0.35 : 0.65/9);
       const predicted = (data.predicted ?? data.predicted_number);
@@ -261,13 +256,13 @@
       el('summary').innerHTML = `Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b><br/>Hot: <b>${hot||'—'}</b> • Cold: <b>${cold||'—'}</b>`;
     }
 
-    // UI handlers
+    // ---------- Manual UI ----------
     el('btnPredict').addEventListener('click', async ()=>{
       const raw = el('inputNumbers').value.trim();
       const hist = parseInput(raw);
       summarizeInput(hist);
       if(hist.length===0){ alert('कृपया नंबर डालें'); return; }
-      if(raw===lastInput){ alert('⚠️ Please enter a new number set.'); return; }
+      if(raw===lastInput){ /* allow manual repeat */ }
       lastInput = raw;
 
       el('resultBox').style.display='none';
@@ -285,12 +280,11 @@
           el('apiStatus').className = 'tag danger';
         }
         renderResult(resp);
-      }catch(err){
-        alert('Error: '+ err.message);
-      }finally{
-        el('thinking').style.display='none';
-      }
+      }catch(err){ alert('Error: '+ err.message); }
+      finally{ el('thinking').style.display='none'; }
     });
+
+    el('btnPredictNow').addEventListener('click', ()=> el('btnPredict').click());
 
     el('btnClear').addEventListener('click', ()=>{
       el('inputNumbers').value=''; el('resultBox').style.display='none'; el('summary').textContent='—';
@@ -300,6 +294,91 @@
       const n = el('vNum').textContent; if(!n || n==='–'){ alert('पहले Predict करें'); return; }
       const text = `Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}`;
       try{ await navigator.clipboard.writeText(text); alert('Copied!'); }catch{ alert('Copy failed'); }
+    });
+
+    // ---------- Auto-Fetch Engine ----------
+    let autoTimer = null, nextTimer = null, lastSeenTail = null;
+
+    async function fetchHistoryOnce(){
+      const url = el('afUrl').value.trim();
+      const fmt = el('afFmt').value;
+      const key = el('afKey').value.trim() || 'results';
+      const count = Math.max(10, parseInt(el('afCount').value||'50',10));
+
+      if(!url){ throw new Error('Results API URL खाली है'); }
+
+      const res = await fetch(url, { cache: 'no-store' });
+      if(!res.ok) throw new Error('Results API error');
+      const txt = await res.text();
+
+      let arr = [];
+      try{
+        if(fmt==='json'){
+          const obj = JSON.parse(txt);
+          const raw = obj[key];
+          if(!Array.isArray(raw)) throw new Error('JSON key में array नहीं मिला');
+          arr = raw;
+        }else{
+          arr = txt.split(/,|\s+/).filter(Boolean);
+        }
+      }catch(e){
+        throw new Error('Parse error: '+e.message);
+      }
+
+      const hist = Array.from(arr).map(v=>parseInt(v,10)).filter(v=>Number.isFinite(v)).map(v=>Math.max(0,Math.min(9,v)));
+      const trimmed = hist.slice(-count);
+      if(trimmed.length===0) throw new Error('API से valid नंबर नहीं मिले');
+
+      // Update input box
+      el('inputNumbers').value = trimmed.join(',');
+      summarizeInput(trimmed);
+      return trimmed;
+    }
+
+    function scheduleNext(periodSec, leadSec){
+      if(nextTimer) { clearTimeout(nextTimer); nextTimer=null; }
+      if(!periodSec || !leadSec) return;
+      // Predict lead सेकंड पहले: अभी से period-lead पर
+      const delay = Math.max(0, (periodSec - leadSec) * 1000);
+      nextTimer = setTimeout(()=> el('btnPredict').click(), delay);
+    }
+
+    async function autoTick(){
+      try{
+        const hist = await fetchHistoryOnce();
+        const tail = hist[hist.length-1];
+        const periodSec = parseInt(el('afPeriod').value||'0',10);
+        const leadSec   = parseInt(el('afLead').value||'0',10);
+
+        // On New Result -> Predict immediately
+        if(lastSeenTail===null || tail!==lastSeenTail){
+          lastSeenTail = tail;
+          el('btnPredict').click();
+          // If using period clock, also schedule next prediction
+          if(periodSec && leadSec){ scheduleNext(periodSec, leadSec); }
+        }
+      }catch(e){
+        console.warn(e.message);
+      }
+    }
+
+    function startAuto(){
+      if(autoTimer) return;
+      const poll = Math.max(2, parseInt(el('afPoll').value||'5',10));
+      autoTimer = setInterval(autoTick, poll*1000);
+      el('autoStatus').textContent = 'Auto: on';
+      el('btnAutoToggle').textContent = '⏸ Stop Auto-Fetch';
+      autoTick(); // immediate
+    }
+    function stopAuto(){
+      if(autoTimer){ clearInterval(autoTimer); autoTimer=null; }
+      if(nextTimer){ clearTimeout(nextTimer); nextTimer=null; }
+      el('autoStatus').textContent = 'Auto: off';
+      el('btnAutoToggle').textContent = '▶ Start Auto-Fetch';
+    }
+
+    el('btnAutoToggle').addEventListener('click', ()=>{
+      if(autoTimer) stopAuto(); else startAuto();
     });
   </script>
 </body>
