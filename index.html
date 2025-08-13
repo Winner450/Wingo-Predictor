@@ -1,157 +1,286 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🎯 WinGo Predictor Pro</title>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f0f0f, #000000);
-      color: #fff;
-      text-align: center;
+    :root{
+      --gold:#FFD700; --gold-soft:#f5d46b;
+      --bg1:#0f0f0f; --bg2:#000;
+      --card:#111; --muted:#9ca3af; --danger:#f87171; --ok:#22c55e;
     }
-
-    header {
-      background: #000;
-      padding: 16px 0;
-      box-shadow: 0 2px 8px #FFD700;
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:'Segoe UI',system-ui,sans-serif;
+      background:linear-gradient(to bottom right,var(--bg1),var(--bg2)); color:#fff; text-align:center;
     }
-
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #FFD700;
+    header{background:#000; padding:16px 0; box-shadow:0 2px 8px var(--gold)}
+    header h1{margin:0; font-size:28px; color:var(--gold)}
+    .container{padding:26px 16px; max-width:1100px; margin:0 auto}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    @media (max-width:900px){ .row{grid-template-columns:1fr} }
+    .card{
+      background:var(--card); border:1px solid rgba(255,255,255,.08);
+      border-radius:18px; padding:18px; text-align:left; box-shadow:0 0 15px rgba(0,0,0,.35)
     }
-
-    .container {
-      padding: 30px 20px;
+    label{font-weight:600}
+    input{
+      margin-top:8px; width:100%; padding:12px; border-radius:10px;
+      border:2px solid var(--gold); background:#000; color:#fff; text-align:center; font-size:18px;
     }
-
-    .input-section input {
-      padding: 10px;
-      border: 2px solid gold;
-      border-radius: 10px;
-      width: 80%;
-      font-size: 18px;
-      margin-top: 10px;
-      background-color: #000;
-      color: #fff;
-      text-align: center;
+    .btn{
+      margin-top:12px; background:var(--gold); color:#000; border:0; border-radius:10px;
+      padding:12px 18px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold)
     }
-
-    .input-section button {
-      margin-top: 15px;
-      background-color: gold;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      color: black;
-      box-shadow: 0 0 10px gold;
+    .btn.secondary{background:#1f2937; color:#fff; box-shadow:none; border:1px solid #333}
+    .meta{font-size:13px; color:var(--muted); margin-top:6px}
+    .result-box{
+      background:#0b0b0b; border:1px solid #1f2937; border-radius:14px; padding:16px; display:none
     }
-
-    .result-box {
-      background-color: #111;
-      color: #FFD700;
-      padding: 28px;
-      border-radius: 20px;
-      width: 85%;
-      max-width: 400px;
-      margin: 30px auto;
-      font-size: 20px;
-      box-shadow: 0 0 15px #ffc107;
-      text-align: left;
-      display: none;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .result-box p {
-      margin: 12px 0;
-      font-weight: 600;
-    }
-
-    .thinking {
-      font-size: 18px;
-      color: #FFEB3B;
-      margin-top: 20px;
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0% { opacity: 0.2; }
-      50% { opacity: 1; }
-      100% { opacity: 0.2; }
-    }
-
-    .label {
-      font-weight: bold;
-      margin-right: 6px;
-      color: #fff;
-    }
+    .line{height:8px; background:#222; border-radius:6px; overflow:hidden; margin-top:8px}
+    .bar{height:8px; background:linear-gradient(90deg,var(--gold-soft),var(--gold)); width:0%}
+    .kv{display:flex; justify-content:space-between; gap:12px}
+    .kv div{flex:1}
+    .val{font-weight:800; color:var(--gold)}
+    .thinking{margin-top:10px; color:#FFEB3B; animation:blink 1s infinite}
+    @keyframes blink{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    @media (max-width:900px){ .grid2{grid-template-columns:1fr} }
+    .tag{display:inline-block; padding:4px 8px; border:1px solid #333; border-radius:999px; font-size:12px; color:#ddd}
+    .history{font-size:12px; color:#cbd5e1; max-height:160px; overflow:auto}
+    .danger{color:var(--danger)}
+    .ok{color:var(--ok)}
   </style>
 </head>
 <body>
-
-  <header>
-    <h1>🎯 WinGo Predictor Pro</h1>
-  </header>
+  <header><h1>🎯 WinGo Predictor Pro</h1></header>
 
   <div class="container">
-    <div class="input-section">
-      <label for="inputNumbers">🔢 <b>Enter Previous Numbers:</b></label><br/>
-      <input type="text" id="inputNumbers" placeholder="e.g., 274"/><br/>
-      <button onclick="predictResult()">🔮 Predict Result</button>
+    <div class="card">
+      <label for="inputNumbers">🔢 <b>Enter Previous Numbers</b> (comma or space separated)</label>
+      <input id="inputNumbers" placeholder="e.g. 3,7,1,9,4,0,2,8,6,5" />
+      <div class="meta">Tip: कम से कम 10 हालिया ड्रॉ डालें ताकि मॉडल को सही संदर्भ मिले</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn" id="btnPredict">🔮 Predict Result</button>
+        <button class="btn secondary" id="btnClear">Clear</button>
+        <button class="btn secondary" id="btnCopy">Copy Result</button>
+        <span class="tag" id="apiStatus">API: auto</span>
+      </div>
+      <div id="thinking" class="thinking" style="display:none">🤖 AI Thinking...</div>
+
+      <div class="result-box" id="resultBox">
+        <div class="kv">
+          <div>🔢 Number<br><span class="val" id="vNum">–</span></div>
+          <div>📏 Size<br><span class="val" id="vSize">–</span></div>
+          <div>🎯 Opposite backup<br><span class="val" id="vBackup">–</span></div>
+        </div>
+        <div style="margin-top:10px">🧠 Confidence</div>
+        <div class="line"><div class="bar" id="confBar"></div></div>
+        <div class="kv" style="margin-top:10px">
+          <div>🟩 Big<br><span class="val" id="vBig">–</span></div>
+          <div>🟥 Small<br><span class="val" id="vSmall">–</span></div>
+        </div>
+      </div>
     </div>
 
-    <div id="thinking" class="thinking" style="display: none;">🤖 AI Thinking...</div>
-    <div class="result-box" id="resultBox"></div>
+    <div class="row" style="margin-top:16px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">📊 Probability (0–9)</h3>
+        <canvas id="probChart" height="200"></canvas>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px">⚖️ Big vs Small</h3>
+        <canvas id="bsChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:16px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">🧾 Input Summary</h3>
+        <div id="summary" class="meta">—</div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px">🕘 Recent Predictions</h3>
+        <div id="hist" class="history">—</div>
+      </div>
+    </div>
   </div>
 
   <script>
+    // ====== CONFIG ======
+    // यदि आपका Flask API अलग डोमेन पर है तो यहाँ URL दें, वरना खाली रखें (relative /predict)
+    const API_BASE = "";  // जैसे: "https://wingo-api.onrender.com"
+    // =====================
+
     let lastInput = "";
+    let probChart = null, bsChart = null;
+    const el = id => document.getElementById(id);
+    const clamp01 = x => Math.max(0, Math.min(1, x));
+    const fmtPct = x => (x*100).toFixed(1) + '%';
 
-    function predictResult() {
-      const input = document.getElementById("inputNumbers").value.trim();
-      const resultBox = document.getElementById("resultBox");
-      const thinking = document.getElementById("thinking");
-
-      if (!input) {
-        alert("Please enter a number.");
-        return;
-      }
-
-      if (input === lastInput) {
-        alert("⚠️ Please enter a new number!");
-        return;
-      }
-
-      lastInput = input;
-      resultBox.style.display = "none";
-      thinking.style.display = "block";
-
-      // 3 seconds delay to simulate AI thinking
-      setTimeout(() => {
-        const number = Math.floor(Math.random() * 10);
-        const color = (number % 2 === 0) ? "🟥 Red" : "🟩 Green";
-        const size = (number >= 5) ? "Big" : "Small";  // Removed color icon
-        const confidence = Math.floor(Math.random() * 16) + 85;
-
-        const resultHTML = 
-          <p><span class="label">📏 Size :</span> ${size}</p>
-          <p><span class="label">🎨 Colour :</span> ${color}</p>
-          <p><span class="label">🔢 Number :</span> ${number}</p>
-          <p><span class="label">🧠 Confidence :</span> ${confidence}%</p>
-        ;
-
-        thinking.style.display = "none";
-        resultBox.innerHTML = resultHTML;
-        resultBox.style.display = "block";
-      }, 3000);
+    function parseInput(str){
+      if(!str) return [];
+      return str.replace(/,/g,' ').split(/\s+/).filter(Boolean).map(v => {
+        let n = parseInt(v,10);
+        if(Number.isNaN(n)) n = 0;
+        return Math.max(0, Math.min(9, n));
+      });
     }
-  </script>
 
+    function freqMap(arr){
+      const f = Array(10).fill(0);
+      arr.forEach(n => f[n]++);
+      return f;
+    }
+
+    function smartFallback(history){
+      // Frequency + recent bias fallback (no server)
+      const f = freqMap(history);
+      const total = history.length || 1;
+      let probs = f.map(c => c/total);
+
+      // light recency bump for last 3 values
+      const L = history.slice(-3);
+      L.forEach((v,idx)=>{ probs[v] += 0.05*(idx+1); });
+      // normalize
+      const sum = probs.reduce((a,b)=>a+b,0) || 1;
+      probs = probs.map(p => p/sum);
+
+      const predicted = probs.indexOf(Math.max(...probs));
+      const pBig = probs.slice(5,10).reduce((a,b)=>a+b,0);
+      const pSmall = probs.slice(0,5).reduce((a,b)=>a+b,0);
+      const confidence = Math.max(...probs);
+
+      // backup opposite
+      const pickIdx = (arr,off,lim)=> off + arr.slice(off,lim).indexOf(Math.max(...arr.slice(off,lim)));
+      const backup = predicted>=5 ? pickIdx(probs,0,5) : pickIdx(probs,5,10);
+      return {predicted, probs, big:pBig, small:pSmall, confidence, backup};
+    }
+
+    function renderCharts(probs, big, small){
+      // Prob chart
+      const labels = [...Array(10).keys()].map(String);
+      const data = probs.map(p => Math.round(p*1000)/10);
+      const pctx = el('probChart').getContext('2d');
+      if (probChart) probChart.destroy();
+      probChart = new Chart(pctx,{
+        type:'bar',
+        data:{ labels, datasets:[{ label:'Probability (%)', data }] },
+        options:{
+          responsive:true,
+          scales:{ y:{ beginAtZero:true, title:{display:true,text:'%'} }, x:{ title:{display:true,text:'Digit'} } }
+        }
+      });
+      // Big/Small chart
+      const bctx = el('bsChart').getContext('2d');
+      if (bsChart) bsChart.destroy();
+      bsChart = new Chart(bctx,{
+        type:'doughnut',
+        data:{ labels:['Big','Small'], datasets:[{ data:[Math.round(big*100), Math.round(small*100)] }] },
+        options:{ responsive:true, cutout:'60%' }
+      });
+    }
+
+    function renderResult(resp){
+      el('resultBox').style.display = 'block';
+      el('vNum').textContent = resp.predicted;
+      el('vSize').textContent = resp.predicted>=5 ? 'Big' : 'Small';
+      el('vBackup').textContent = resp.backup;
+      el('confBar').style.width = (resp.confidence*100).toFixed(1)+'%';
+      el('vBig').textContent = fmtPct(resp.big);
+      el('vSmall').textContent = fmtPct(resp.small);
+      renderCharts(resp.probs, resp.big, resp.small);
+      // history feed
+      const stamp = new Date().toLocaleTimeString();
+      const line = `⏱ ${stamp} → #${resp.predicted} (${(resp.predicted>=5?'Big':'Small')}) • conf ${Math.round(resp.confidence*100)}% • backup ${resp.backup}`;
+      const h = el('hist');
+      h.innerHTML = (h.innerHTML==='—'?'':h.innerHTML)+'<div>'+line+'</div>';
+    }
+
+    async function callServer(history){
+      const payload = { numbers: history.join(',') };
+      const url = (API_BASE || '') + '/predict';
+      const res = await fetch(url,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error((await res.json()).error || 'Server error');
+      const data = await res.json();
+      // Convert server schema -> UI schema
+      const probsArr = Array.isArray(data.probs) ? data.probs :
+        // if server not sending probs, derive a peaky dist around predicted
+        Array.from({length:10},(_,i)=> i===data.predicted_number ? 0.4 : 0.6/9);
+      const predicted = (data.predicted ?? data.predicted_number);
+      const big = clamp01((data.big_small?.big) ?? data.big_probability ?? 0.5);
+      const small = clamp01((data.big_small?.small) ?? data.small_probability ?? (1-big));
+      const confidence = clamp01(data.confidence ?? Math.max(...probsArr));
+      const backup = (data.backup_opposite ?? ((predicted>=5)
+        ? probsArr.slice(0,5).indexOf(Math.max(...probsArr.slice(0,5)))
+        : 5+probsArr.slice(5,10).indexOf(Math.max(...probsArr.slice(5,10)))) );
+      return {predicted, probs:probsArr, big, small, confidence, backup};
+    }
+
+    function summarizeInput(arr){
+      if(arr.length===0){ el('summary').textContent='—'; return; }
+      const f = freqMap(arr);
+      const max = Math.max(...f), min = Math.min(...f);
+      const hot = f.map((c,i)=>[c,i]).filter(([c])=>c===max).map(([,i])=>i).join(', ');
+      const cold = f.map((c,i)=>[c,i]).filter(([c])=>c===min).map(([,i])=>i).join(', ');
+      el('summary').innerHTML =
+        `Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b><br/>
+         Hot: <b>${hot||'—'}</b> • Cold: <b>${cold||'—'}</b>`;
+    }
+
+    // ---- UI handlers ----
+    el('btnPredict').addEventListener('click', async ()=>{
+      const raw = el('inputNumbers').value.trim();
+      const hist = parseInput(raw);
+      summarizeInput(hist);
+      if(hist.length===0){ alert('कृपया नंबर डालें'); return; }
+      if(raw===lastInput){ alert('⚠️ Please enter a new number set.'); return; }
+      lastInput = raw;
+
+      el('resultBox').style.display='none';
+      el('thinking').style.display='block';
+
+      try{
+        // Try server first
+        const useServer = true;
+        let resp;
+        try{
+          resp = await callServer(hist);
+          el('apiStatus').textContent = 'API: server';
+          el('apiStatus').className='tag ok';
+        }catch(_e){
+          // Fallback to client
+          resp = smartFallback(hist);
+          el('apiStatus').textContent = 'API: fallback';
+          el('apiStatus').className='tag danger';
+        }
+        renderResult(resp);
+      }catch(err){
+        alert('Error: '+ err.message);
+      }finally{
+        el('thinking').style.display='none';
+      }
+    });
+
+    el('btnClear').addEventListener('click', ()=>{
+      el('inputNumbers').value='';
+      el('resultBox').style.display='none';
+      el('summary').textContent='—';
+    });
+
+    el('btnCopy').addEventListener('click', async ()=>{
+      const n = el('vNum').textContent;
+      if(!n || n==='–'){ alert('पहले Predict करें'); return; }
+      const text = `Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}`;
+      try{ await navigator.clipboard.writeText(text); alert('Copied!'); }catch{ alert('Copy failed'); }
+    });
+  </script>
 </body>
-</html>
+  </html>
