@@ -13,14 +13,14 @@
           background:linear-gradient(to bottom right,var(--bg1),var(--bg2)); color:#fff; text-align:center; }
     header{ background:#000; padding:16px 0; box-shadow:0 2px 8px var(--gold) }
     header h1{ margin:0; font-size:28px; color:var(--gold) }
-    .container{ padding:26px 16px; max-width:1100px; margin:0 auto }
+    .container{ padding:26px 16px; max-width:1150px; margin:0 auto }
     .row{ display:grid; grid-template-columns:1fr 1fr; gap:16px }
     @media (max-width:900px){ .row{ grid-template-columns:1fr } }
     .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:18px; text-align:left;
            box-shadow:0 0 15px rgba(0,0,0,.35) }
     label{ font-weight:600 }
-    input{ margin-top:8px; width:100%; padding:12px; border-radius:10px;
-           border:2px solid var(--gold); background:#000; color:#fff; text-align:center; font-size:18px; }
+    input, select{ margin-top:8px; width:100%; padding:12px; border-radius:10px;
+           border:2px solid var(--gold); background:#000; color:#fff; text-align:center; font-size:16px; }
     .btn{ margin-top:12px; background:var(--gold); color:#000; border:0; border-radius:10px;
           padding:12px 18px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold) }
     .btn.secondary{ background:#1f2937; color:#fff; box-shadow:none; border:1px solid #333 }
@@ -34,8 +34,9 @@
     .thinking{ margin-top:10px; color:#FFEB3B; animation:blink 1s infinite }
     @keyframes blink{ 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }
     .tag{ display:inline-block; padding:4px 8px; border:1px solid #333; border-radius:999px; font-size:12px; color:#ddd }
-    .history{ font-size:12px; color:#cbd5e1; max-height:160px; overflow:auto }
-    .danger{ color:var(--danger) } .ok{ color:var(--ok) }
+    .history{ font-size:12px; color:#cbd5e1; max-height:180px; overflow:auto }
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid #333;margin-right:6px}
+    .ok{color:var(--ok)} .danger{color:var(--danger)}
   </style>
 </head>
 <body>
@@ -45,13 +46,20 @@
     <div class="card">
       <label for="inputNumbers">🔢 <b>Enter Previous Numbers</b> (comma or space separated)</label>
       <input id="inputNumbers" placeholder="e.g. 3,7,1,9,4,0,2,8,6,5" />
-      <div class="meta">Tip: 40–60 हालिया ड्रॉ डालें या ऑटो-फेच यूज़ करें</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap">
-        <button class="btn" id="btnPredict">🔮 Predict Result</button>
+      <div class="meta">Best: 40–60 हालिया ड्रॉ • Minimum: 5 (recommended ≥8)</div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+        <select id="mode">
+          <option value="balanced" selected>Strategy: Balanced</option>
+          <option value="conservative">Strategy: Conservative</option>
+          <option value="aggressive">Strategy: Aggressive</option>
+        </select>
+        <button class="btn" id="btnPredict">🔮 Predict</button>
         <button class="btn secondary" id="btnClear">Clear</button>
         <button class="btn secondary" id="btnCopy">Copy Result</button>
         <span class="tag" id="apiStatus">API: auto</span>
       </div>
+
       <div id="thinking" class="thinking" style="display:none">🤖 AI Thinking...</div>
 
       <div class="result-box" id="resultBox">
@@ -60,11 +68,18 @@
           <div>📏 Size<br><span class="val" id="vSize">–</span></div>
           <div>🎯 Opposite backup<br><span class="val" id="vBackup">–</span></div>
         </div>
+
         <div style="margin-top:10px">🧠 Confidence</div>
         <div class="line"><div class="bar" id="confBar"></div></div>
         <div class="kv" style="margin-top:10px">
           <div>🟩 Big<br><span class="val" id="vBig">–</span></div>
           <div>🟥 Small<br><span class="val" id="vSmall">–</span></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <span id="playSignal" class="pill">—</span>
+          <span id="top3" class="pill">Top-3: —</span>
+          <span id="backup2" class="pill">Backup-2: —</span>
         </div>
       </div>
     </div>
@@ -72,11 +87,11 @@
     <div class="row" style="margin-top:16px">
       <div class="card">
         <h3 style="margin:0 0 8px">📊 Probability (0–9)</h3>
-        <canvas id="probChart" height="200"></canvas>
+        <canvas id="probChart" height="210"></canvas>
       </div>
       <div class="card">
         <h3 style="margin:0 0 8px">⚖️ Big vs Small</h3>
-        <canvas id="bsChart" height="200"></canvas>
+        <canvas id="bsChart" height="210"></canvas>
       </div>
     </div>
 
@@ -93,198 +108,253 @@
   </div>
 
   <script>
-    const API_BASE = ""; // अगर Flask API हो तो यहाँ डालें
+    const API_BASE = ""; // अगर Flask API हो तो यहाँ दें
 
-    let lastInput = "";
-    let probChart = null, bsChart = null;
-    const el = id => document.getElementById(id);
-    const clamp01 = x => Math.max(0, Math.min(1, x));
-    const fmtPct = x => (x*100).toFixed(1) + '%';
+    let probChart=null, bsChart=null;
+    const el=id=>document.getElementById(id);
+    const clamp01=x=>Math.max(0,Math.min(1,x));
+    const fmtPct=x=>(x*100).toFixed(1)+'%';
 
     function parseInput(str){
       if(!str) return [];
-      return str.replace(/,/g,' ').split(/\s+/).filter(Boolean).map(v=>{
-        let n = parseInt(v,10); if(Number.isNaN(n)) n = 0;
-        return Math.max(0, Math.min(9, n));
-      });
+      return str.replace(/,/g,' ').split(/\s+/).filter(Boolean)
+        .map(v=>Math.max(0,Math.min(9, parseInt(v,10)||0)));
     }
-    function freqMap(arr){ const f = Array(10).fill(0); arr.forEach(n=>f[n]++); return f; }
+    function normalize(arr){ const s=arr.reduce((a,b)=>a+b,0)||1; return arr.map(x=>x/s); }
+    function argmax(arr){ let i=0,bv=-1; for(let k=0;k<arr.length;k++){ if(arr[k]>bv){bv=arr[k]; i=k;} } return i; }
 
-    // --------- NEW SMART FALLBACK (balanced & calibrated) ----------
-    function smartFallback(history){
-      if(history.length===0){
-        const p = Array(10).fill(0.1);
-        return {predicted:5, probs:p, big:0.5, small:0.5, confidence:0.1, backup:4};
+    // ====== ENSEMBLE PREDICTOR ======
+    function predictEnsemble(history, mode='balanced'){
+      // ---- guard & window ----
+      const MIN=5, RECOMM=8;
+      if(history.length<MIN){
+        return { error:`कम से कम ${MIN} नंबर जरूरी हैं (बेहतर के लिए ${RECOMM}+).` };
       }
-
-      // rolling window (avoid stale drift)
-      const W = Math.min(60, history.length);
+      const W = Math.min(60, history.length);     // rolling window
       const H = history.slice(-W);
       const n = H.length;
 
-      // unigram + recency
-      const alpha = 0.8;   // Dirichlet smoothing
-      const decay = 0.96;  // recency
-      const uni = Array(10).fill(alpha);
-      for(let i=0;i<n;i++){ uni[H[i]] += Math.pow(decay, n-1-i); }
-      const uS = uni.reduce((a,b)=>a+b,0)||1; const pUni = uni.map(x=>x/uS);
+      // ---- hyper by mode ----
+      const hyper = {
+        conservative:{ temp:(n<25)?1.08:1.03, maxCap:(n<25)?0.50:0.60, priorStrength:6, streakPenalty:0.07, phaseWeight:0.07 },
+        balanced    :{ temp:(n<25)?1.10:1.05, maxCap:(n<25)?0.55:0.65, priorStrength:4, streakPenalty:0.06, phaseWeight:0.10 },
+        aggressive  :{ temp:(n<25)?1.12:1.07, maxCap:(n<25)?0.60:0.70, priorStrength:3, streakPenalty:0.05, phaseWeight:0.12 }
+      }[mode] || hyper.balanced;
 
-      // 1st-order Markov with smoothing + recency
-      const trans = Array.from({length:10},()=>Array(10).fill(alpha/10));
-      for(let i=1;i<n;i++){
-        const age = n-1-i;
-        trans[H[i-1]][H[i]] += Math.pow(decay, age);
+      // ---- 1) Unigram + recency ----
+      const alpha=0.8, decay=0.96;
+      const uni=Array(10).fill(alpha);
+      for(let i=0;i<n;i++){ uni[H[i]] += Math.pow(decay,n-1-i); }
+      const pUni = normalize(uni);
+
+      // ---- 2) Markov-1 ----
+      const trans1 = Array.from({length:10},()=>Array(10).fill(alpha/10));
+      for(let i=1;i<n;i++){ trans1[H[i-1]][H[i]] += Math.pow(decay, n-1-i); }
+      let row1 = normalize(trans1[H[n-1]].slice());
+
+      // ---- 3) Markov-2 (last two → next) ----
+      let row2=null;
+      if(n>=3){
+        const trans2 = {}; // key "a-b" → probs[10]
+        for(let i=2;i<n;i++){
+          const a=H[i-2], b=H[i-1], c=H[i];
+          const key=a+'-'+b;
+          if(!trans2[key]) trans2[key]=Array(10).fill(alpha/10);
+          trans2[key][c]+=Math.pow(decay, n-1-i);
+        }
+        const key=(H[n-2]+'-'+H[n-1]);
+        if(trans2[key]) row2 = normalize(trans2[key].slice());
       }
-      const last = H[n-1];
-      let row = trans[last].slice();
-      const rS = row.reduce((a,b)=>a+b,0)||1; row = row.map(x=>x/rS);
 
-      // backoff mix: ज्यादा डेटा ⇒ ज्यादा Markov
-      const lambda = Math.min(0.9, 0.45 + 0.45*(n/(n+10)));
-      let probs = row.map((r,i)=> lambda*r + (1-lambda)*pUni[i]);
+      // ---- 4) Phase/Period signal (simple autocorrelation) ----
+      //  candidate periods 5..12 → same phase histogram
+      let pPhase = Array(10).fill(1/10);
+      if(n>=10){
+        let bestP=0, bestScore=-1;
+        for(let P=5;P<=12;P++){
+          let match=0;
+          for(let i=P;i<n;i++){ if(H[i]===H[i-P]) match++; }
+          const score = match/(n-P);
+          if(score>bestScore){ bestScore=score; bestP=P; }
+        }
+        const phase = (n-1) % (bestP||1);
+        const bucket = Array(10).fill(0.1);
+        for(let i=phase;i<n;i+=bestP){ bucket[H[i]] += 1; }
+        pPhase = normalize(bucket);
+      }
 
-      // Recent Big/Small calibration (shrink-to-0.5)
-      const K = Math.min(10, n);
-      const recent = H.slice(-K);
-      const bigRatioRecent = recent.filter(v=>v>=5).length / K;
-      const priorStrength = 4; // 4 = 80% weight recent, 20% neutral
-      const targetBig = clamp01((priorStrength*bigRatioRecent + 0.5) / (priorStrength+1));
+      // ---- 5) blend (data-driven weights) ----
+      // more data ⇒ more markov2, else markov1/unigram
+      const w2 = clamp01((n-12)/(n-12+8));       // 0 → ~1
+      const w1 = clamp01((n-5)/(n-5+6))*(1-w2);  // fades when w2 grows
+      const wU = 1 - (w1+w2);
+      let probs = Array(10).fill(0);
+      for(let d=0; d<10; d++){
+        probs[d] = wU*pUni[d] + w1*row1[d] + (row2? w2*row2[d] : 0);
+      }
+      // add small phase weight
+      const wP = hyper.phaseWeight;
+      probs = normalize(probs.map((p,i)=> (1-wP)*p + wP*pPhase[i]));
 
-      const curBig = probs.slice(5,10).reduce((a,b)=>a+b,0);
+      // ---- 6) Big/Small calibration (recent K shrink-to-0.5) ----
+      const K=Math.min(10,n);
+      const br = H.slice(-K).filter(v=>v>=5).length / K;
+      const tgtBig = clamp01((hyper.priorStrength*br + 0.5)/(hyper.priorStrength+1));
+      const curBig = probs.slice(5).reduce((a,b)=>a+b,0);
       if(curBig>0 && curBig<1){
-        const scaleBig = Math.sqrt(targetBig/(curBig+1e-9));
-        const scaleSmall = Math.sqrt((1-targetBig)/((1-curBig)+1e-9));
-        for(let i=0;i<10;i++){ probs[i]*=(i>=5?scaleBig:scaleSmall); }
+        const sB = Math.sqrt(tgtBig/(curBig+1e-9));
+        const sS = Math.sqrt((1-tgtBig)/((1-curBig)+1e-9));
+        for(let i=0;i<10;i++) probs[i]*=(i>=5?sB:sS);
+        probs = normalize(probs);
       }
 
-      // Repeat-streak penalty
-      let streak=1; for(let i=history.length-1;i>0&&history[i]===history[i-1];i--) streak++;
-      if(streak>=3){
-        const factor = Math.max(0.8, 1 - 0.06*(streak-2)); // थोड़ा ज़्यादा पेनल्टी
-        probs[last] *= factor;
+      // ---- 7) Streak penalty (digit + big/small long runs) ----
+      let dStreak=1;
+      for(let i=history.length-1;i>0&&history[i]===history[i-1];i--) dStreak++;
+      if(dStreak>=3){ probs[H[H.length-1]] *= Math.max(0.75, 1 - hyper.streakPenalty*(dStreak-2)); }
+      // big/small streak
+      let sStreak=1;
+      for(let i=history.length-1;i>0;i--){
+        const cur=history[i]>=5, prev=history[i-1]>=5;
+        if(cur===prev) sStreak++; else break;
+      }
+      if(sStreak>=4){
+        const scale = Math.max(0.80, 1 - 0.05*(sStreak-3));
+        const side = (history[history.length-1] >=5) ? 'big' : 'small';
+        for(let i=0;i<10;i++){
+          if(side==='big' && i>=5) probs[i]*=scale;
+          if(side==='small' && i<5) probs[i]*=scale;
+        }
       }
 
-      // de-peaking (temperature) + cap by data size
-      const temp = (n<25)?1.10:1.05;
-      probs = probs.map(p=>Math.pow(p, 1/temp));
-      let sum = probs.reduce((a,b)=>a+b,0)||1; probs = probs.map(p=>p/sum);
-
-      const maxCap = (n<25)?0.55:0.65; // guard against one-digit dominance
+      // ---- 8) Temperature + MaxCap ----
+      probs = normalize(probs.map(p=>Math.pow(p, 1/hyper.temp)));
       const maxP = Math.max(...probs);
-      if(maxP>maxCap){
-        const excess = maxP - maxCap;
-        const iMax = probs.indexOf(maxP);
-        probs[iMax] -= excess;
-        const rest = 1 - probs[iMax];
-        const base = probs.map((p,i)=> i===iMax?0:p).reduce((a,b)=>a+b,0)||1;
-        for(let i=0;i<10;i++){ if(i!==iMax) probs[i] = probs[i]/base * rest; }
+      if(maxP>hyper.maxCap){
+        const iM = argmax(probs), excess=maxP-hyper.maxCap;
+        probs[iM]-=excess;
+        const base = probs.reduce((a,b)=>a+b,0); // <1
+        const scale = (1 - probs[iM]) / base;
+        for(let i=0;i<10;i++){ if(i!==iM) probs[i]*=scale; }
       }
+      probs = normalize(probs);
 
-      // finalize
-      const predicted = probs.indexOf(Math.max(...probs));
-      const big = probs.slice(5,10).reduce((a,b)=>a+b,0); const small = 1-big;
+      // ---- outputs ----
+      const predicted = argmax(probs);
+      const big = probs.slice(5).reduce((a,b)=>a+b,0), small = 1-big;
 
-      // entropy-based confidence
+      // entropy→confidence
       let Hent=0; for(const p of probs){ if(p>0) Hent += -p*Math.log(p); }
       const confidence = clamp01(1 - Hent/Math.log(10));
 
-      // opposite backup
-      const argmaxRange=(arr,a,b)=>{ let best=a,bv=-1; for(let i=a;i<b;i++) if(arr[i]>bv){bv=arr[i];best=i;} return best; };
-      const backup = predicted>=5 ? argmaxRange(probs,0,5) : argmaxRange(probs,5,10);
+      // backups
+      const oppBest = (predicted>=5)
+        ? argmax(probs.slice(0,5))
+        : 5 + argmax(probs.slice(5,10));
 
-      return {predicted, probs, big, small, confidence, backup};
+      // overall second best
+      const sorted = probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
+      const secondBest = sorted[1]?.i ?? ((predicted+1)%10);
+
+      return {
+        predicted, probs, big, small, confidence,
+        backup: oppBest, backup2: secondBest,
+        meta:{ n, mode }
+      };
     }
-    // ---------------------------------------------------------------
+    // ===========================================
 
     function renderCharts(probs, big, small){
-      const labels = [...Array(10).keys()].map(String);
-      const data = probs.map(p => Math.round(p*1000)/10);
-      const pctx = el('probChart').getContext('2d');
-      if (probChart) probChart.destroy();
-      probChart = new Chart(pctx,{
-        type:'bar',
-        data:{ labels, datasets:[{ label:'Probability (%)', data }] },
-        options:{ responsive:true, scales:{ y:{ beginAtZero:true, title:{display:true,text:'%'} }, x:{ title:{display:true,text:'Digit'} } } }
+      const labels=[...Array(10).keys()].map(String);
+      const data = probs.map(p=>Math.round(p*1000)/10);
+      if(probChart) probChart.destroy();
+      probChart = new Chart(el('probChart').getContext('2d'), {
+        type:'bar', data:{labels, datasets:[{label:'Probability (%)', data}]},
+        options:{ responsive:true, scales:{ y:{beginAtZero:true,title:{display:true,text:'%'}}, x:{title:{display:true,text:'Digit'}}}}
       });
-      const bctx = el('bsChart').getContext('2d');
-      if (bsChart) bsChart.destroy();
-      bsChart = new Chart(bctx,{
-        type:'doughnut',
-        data:{ labels:['Big','Small'], datasets:[{ data:[Math.round(big*100), Math.round(small*100)] }] },
-        options:{ responsive:true, cutout:'60%' }
+      if(bsChart) bsChart.destroy();
+      bsChart = new Chart(el('bsChart').getContext('2d'), {
+        type:'doughnut', data:{labels:['Big','Small'], datasets:[{data:[Math.round(big*100),Math.round(small*100)]}]},
+        options:{responsive:true, cutout:'60%'}
       });
     }
 
-    function renderResult(resp){
-      el('resultBox').style.display = 'block';
-      el('vNum').textContent = resp.predicted;
-      el('vSize').textContent = resp.predicted>=5 ? 'Big' : 'Small';
-      el('vBackup').textContent = resp.backup;
-      el('confBar').style.width = (resp.confidence*100).toFixed(1)+'%';
-      el('vBig').textContent = fmtPct(resp.big);
-      el('vSmall').textContent = fmtPct(resp.small);
-      renderCharts(resp.probs, resp.big, resp.small);
-      const stamp = new Date().toLocaleTimeString();
-      const line = `⏱ ${stamp} → #${resp.predicted} (${resp.predicted>=5?'Big':'Small'}) • conf ${Math.round(resp.confidence*100)}% • backup ${resp.backup}`;
-      const h = el('hist'); h.innerHTML = (h.innerHTML==='—'?'':h.innerHTML)+'<div>'+line+'</div>';
-    }
+    function renderResult(r){
+      el('resultBox').style.display='block';
+      el('vNum').textContent = r.predicted;
+      el('vSize').textContent = r.predicted>=5 ? 'Big' : 'Small';
+      el('vBackup').textContent = r.backup;
+      el('confBar').style.width = (r.confidence*100).toFixed(1)+'%';
+      el('vBig').textContent = fmtPct(r.big);
+      el('vSmall').textContent = fmtPct(r.small);
 
-    async function callServer(history){
-      const payload = { numbers: history.join(',') };
-      const url = (API_BASE || '') + '/predict';
-      const res = await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-      if(!res.ok) throw new Error((await res.json()).error || 'Server error');
-      const data = await res.json();
-      const probsArr = Array.isArray(data.probs) ? data.probs
-        : Array.from({length:10},(_,i)=> i===data.predicted_number ? 0.35 : 0.65/9);
-      const predicted = (data.predicted ?? data.predicted_number);
-      const big = clamp01((data.big_small?.big) ?? data.big_probability ?? 0.5);
-      const small = clamp01((data.big_small?.small) ?? data.small_probability ?? (1-big));
-      const confidence = clamp01(data.confidence ?? Math.max(...probsArr));
-      const oppIdx = predicted>=5
-        ? probsArr.slice(0,5).indexOf(Math.max(...probsArr.slice(0,5)))
-        : 5 + probsArr.slice(5,10).indexOf(Math.max(...probsArr.slice(5,10)));
-      return { predicted, probs:probsArr, big, small, confidence, backup: oppIdx };
+      // Play/Skip signal
+      let signal='—', cls='';
+      if(r.meta.n<8){ signal='Low data • Consider wait'; cls='danger'; }
+      else if(r.confidence<0.22){ signal='Skip (low signal)'; cls='danger'; }
+      else if(r.confidence>=0.22 && r.confidence<0.35){ signal='Play light'; cls=''; }
+      else { signal='Play (strong)'; cls='ok'; }
+      const top3 = r.probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p).slice(0,3)
+                      .map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
+      el('playSignal').textContent = signal; el('playSignal').className='pill '+cls;
+      el('top3').textContent = 'Top-3: '+top3;
+      el('backup2').textContent = 'Backup-2: '+r.backup2;
+
+      renderCharts(r.probs, r.big, r.small);
+
+      const stamp=new Date().toLocaleTimeString();
+      const line=`⏱ ${stamp} → #${r.predicted} (${r.predicted>=5?'Big':'Small'}) • conf ${(r.confidence*100).toFixed(0)}% • backup ${r.backup} • mode ${r.meta.mode}`;
+      const h=el('hist'); h.innerHTML=(h.innerHTML==='—'?'':h.innerHTML)+`<div>${line}</div>`;
     }
 
     function summarizeInput(arr){
       if(arr.length===0){ el('summary').textContent='—'; return; }
-      const f = freqMap(arr);
-      const max = Math.max(...f), min = Math.min(...f);
-      const hot = f.map((c,i)=>[c,i]).filter(([c])=>c===max).map(([,i])=>i).join(', ');
-      const cold = f.map((c,i)=>[c,i]).filter(([c])=>c===min).map(([,i])=>i).join(', ');
-      el('summary').innerHTML = `Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b><br/>Hot: <b>${hot||'—'}</b> • Cold: <b>${cold||'—'}</b>`;
+      const f=Array(10).fill(0); arr.forEach(n=>f[n]++);
+      const max=Math.max(...f), min=Math.min(...f);
+      const hot=f.map((c,i)=>[c,i]).filter(([c])=>c===max).map(([,i])=>i).join(', ');
+      const cold=f.map((c,i)=>[c,i]).filter(([c])=>c===min).map(([,i])=>i).join(', ');
+      el('summary').innerHTML=`Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b><br/>Hot: <b>${hot||'—'}</b> • Cold: <b>${cold||'—'}</b>`;
     }
 
-    // -------- UI handlers --------
+    async function callServer(history){
+      // optional: यदि आपका Flask /predict बना है
+      const url=(API_BASE||'')+'/predict';
+      const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({numbers:history.join(',')})});
+      if(!res.ok) throw new Error('server');
+      const data=await res.json();
+      // server schema adapt (यदि probs ना हों तो ensemble यूज़ करेंगे)
+      if(!Array.isArray(data.probs)) throw new Error('no-probs');
+      const predicted=(data.predicted ?? data.predicted_number);
+      const big=clamp01((data.big_small?.big) ?? data.big_probability ?? 0.5);
+      const small=1-big;
+      const confidence=clamp01(data.confidence ?? Math.max(...data.probs));
+      const opp = predicted>=5
+        ? data.probs.slice(0,5).indexOf(Math.max(...data.probs.slice(0,5)))
+        : 5 + data.probs.slice(5,10).indexOf(Math.max(...data.probs.slice(5,10)));
+      return {predicted, probs:data.probs, big, small, confidence, backup:opp, backup2:null, meta:{n:history.length, mode:'server'}};
+    }
+
+    // -------- UI --------
     el('btnPredict').addEventListener('click', async ()=>{
-      const raw = el('inputNumbers').value.trim();
-      const hist = parseInput(raw);
+      const hist=parseInput(el('inputNumbers').value.trim());
       summarizeInput(hist);
-      if(hist.length<15){ alert('बेहतर रिज़ल्ट के लिए कम से कम 15–20 पिछले ड्रॉ डालें'); }
-      // allow same input repeats
-      lastInput = raw;
+      if(hist.length<5){ alert('कम से कम 5 नंबर डालें (बेहतर ≥8)'); return; }
 
       el('resultBox').style.display='none';
       el('thinking').style.display='block';
-
       try{
-        let resp;
+        let out;
         try{
-          resp = await callServer(hist);
-          el('apiStatus').textContent = 'API: server';
-          el('apiStatus').className = 'tag ok';
-        }catch(_e){
-          resp = smartFallback(hist);
-          el('apiStatus').textContent = 'API: fallback';
-          el('apiStatus').className = 'tag danger';
+          out = await callServer(hist);
+          el('apiStatus').textContent='API: server'; el('apiStatus').className='tag ok';
+        }catch(_){
+          out = predictEnsemble(hist, el('mode').value);
+          if(out.error) { alert(out.error); return; }
+          el('apiStatus').textContent='API: fallback'; el('apiStatus').className='tag danger';
         }
-        renderResult(resp);
-      }catch(err){
-        alert('Error: '+ err.message);
-      }finally{
-        el('thinking').style.display='none';
-      }
+        renderResult(out);
+      }catch(e){ alert('Error: '+e.message); }
+      finally{ el('thinking').style.display='none'; }
     });
 
     el('btnClear').addEventListener('click', ()=>{
@@ -292,8 +362,8 @@
     });
 
     el('btnCopy').addEventListener('click', async ()=>{
-      const n = el('vNum').textContent; if(!n || n==='–'){ alert('पहले Predict करें'); return; }
-      const text = `Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}`;
+      const n=el('vNum').textContent; if(!n||n==='–'){ alert('पहले Predict करें'); return; }
+      const text=`Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}`;
       try{ await navigator.clipboard.writeText(text); alert('Copied!'); }catch{ alert('Copy failed'); }
     });
   </script>
