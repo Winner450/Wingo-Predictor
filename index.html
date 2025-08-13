@@ -37,11 +37,6 @@
     .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid #333;margin-right:6px}
     .ok{color:var(--ok)} .danger{color:var(--danger)}
     .chip{ display:inline-block; padding:4px 6px; border:1px solid #333; border-radius:8px; margin:4px; font-size:12px }
-    .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
-    @media (max-width:950px){ .grid3{grid-template-columns:1fr} }
-    .ex-wrap{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px }
-    .ex-wrap label{ border:1px solid #333; border-radius:8px; padding:4px 8px; cursor:pointer }
-    .ex-wrap input{ margin-right:6px; transform: translateY(1px); width:auto; }
     .history{ font-size:12px; color:#cbd5e1; max-height:180px; overflow:auto }
   </style>
 </head>
@@ -50,34 +45,16 @@
 
   <div class="container">
     <div class="card">
-      <div class="grid3">
-        <div>
-          <label for="inputNumbers">🔢 <b>Enter Previous Numbers</b> (comma or space separated)</label>
-          <input id="inputNumbers" placeholder="e.g. 3,7,1,9,4,0,2,8,6,5" />
-          <div class="meta">Best: 40–60 हालिया ड्रॉ • <b>Minimum: 5</b> (recommended ≥10)</div>
-        </div>
-
-        <div>
-          <label for="mode"><b>Strategy</b></label>
-          <select id="mode">
-            <option value="balanced" selected>Balanced</option>
-            <option value="conservative">Conservative</option>
-            <option value="aggressive">Aggressive</option>
-          </select>
-
-          <label for="winSize" style="margin-top:10px; display:block"><b>Rolling Window (10–80)</b></label>
-          <input id="winSize" type="range" min="10" max="80" value="60" oninput="el('winLabel').textContent=this.value">
-          <div class="meta">Window: <b id="winLabel">60</b> draws</div>
-        </div>
-
-        <div>
-          <label><b>Digit Exclusions</b> (optional)</label>
-          <div class="ex-wrap" id="exWrap"></div>
-          <div class="meta">Excluded digits की probability 0 कर दी जाएगी (auto renormalize)</div>
-        </div>
-      </div>
+      <label for="inputNumbers">🔢 <b>Enter Previous Numbers</b> (comma or space separated)</label>
+      <input id="inputNumbers" placeholder="e.g. 3,7,1,9,4,0,2,8,6,5" />
+      <div class="meta">Best: 40–60 हालिया ड्रॉ • <b>Minimum: 5</b> (recommended ≥10)</div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px">
+        <select id="mode">
+          <option value="balanced" selected>Strategy: Balanced</option>
+          <option value="conservative">Strategy: Conservative</option>
+          <option value="aggressive">Strategy: Aggressive</option>
+        </select>
         <button class="btn" id="btnPredict">🔮 Predict</button>
         <button class="btn secondary" id="btnClear">Clear</button>
         <button class="btn secondary" id="btnCopy">Copy Result</button>
@@ -91,7 +68,6 @@
           <div>🔢 Number<br><span class="val" id="vNum">–</span></div>
           <div>📏 Size<br><span class="val" id="vSize">–</span></div>
           <div>🎯 Opposite backup<br><span class="val" id="vBackup">–</span></div>
-          <div>🧩 Backup-2<br><span class="val" id="vBackup2">–</span></div>
         </div>
 
         <div style="margin-top:10px">🧠 Confidence</div>
@@ -99,7 +75,7 @@
         <div class="kv" style="margin-top:10px">
           <div>🟩 Big<br><span class="val" id="vBig">–</span></div>
           <div>🟥 Small<br><span class="val" id="vSmall">–</span></div>
-          <div>🔁 Stability<br><span class="val" id="vStab">–</span></div>
+          <div>🔒 Stability<br><span class="val" id="vStab">–</span></div>
         </div>
 
         <div style="margin-top:12px">
@@ -134,12 +110,15 @@
     </div>
   </div>
 
-  <script>
-    // ====== CONFIG ======
-    const API_BASE = ""; // अगर Flask /predict API है तो base URL दें
-    // =====================
+  <!-- 🔊 3-second warning sound (auto plays on Skip/low-signal) -->
+  <audio id="warnSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+  </audio>
 
-    // quick helpers
+  <script>
+    const API_BASE = ""; // अगर Flask /predict API है तो base URL दें
+
+    // ---------- helpers ----------
     let probChart=null, bsChart=null;
     const el=id=>document.getElementById(id);
     const clamp01=x=>Math.max(0,Math.min(1,x));
@@ -147,16 +126,6 @@
     const sum=a=>a.reduce((p,c)=>p+c,0);
     const normalize=a=>{const s=sum(a)||1; return a.map(x=>x/s);};
     const argmax=a=>{let i=0,b=-1; for(let k=0;k<a.length;k++){ if(a[k]>b){b=a[k]; i=k;} } return i; };
-
-    // exclusions UI
-    (function initEx(){
-      const w=el('exWrap');
-      for(let d=0; d<=9; d++){
-        const L=document.createElement('label');
-        L.innerHTML=`<input type="checkbox" data-ex="${d}"/> ${d}`;
-        w.appendChild(L);
-      }
-    })();
 
     function parseInput(str){
       if(!str) return [];
@@ -170,23 +139,18 @@
 
     function freqMap(arr){ const f=Array(10).fill(0); arr.forEach(n=>f[n]++); return f; }
 
-    function getExclusions(){
-      const checks=[...document.querySelectorAll('[data-ex]')];
-      return checks.filter(c=>c.checked).map(c=>parseInt(c.getAttribute('data-ex'),10));
-    }
-
-    // ========= ENSEMBLE + BOOTSTRAP =========
-    function coreModel(history, mode, W){
+    // ---------- core ensemble model (accuracy-focused) ----------
+    function coreModel(history, mode){
       const n0=history.length;
       if(n0<5) return {error:"कम से कम 5 नंबर जरूरी हैं (बेहतर ≥10)"};
 
-      const H=history.slice(-W);
+      const H=history.slice(-Math.min(60, n0)); // auto short rolling internally (no UI)
       const n=H.length;
 
       const hyper = {
-        conservative:{ temp:(n<25)?1.08:1.03, maxCap:(n<25)?0.50:0.60, priorStrength:6, streakPenalty:0.07, phaseWeight:0.07 },
-        balanced    :{ temp:(n<25)?1.10:1.05, maxCap:(n<25)?0.55:0.65, priorStrength:4, streakPenalty:0.06, phaseWeight:0.10 },
-        aggressive  :{ temp:(n<25)?1.12:1.07, maxCap:(n<25)?0.60:0.70, priorStrength:3, streakPenalty:0.05, phaseWeight:0.12 }
+        conservative:{ temp:(n<25)?1.08:1.03, maxCap:(n<25)?0.50:0.60, priorStrength:6, streakPenalty:0.07, phaseWeight:0.07, momentum:0.08 },
+        balanced    :{ temp:(n<25)?1.10:1.05, maxCap:(n<25)?0.55:0.65, priorStrength:4, streakPenalty:0.06, phaseWeight:0.10, momentum:0.10 },
+        aggressive  :{ temp:(n<25)?1.12:1.07, maxCap:(n<25)?0.60:0.70, priorStrength:3, streakPenalty:0.05, phaseWeight:0.12, momentum:0.12 }
       }[mode] || hyper.balanced;
 
       // 1) Unigram + recency
@@ -214,7 +178,7 @@
         if(tr2[key]) row2=normalize(tr2[key].slice());
       }
 
-      // 4) Phase/periodicity
+      // 4) Phase/periodicity (auto P=5..12)
       let pPhase=Array(10).fill(0.1);
       if(n>=10){
         let bestP=0, bestScore=-1;
@@ -229,8 +193,20 @@
         pPhase=normalize(bucket);
       }
 
-      // 5) Blend
-      const w2=Math.max(0, Math.min(1,(n-12)/(n-12+8))); // 0..~1
+      // 5) Trend/Momentum boost (last M vs previous M)
+      const M=Math.min(6, Math.floor(n/3));
+      if(M>=2){
+        const recent=H.slice(-M), prev=H.slice(-(2*M), -M);
+        const fr=Array(10).fill(0), fp=Array(10).fill(0);
+        recent.forEach(d=>fr[d]++); prev.forEach(d=>fp[d]++);
+        const mom=fr.map((c,i)=> (c+0.1) / (fp[i]+0.1)); // >1 uptrend
+        const mScale=hyper.momentum;
+        for(let i=0;i<10;i++){ row1[i]*=(1+mScale*(mom[i]-1)); if(row2) row2[i]*=(1+mScale*(mom[i]-1)); }
+        row1=normalize(row1); if(row2) row2=normalize(row2);
+      }
+
+      // 6) Blend base distributions
+      const w2=Math.max(0, Math.min(1,(n-12)/(n-12+8)));
       const w1=Math.max(0, Math.min(1,(n-5)/(n-5+6)))*(1-w2);
       const wU=1-(w1+w2);
       let probs=Array(10).fill(0);
@@ -238,7 +214,7 @@
       const wP=hyper.phaseWeight;
       probs=normalize(probs.map((p,i)=>(1-wP)*p + wP*pPhase[i]));
 
-      // 6) Big/Small calibration
+      // 7) Big/Small calibration (shrink to 0.5)
       const K=Math.min(10,n);
       const br=H.slice(-K).filter(v=>v>=5).length / K;
       const tgt=clamp01((hyper.priorStrength*br + 0.5)/(hyper.priorStrength+1));
@@ -249,7 +225,7 @@
         probs=normalize(probs);
       }
 
-      // 7) Streak penalties
+      // 8) Streak penalties (digit + side)
       let dStreak=1;
       for(let i=history.length-1;i>0&&history[i]===history[i-1];i--) dStreak++;
       if(dStreak>=3){ probs[history[history.length-1]]*=Math.max(0.75,1-hyper.streakPenalty*(dStreak-2)); }
@@ -264,7 +240,7 @@
         for(let i=0;i<10;i++){ if(side==='big' && i>=5) probs[i]*=scale; if(side==='small' && i<5) probs[i]*=scale; }
       }
 
-      // 8) Temperature + MaxCap
+      // 9) Temperature + MaxCap
       probs=normalize(probs.map(p=>Math.pow(p, 1/hyper.temp)));
       const maxCap=hyper.maxCap, mx=Math.max(...probs);
       if(mx>maxCap){
@@ -277,37 +253,30 @@
       return {probs, meta:{n,mode}};
     }
 
-    function applyExclusions(probs, excluded){
-      if(!excluded.length) return probs;
-      const out=probs.slice();
-      excluded.forEach(d=> out[d]=0);
-      return normalize(out);
-    }
-
-    function bootstrapBlend(history, mode, W, excluded){
-      // 60 bootstrap samples (80% size) → average probs + stability
+    // ---------- bootstrap blend for stability ----------
+    function bootstrapBlend(history, mode){
       const B=60, frac=0.8;
       let agg=Array(10).fill(0), votes=Array(10).fill(0);
       const N=history.length, m=Math.max(5, Math.floor(N*frac));
       for(let b=0;b<B;b++){
         const samp=[]; for(let i=0;i<m;i++){ samp.push(history[Math.floor(Math.random()*N)]); }
-        const base=coreModel(samp, mode, Math.min(W, samp.length));
+        const base=coreModel(samp, mode);
         if(base.error) continue;
-        let p=applyExclusions(base.probs, excluded);
-        agg=agg.map((x,i)=>x+p[i]);
+        const p=base.probs;
+        for(let i=0;i<10;i++) agg[i]+=p[i];
         votes[argmax(p)]++;
       }
-      if(sum(agg)===0){ // fallback 1 run
-        const single=coreModel(history, mode, W);
+      if(sum(agg)===0){
+        const single=coreModel(history, mode);
         if(single.error) return single;
-        agg=applyExclusions(single.probs, excluded);
+        agg=single.probs.slice();
         votes[argmax(agg)]++;
         return { probs: normalize(agg), stability: 1/B, meta: single.meta };
       }
       return { probs: normalize(agg), stability: (Math.max(...votes)/B), meta:{ n:history.length, mode } };
     }
 
-    // ===== charts & UI =====
+    // ---------- charts & rendering ----------
     function renderCharts(probs, big, small){
       const labels=[...Array(10).keys()].map(String);
       const data=probs.map(p=>Math.round(p*1000)/10);
@@ -345,14 +314,12 @@
 
       // backups
       const opp=(predicted>=5)? argmax(probs.slice(0,5)) : 5 + argmax(probs.slice(5));
-      const second= (probs.map((p,i)=>({p,i})).sort((a,b)=>b.p-a.p)[1]||{i:(predicted+1)%10}).i;
 
       // UI fill
       el('resultBox').style.display='block';
       el('vNum').textContent=predicted;
       el('vSize').textContent=(predicted>=5?'Big':'Small');
       el('vBackup').textContent=opp;
-      el('vBackup2').textContent=second;
       el('confBar').style.width=(confidence*100).toFixed(1)+'%';
       el('vBig').textContent=fmtPct(big);
       el('vSmall').textContent=fmtPct(small);
@@ -360,14 +327,21 @@
 
       renderCharts(probs, big, small);
 
-      // signal & reasons
+      // signal & reasons + 🔊 sound on skip
       let signal='—', cls='', reasons=[];
       if((obj.meta?.n||0) < 8){ reasons.push('low data'); }
       if(confidence < 0.22){ reasons.push('low entropy'); }
       if((obj.stability ?? 0) < 0.35){ reasons.push('unstable'); }
-      if(reasons.length){ signal='Skip (low signal)'; cls='danger'; }
-      else if(confidence<0.35){ signal='Play light'; }
-      else { signal='Play (strong)'; cls='ok'; }
+      if(reasons.length){ 
+        signal='Skip (low signal)'; cls='danger'; 
+        // 3-second warning sound
+        const snd = el('warnSound'); snd.currentTime = 0; snd.play();
+        setTimeout(()=>snd.pause(), 3000);
+      } else if(confidence<0.35){ 
+        signal='Play light'; 
+      } else { 
+        signal='Play (strong)'; cls='ok'; 
+      }
 
       const top3 = probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p).slice(0,3)
                     .map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
@@ -381,6 +355,7 @@
       const h=el('hist'); h.innerHTML=(h.innerHTML==='—'?'':h.innerHTML)+`<div>${line}</div>`;
     }
 
+    // ---------- optional server (if available) ----------
     async function callServer(history){
       const url=(API_BASE||'')+'/predict';
       const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({numbers:history.join(',')})});
@@ -390,7 +365,7 @@
       return { probs: normalize(data.probs), stability: 0.5, meta:{n:history.length, mode:'server'} };
     }
 
-    // ===== UI events =====
+    // ---------- UI events ----------
     el('btnPredict').addEventListener('click', async ()=>{
       const hist=parseInput(el('inputNumbers').value.trim());
       renderSummary(hist);
@@ -399,18 +374,14 @@
       el('resultBox').style.display='none';
       el('thinking').style.display='block';
       const mode=el('mode').value;
-      const W=parseInt(el('winSize').value,10);
-      const excluded=getExclusions();
 
       try{
         let out;
         try{
           out = await callServer(hist);
-          // server probs पर exclusions/boostrap नहीं लगाएँगे; पर चाहें तो apply कर सकते हैं:
-          out.probs = applyExclusions(out.probs, excluded);
           el('apiStatus').textContent='API: server'; el('apiStatus').className='tag ok';
         }catch(_){
-          out = bootstrapBlend(hist, mode, W, excluded);
+          out = bootstrapBlend(hist, mode);
           if(out.error){ alert(out.error); return; }
           el('apiStatus').textContent='API: fallback'; el('apiStatus').className='tag danger';
         }
@@ -431,4 +402,4 @@
     });
   </script>
 </body>
-</html>
+  </html>
