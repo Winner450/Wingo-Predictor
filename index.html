@@ -94,7 +94,6 @@
 
   <script>
     // ====== CONFIG ======
-    // अगर Flask API अलग डोमेन पर है, यहाँ URL दें; वरना खाली (relative /predict)
     const API_BASE = "";  // e.g. "https://wingo-api.onrender.com"
     // =====================
 
@@ -114,45 +113,86 @@
 
     function freqMap(arr){ const f = Array(10).fill(0); arr.forEach(n=>f[n]++); return f; }
 
-    // ---- FIXED SMART FALLBACK (no more constant 7/Big) ----
+    // ========= ADVANCED SMART FALLBACK =========
     function smartFallback(history){
-      const alpha = 0.5;          // Laplace smoothing (prevents zeros)
-      const decay = 0.93;         // exponential decay for recency
-      const f = Array(10).fill(alpha);
-
       const n = history.length;
+      // A) unigram with Laplace smoothing + recency decay
+      const alpha = 0.6;           // smoothing
+      const decay = 0.95;          // recency weight
+      const uni = Array(10).fill(alpha);
       for(let i=0;i<n;i++){
-        const d = history[i];
-        const age = n-1-i;              // 0 for latest
-        const w = Math.pow(decay, age); // 1, 0.93, 0.93^2, ...
-        f[d] += w;
+        const age = n-1-i;                 // 0 for latest
+        uni[history[i]] += Math.pow(decay, age);
+      }
+      const uniSum = uni.reduce((a,b)=>a+b,0) || 1;
+      let pUni = uni.map(x => x/uniSum);
+
+      // B) 1st-order Markov transitions with smoothing + recency decay
+      const trans = Array.from({length:10},()=>Array(10).fill(alpha/10));
+      for(let i=1;i<n;i++){
+        const prev = history[i-1], curr = history[i];
+        const age = n-1-i;                 // transition ending at i
+        trans[prev][curr] += Math.pow(decay, age);
+      }
+      // row for last symbol
+      const last = history[n-1] ?? 0;
+      let row = trans[last].slice();
+      const rowSum = row.reduce((a,b)=>a+b,0) || 1;
+      row = row.map(x => x/rowSum);
+
+      // C) Backoff mixing: more data => more Markov weight
+      const lambda = Math.min(0.85, 0.40 + 0.45*(n/(n+8))); // 0.4..0.85
+      let probs = row.map((r,i)=> lambda*r + (1-lambda)*pUni[i]);
+
+      // D) Recent Big/Small bias (last K)
+      const K = Math.min(6, n);
+      if(K>=2){
+        const recent = history.slice(-K);
+        const bigRatio = recent.filter(v=>v>=5).length / K; // 0..1
+        const scaleBig  = 0.9 + 0.25*bigRatio;
+        const scaleSmall= 0.9 + 0.25*(1-bigRatio);
+        for(let i=0;i<10;i++){
+          probs[i] *= (i>=5? scaleBig : scaleSmall);
+        }
       }
 
-      // normalize to probabilities
-      let sum = f.reduce((a,b)=>a+b,0) || 1;
-      let probs = f.map(x => x/sum);
+      // E) Repeat-streak penalty (avoid locking on same digit)
+      let streak = 1;
+      for(let i=n-1;i>0 && history[i]===history[i-1]; i--) streak++;
+      if(streak>2){
+        const factor = Math.max(0.85, 1 - 0.04*(streak-2)); // cap penalty
+        probs[last] *= factor;
+      }
 
-      // mild temperature to avoid peaky single-digit dominance
-      const temp = 1.2; // >1 => flatter
+      // F) Temperature to control peakiness
+      const temp = 1.07; // small flatten
       probs = probs.map(p => Math.pow(p, 1/temp));
-      const s2 = probs.reduce((a,b)=>a+b,0) || 1;
-      probs = probs.map(p => p/s2);
+      const s = probs.reduce((a,b)=>a+b,0) || 1;
+      probs = probs.map(p => p/s);
 
+      // Outputs
       const predicted = probs.indexOf(Math.max(...probs));
       const pBig = probs.slice(5,10).reduce((a,b)=>a+b,0);
       const pSmall = 1 - pBig;
-      const confidence = Math.max(...probs);
 
-      // backup: best on opposite side (ensure valid index)
+      // Entropy-based confidence (0..1)
+      const log10 = Math.log(10);
+      let H = 0;
+      for(const p of probs){ if(p>0) H += -p*Math.log(p); }
+      H = H / (log10);                // natural->log10
+      const confidence = 1 - (H / 1); // normalized (log10(10)=1)
+
+      // Opposite backup
       const argmaxRange = (arr, a, b)=>{
         let best=a, bv=-1;
         for(let i=a;i<b;i++){ if(arr[i]>bv){ bv=arr[i]; best=i; } }
         return best;
       };
       const backup = predicted>=5 ? argmaxRange(probs,0,5) : argmaxRange(probs,5,10);
-      return {predicted, probs, big:pBig, small:pSmall, confidence, backup};
+
+      return {predicted, probs, big:pBig, small:pSmall, confidence:clamp01(confidence), backup};
     }
-    // -------------------------------------------------------
+    // ===========================================
 
     function renderCharts(probs, big, small){
       const labels = [...Array(10).keys()].map(String);
