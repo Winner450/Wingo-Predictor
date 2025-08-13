@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎯 WinGo Predictor Pro</title>
+  <title>🎯 WinGo Predictor Pro + Auto-Fetch</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root{ --gold:#FFD700; --gold-soft:#f5d46b; --bg1:#0f0f0f; --bg2:#000;
-           --card:#111; --muted:#9ca3af; --danger:#f87171; --ok:#22c55e; }
+           --card:#111; --muted:#9ca3af; --danger:#f87171; --ok:#22c55e; --warn:#f59e0b; }
     *{ box-sizing:border-box }
     body{ margin:0; font-family:'Segoe UI',system-ui,sans-serif;
           background:linear-gradient(to bottom right,var(--bg1),var(--bg2)); color:#fff; text-align:center; }
@@ -24,7 +24,7 @@
     .btn{ margin-top:12px; background:var(--gold); color:#000; border:0; border-radius:10px;
           padding:12px 18px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--gold) }
     .btn.secondary{ background:#1f2937; color:#fff; box-shadow:none; border:1px solid #333 }
-    .meta{ font-size:13px; color:var(--muted); margin-top:6px }
+    .meta{ font-size:13px; color:#9ca3af; margin-top:6px }
     .result-box{ background:#0b0b0b; border:1px solid #1f2937; border-radius:14px; padding:16px; display:none }
     .line{ height:8px; background:#222; border-radius:6px; overflow:hidden; margin-top:8px }
     .bar{ height:8px; background:linear-gradient(90deg,var(--gold-soft),var(--gold)); width:0% }
@@ -35,9 +35,14 @@
     @keyframes blink{ 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }
     .tag{ display:inline-block; padding:4px 8px; border:1px solid #333; border-radius:999px; font-size:12px; color:#ddd; margin-right:6px }
     .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid #333;margin-right:6px}
-    .ok{color:var(--ok)} .danger{color:var(--danger)}
+    .ok{color:var(--ok)} .danger{color:var(--danger)} .warn{color:var(--warn)}
     .chip{ display:inline-block; padding:4px 6px; border:1px solid #333; border-radius:8px; margin:4px; font-size:12px }
-    .history{ font-size:12px; color:#cbd5e1; max-height:180px; overflow:auto }
+    .history{ font-size:12px; color:#cbd5e1; max-height:184px; overflow:auto }
+    /* Auto-Fetch panel */
+    .af-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
+    @media (max-width:950px){ .af-grid{ grid-template-columns:1fr } }
+    .subtle{ font-size:12px; color:#9ca3af }
+    .row-flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   </style>
 </head>
 <body>
@@ -47,9 +52,9 @@
     <div class="card">
       <label for="inputNumbers">🔢 <b>Enter Previous Numbers</b> (comma or space separated)</label>
       <input id="inputNumbers" placeholder="e.g. 3,7,1,9,4,0,2,8,6,5" />
-      <div class="meta">Best: 40–60 हालिया ड्रॉ • <b>Minimum: 5</b> (recommended ≥10)</div>
+      <div class="meta">Best: 40–60 हालिया ड्रॉ • <b>Minimum: 5</b> (recommended ≥10) • Game: WinGo 30s</div>
 
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px">
+      <div class="row-flex" style="margin-top:10px">
         <select id="mode">
           <option value="balanced" selected>Strategy: Balanced</option>
           <option value="conservative">Strategy: Conservative</option>
@@ -80,11 +85,49 @@
 
         <div style="margin-top:12px">
           <span id="playSignal" class="pill">—</span>
+          <span id="top2" class="pill">Safe set: —</span>
           <span id="top3" class="pill">Top-3: —</span>
           <span id="reasons" class="pill">—</span>
         </div>
       </div>
     </div>
+
+    <!-- =============== AUTO-FETCH HELPER =============== -->
+    <div class="card" style="margin-top:16px">
+      <h3 style="margin:0 0 8px">⚡ Auto-Fetch Helper (BDGOP friendly)</h3>
+      <div class="af-grid">
+        <div>
+          <label><b>Clipboard Helper (Recommended for bdgop)</b></label>
+          <div class="subtle">
+            bdgop WinGo पेज खोलें → Results/History टेक्स्ट कॉपी करें → नीचे Paste दबाएँ।
+          </div>
+          <div class="row-flex">
+            <button class="btn" id="btnPaste">📋 Paste from Clipboard</button>
+            <label class="subtle"><input type="checkbox" id="clipAuto"> Auto-Poll Clipboard</label>
+            <input id="clipInterval" type="number" min="3" value="6" style="width:90px" />
+            <span class="subtle">sec</span>
+          </div>
+          <div id="clipStatus" class="meta">—</div>
+        </div>
+
+        <div>
+          <label for="fetchUrl"><b>Direct Fetch (JSON/CSV URL)</b></label>
+          <input id="fetchUrl" placeholder="https://example.com/results.json or .csv" />
+          <div class="row-flex">
+            <button class="btn secondary" id="btnTestFetch">Test Fetch</button>
+            <button class="btn" id="btnStartFetch">▶ Start Auto-Fetch</button>
+            <button class="btn secondary" id="btnStopFetch">⏸ Stop</button>
+            <input id="fetchEvery" type="number" value="5" min="3" style="width:90px" />
+            <span class="subtle">sec</span>
+            <input id="fetchCount" type="number" value="20" min="5" style="width:100px" />
+            <span class="subtle">take last N</span>
+          </div>
+          <div class="subtle">Auto-detects: JSON <i>[3,7,1,...]</i>, JSON objects <i>[{n:3},{n:7}]</i>, or CSV <i>3,7,1,...</i></div>
+          <div id="fetchStatus" class="meta">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- ================================================= -->
 
     <div class="row" style="margin-top:16px">
       <div class="card">
@@ -110,15 +153,10 @@
     </div>
   </div>
 
-  <!-- 🔊 3-second warning sound (auto plays on Skip/low-signal) -->
-  <audio id="warnSound">
-    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
-  </audio>
-
   <script>
-    const API_BASE = ""; // अगर Flask /predict API है तो base URL दें
+    const API_BASE = ""; // यदि आपके पास /predict API हो
 
-    // ---------- helpers ----------
+    // ===== helpers =====
     let probChart=null, bsChart=null;
     const el=id=>document.getElementById(id);
     const clamp01=x=>Math.max(0,Math.min(1,x));
@@ -131,46 +169,38 @@
       if(!str) return [];
       const arr=str.replace(/,/g,' ').split(/\s+/).filter(Boolean)
         .map(v=>Math.max(0,Math.min(9, parseInt(v,10)||0)));
-      // chips (last 20)
       const chips = arr.slice(-20).map(n=>`<span class="chip">${n}</span>`).join('');
       el('chips').innerHTML = chips || '';
       return arr;
     }
-
     function freqMap(arr){ const f=Array(10).fill(0); arr.forEach(n=>f[n]++); return f; }
 
-    // ---------- core ensemble model (accuracy-focused) ----------
+    // ===== predictor (bias-fixed) =====
     function coreModel(history, mode){
       const n0=history.length;
       if(n0<5) return {error:"कम से कम 5 नंबर जरूरी हैं (बेहतर ≥10)"};
-
-      const H=history.slice(-Math.min(60, n0)); // auto short rolling internally (no UI)
+      const H=history.slice(-Math.min(60, n0));
       const n=H.length;
-
       const hyper = {
-        conservative:{ temp:(n<25)?1.08:1.03, maxCap:(n<25)?0.50:0.60, priorStrength:6, streakPenalty:0.07, phaseWeight:0.07, momentum:0.08 },
-        balanced    :{ temp:(n<25)?1.10:1.05, maxCap:(n<25)?0.55:0.65, priorStrength:4, streakPenalty:0.06, phaseWeight:0.10, momentum:0.10 },
-        aggressive  :{ temp:(n<25)?1.12:1.07, maxCap:(n<25)?0.60:0.70, priorStrength:3, streakPenalty:0.05, phaseWeight:0.12, momentum:0.12 }
+        conservative:{ temp:(n<25)?1.06:1.03, maxCap:(n<25)?0.48:0.58, priorStrengthBS:10, priorStrengthEO:10, streakPenalty:0.07, phaseWeight:0.06, momentum:0.06 },
+        balanced    :{ temp:(n<25)?1.08:1.05, maxCap:(n<25)?0.52:0.62, priorStrengthBS:8,  priorStrengthEO:8,  streakPenalty:0.06, phaseWeight:0.08, momentum:0.08 },
+        aggressive  :{ temp:(n<25)?1.10:1.06, maxCap:(n<25)?0.56:0.66, priorStrengthBS:6,  priorStrengthEO:6,  streakPenalty:0.05, phaseWeight:0.10, momentum:0.10 }
       }[mode] || hyper.balanced;
 
-      // 1) Unigram + recency
-      const alpha=0.8, decay=0.96;
+      const alpha=0.9, decay=0.96;
       const uni=Array(10).fill(alpha);
-      for(let i=0;i<n;i++){ uni[H[i]] += Math.pow(decay, n-1-i); }
+      for(let i=0;i<n;i++) uni[H[i]] += Math.pow(decay, n-1-i);
       const pUni=normalize(uni);
 
-      // 2) Markov-1
       const tr1=Array.from({length:10},()=>Array(10).fill(alpha/10));
-      for(let i=1;i<n;i++){ tr1[H[i-1]][H[i]] += Math.pow(decay, n-1-i); }
+      for(let i=1;i<n;i++) tr1[H[i-1]][H[i]] += Math.pow(decay, n-1-i);
       let row1=normalize(tr1[H[n-1]].slice());
 
-      // 3) Markov-2
       let row2=null;
       if(n>=3){
         const tr2={};
         for(let i=2;i<n;i++){
-          const a=H[i-2], b=H[i-1], c=H[i];
-          const key=a+'-'+b;
+          const a=H[i-2], b=H[i-1], c=H[i], key=a+'-'+b;
           if(!tr2[key]) tr2[key]=Array(10).fill(alpha/10);
           tr2[key][c]+=Math.pow(decay, n-1-i);
         }
@@ -178,125 +208,110 @@
         if(tr2[key]) row2=normalize(tr2[key].slice());
       }
 
-      // 4) Phase/periodicity (auto P=5..12)
       let pPhase=Array(10).fill(0.1);
       if(n>=10){
-        let bestP=0, bestScore=-1;
+        let bestP=0, best=-1;
         for(let P=5;P<=12;P++){
-          let m=0; for(let i=P;i<n;i++){ if(H[i]===H[i-P]) m++; }
-          const s=m/(n-P);
-          if(s>bestScore){ bestScore=s; bestP=P; }
+          let m=0; for(let i=P;i<n;i++) if(H[i]===H[i-P]) m++;
+          const s=m/(n-P); if(s>best){ best=s; bestP=P; }
         }
-        const phase=(n-1)%(bestP||1);
-        const bucket=Array(10).fill(0.1);
-        for(let i=phase;i<n;i+=bestP){ bucket[H[i]]++; }
+        const phase=(n-1)%(bestP||1), bucket=Array(10).fill(0.1);
+        for(let i=phase;i<n;i+=bestP) bucket[H[i]]++;
         pPhase=normalize(bucket);
       }
 
-      // 5) Trend/Momentum boost (last M vs previous M)
       const M=Math.min(6, Math.floor(n/3));
       if(M>=2){
-        const recent=H.slice(-M), prev=H.slice(-(2*M), -M);
+        const r=H.slice(-M), p=H.slice(-(2*M),-M);
         const fr=Array(10).fill(0), fp=Array(10).fill(0);
-        recent.forEach(d=>fr[d]++); prev.forEach(d=>fp[d]++);
-        const mom=fr.map((c,i)=> (c+0.1) / (fp[i]+0.1)); // >1 uptrend
-        const mScale=hyper.momentum;
+        r.forEach(d=>fr[d]++); p.forEach(d=>fp[d]++);
+        const mom=fr.map((c,i)=>(c+0.1)/(fp[i]+0.1)), mScale=hyper.momentum;
         for(let i=0;i<10;i++){ row1[i]*=(1+mScale*(mom[i]-1)); if(row2) row2[i]*=(1+mScale*(mom[i]-1)); }
         row1=normalize(row1); if(row2) row2=normalize(row2);
       }
 
-      // 6) Blend base distributions
       const w2=Math.max(0, Math.min(1,(n-12)/(n-12+8)));
       const w1=Math.max(0, Math.min(1,(n-5)/(n-5+6)))*(1-w2);
       const wU=1-(w1+w2);
       let probs=Array(10).fill(0);
-      for(let d=0; d<10; d++){ probs[d]=wU*pUni[d] + w1*row1[d] + (row2? w2*row2[d]:0); }
+      for(let d=0; d<10; d++) probs[d]=wU*pUni[d] + w1*row1[d] + (row2? w2*row2[d]:0);
       const wP=hyper.phaseWeight;
       probs=normalize(probs.map((p,i)=>(1-wP)*p + wP*pPhase[i]));
 
-      // 7) Big/Small calibration (shrink to 0.5)
-      const K=Math.min(10,n);
-      const br=H.slice(-K).filter(v=>v>=5).length / K;
-      const tgt=clamp01((hyper.priorStrength*br + 0.5)/(hyper.priorStrength+1));
-      const cur=probs.slice(5).reduce((a,b)=>a+b,0);
-      if(cur>0 && cur<1){
-        const sB=Math.sqrt(tgt/(cur+1e-9)), sS=Math.sqrt((1-tgt)/((1-cur)+1e-9));
+      const K=Math.min(12,n), lastK=H.slice(-K);
+      // Big/Small shrink→0.5
+      const br=lastK.filter(v=>v>=5).length/K;
+      const tgtBS=(hyper.priorStrengthBS*0.5 + br)/(hyper.priorStrengthBS+1);
+      let curBig=probs.slice(5).reduce((a,b)=>a+b,0);
+      if(curBig>0 && curBig<1){
+        const sB=Math.sqrt(tgtBS/(curBig+1e-9)), sS=Math.sqrt((1-tgtBS)/((1-curBig)+1e-9));
         for(let i=0;i<10;i++) probs[i]*=(i>=5?sB:sS);
         probs=normalize(probs);
       }
-
-      // 8) Streak penalties (digit + side)
-      let dStreak=1;
-      for(let i=history.length-1;i>0&&history[i]===history[i-1];i--) dStreak++;
-      if(dStreak>=3){ probs[history[history.length-1]]*=Math.max(0.75,1-hyper.streakPenalty*(dStreak-2)); }
-      let sStreak=1;
-      for(let i=history.length-1;i>0;i--){
-        const curB=history[i]>=5, prevB=history[i-1]>=5;
-        if(curB===prevB) sStreak++; else break;
-      }
-      if(sStreak>=4){
-        const scale=Math.max(0.80, 1-0.05*(sStreak-3));
-        const side=(history[history.length-1]>=5)?'big':'small';
-        for(let i=0;i<10;i++){ if(side==='big' && i>=5) probs[i]*=scale; if(side==='small' && i<5) probs[i]*=scale; }
+      // Even/Odd shrink→0.5
+      const er=lastK.filter(v=>v%2===0).length/K;
+      const tgtEO=(hyper.priorStrengthEO*0.5 + er)/(hyper.priorStrengthEO+1);
+      let curEven=0; for(let i=0;i<10;i++) if(i%2===0) curEven+=probs[i];
+      if(curEven>0 && curEven<1){
+        const sE=Math.sqrt(tgtEO/(curEven+1e-9)), sO=Math.sqrt((1-tgtEO)/((1-curEven)+1e-9));
+        for(let i=0;i<10;i++) probs[i]*=(i%2===0?sE:sO);
+        probs=normalize(probs);
       }
 
-      // 9) Temperature + MaxCap
+      let dStreak=1; for(let i=history.length-1;i>0&&history[i]===history[i-1];i--) dStreak++;
+      if(dStreak>=3) probs[history[history.length-1]]*=Math.max(0.75,1-hyper.streakPenalty*(dStreak-2));
+      let sStreak=1; for(let i=history.length-1;i>0;i--){const c=history[i]>=5,p=history[i-1]>=5; if(c===p) sStreak++; else break;}
+      if(sStreak>=4){ const scale=Math.max(0.82,1-0.05*(sStreak-3)), side=(history[history.length-1]>=5);
+        for(let i=0;i<10;i++){ if(side && i>=5) probs[i]*=scale; if(!side && i<5) probs[i]*=scale; }
+        probs=normalize(probs);
+      }
+
       probs=normalize(probs.map(p=>Math.pow(p, 1/hyper.temp)));
-      const maxCap=hyper.maxCap, mx=Math.max(...probs);
+      const mx=Math.max(...probs), maxCap=hyper.maxCap;
       if(mx>maxCap){
         const iM=argmax(probs), excess=mx-maxCap; probs[iM]-=excess;
         const base=sum(probs.filter((_,i)=>i!==iM))||1, scale=(1-probs[iM])/base;
-        for(let i=0;i<10;i++){ if(i!==iM) probs[i]*=scale; }
+        for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale;
+        probs=normalize(probs);
       }
-      probs=normalize(probs);
-
-      return {probs, meta:{n,mode}};
+      return { probs, meta:{n,mode} };
     }
 
-    // ---------- bootstrap blend for stability ----------
     function bootstrapBlend(history, mode){
-      const B=60, frac=0.8;
+      const B=50, frac=0.78;
       let agg=Array(10).fill(0), votes=Array(10).fill(0);
       const N=history.length, m=Math.max(5, Math.floor(N*frac));
       for(let b=0;b<B;b++){
-        const samp=[]; for(let i=0;i<m;i++){ samp.push(history[Math.floor(Math.random()*N)]); }
-        const base=coreModel(samp, mode);
-        if(base.error) continue;
-        const p=base.probs;
-        for(let i=0;i<10;i++) agg[i]+=p[i];
-        votes[argmax(p)]++;
+        const samp=[]; for(let i=0;i<m;i++) samp.push(history[Math.floor(Math.random()*N)]);
+        const base=coreModel(samp, mode); if(base.error) continue;
+        base.probs.forEach((p,i)=>agg[i]+=p); votes[argmax(base.probs)]++;
       }
       if(sum(agg)===0){
-        const single=coreModel(history, mode);
-        if(single.error) return single;
-        agg=single.probs.slice();
-        votes[argmax(agg)]++;
+        const single=coreModel(history, mode); if(single.error) return single;
+        agg=single.probs.slice(); votes[argmax(agg)]++; 
         return { probs: normalize(agg), stability: 1/B, meta: single.meta };
       }
       return { probs: normalize(agg), stability: (Math.max(...votes)/B), meta:{ n:history.length, mode } };
     }
 
-    // ---------- charts & rendering ----------
     function renderCharts(probs, big, small){
       const labels=[...Array(10).keys()].map(String);
       const data=probs.map(p=>Math.round(p*1000)/10);
       if(probChart) probChart.destroy();
       probChart=new Chart(el('probChart').getContext('2d'),{
-        type:'bar',
-        data:{labels, datasets:[{label:'Probability (%)', data}]},
+        type:'bar', data:{labels, datasets:[{label:'Probability (%)', data}]},
         options:{responsive:true, scales:{ y:{beginAtZero:true,title:{display:true,text:'%'}}, x:{title:{display:true,text:'Digit'}}}}
       });
       if(bsChart) bsChart.destroy();
       bsChart=new Chart(el('bsChart').getContext('2d'),{
-        type:'doughnut',
-        data:{labels:['Big','Small'], datasets:[{data:[Math.round(big*100),Math.round(small*100)]}]},
+        type:'doughnut', data:{labels:['Big','Small'], datasets:[{data:[Math.round(big*100),Math.round(small*100)]}]},
         options:{responsive:true, cutout:'60%'}
       });
     }
 
     function renderSummary(arr){
       if(arr.length===0){ el('summary').textContent='—'; return; }
-      const f=freqMap(arr); const mx=Math.max(...f), mn=Math.min(...f);
+      const f=freqMap(arr), mx=Math.max(...f), mn=Math.min(...f);
       const hot=f.map((c,i)=>[c,i]).filter(([c])=>c===mx).map(([,i])=>i).join(', ');
       const cold=f.map((c,i)=>[c,i]).filter(([c])=>c===mn).map(([,i])=>i).join(', ');
       el('summary').innerHTML=`Len: <b>${arr.length}</b> • Unique: <b>${[...new Set(arr)].length}</b>
@@ -308,14 +323,10 @@
       const predicted=argmax(probs);
       const big=sum(probs.slice(5)), small=1-big;
 
-      // entropy → confidence
       let H=0; probs.forEach(p=>{ if(p>0) H += -p*Math.log(p); });
       const confidence=clamp01(1 - H/Math.log(10));
-
-      // backups
       const opp=(predicted>=5)? argmax(probs.slice(0,5)) : 5 + argmax(probs.slice(5));
 
-      // UI fill
       el('resultBox').style.display='block';
       el('vNum').textContent=predicted;
       el('vSize').textContent=(predicted>=5?'Big':'Small');
@@ -327,35 +338,29 @@
 
       renderCharts(probs, big, small);
 
-      // signal & reasons + 🔊 sound on skip
-      let signal='—', cls='', reasons=[];
-      if((obj.meta?.n||0) < 8){ reasons.push('low data'); }
-      if(confidence < 0.22){ reasons.push('low entropy'); }
-      if((obj.stability ?? 0) < 0.35){ reasons.push('unstable'); }
-      if(reasons.length){ 
-        signal='Skip (low signal)'; cls='danger'; 
-        // 3-second warning sound
-        const snd = el('warnSound'); snd.currentTime = 0; snd.play();
-        setTimeout(()=>snd.pause(), 3000);
-      } else if(confidence<0.35){ 
-        signal='Play light'; 
-      } else { 
-        signal='Play (strong)'; cls='ok'; 
-      }
+      let signal='—', cls=''; const reasons=[];
+      const n=obj.meta?.n||0;
+      if(n<6) reasons.push('very low data');
+      if(confidence<0.18) reasons.push('low entropy');
+      if((obj.stability ?? 0) < 0.28) reasons.push('unstable');
 
-      const top3 = probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p).slice(0,3)
-                    .map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
+      if(reasons.length>=2){ signal='Wait'; cls='danger'; }
+      else if(reasons.length===1){ signal='Caution'; cls='warn'; }
+      else { signal='Play'; cls='ok'; }
+
+      const sorted = probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
+      const top2 = sorted.slice(0,2).map(o=>o.i).join(', ');
+      const top3 = sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
       el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
+      el('top2').textContent='Safe set: '+top2;
       el('top3').textContent='Top-3: '+top3;
-      el('reasons').textContent = reasons.length ? ('Reasons: '+reasons.join(', ')) : 'Reasons: signal ok';
+      el('reasons').textContent = reasons.length ? ('Reasons: '+reasons.join(', ')) : 'Reasons: good signal';
 
-      // history feed
       const stamp=new Date().toLocaleTimeString();
-      const line=`⏱ ${stamp} → #${predicted} (${predicted>=5?'Big':'Small'}) • conf ${(confidence*100).toFixed(0)}% • stab ${((obj.stability??0)*100).toFixed(0)}% • backup ${opp} • mode ${obj.meta?.mode||'-'}`;
+      const line=`⏱ ${stamp} → #${predicted} (${predicted>=5?'Big':'Small'}) • conf ${(confidence*100).toFixed(0)}% • stab ${((obj.stability??0)*100).toFixed(0)}% • backup ${opp} • mode ${obj.meta?.mode||'-'} • ${signal}`;
       const h=el('hist'); h.innerHTML=(h.innerHTML==='—'?'':h.innerHTML)+`<div>${line}</div>`;
     }
 
-    // ---------- optional server (if available) ----------
     async function callServer(history){
       const url=(API_BASE||'')+'/predict';
       const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({numbers:history.join(',')})});
@@ -365,12 +370,11 @@
       return { probs: normalize(data.probs), stability: 0.5, meta:{n:history.length, mode:'server'} };
     }
 
-    // ---------- UI events ----------
+    // ===== Predict UI =====
     el('btnPredict').addEventListener('click', async ()=>{
       const hist=parseInput(el('inputNumbers').value.trim());
       renderSummary(hist);
       if(hist.length<5){ alert('कम से कम 5 नंबर डालें (बेहतर ≥10)'); return; }
-
       el('resultBox').style.display='none';
       el('thinking').style.display='block';
       const mode=el('mode').value;
@@ -383,7 +387,7 @@
         }catch(_){
           out = bootstrapBlend(hist, mode);
           if(out.error){ alert(out.error); return; }
-          el('apiStatus').textContent='API: fallback'; el('apiStatus').className='tag danger';
+          el('apiStatus').textContent='API: fallback'; el('apiStatus').className='tag';
         }
         renderResult(out);
       }catch(e){ alert('Error: '+e.message); }
@@ -394,12 +398,111 @@
       el('inputNumbers').value=''; el('resultBox').style.display='none';
       el('summary').textContent='—'; el('chips').innerHTML='';
     });
-
     el('btnCopy').addEventListener('click', async ()=>{
       const n=el('vNum').textContent; if(!n||n==='–'){ alert('पहले Predict करें'); return; }
       const text=`Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}, Stability:${el('vStab').textContent}`;
       try{ await navigator.clipboard.writeText(text); alert('Copied!'); }catch{ alert('Copy failed'); }
     });
+
+    // ========== AUTO-FETCH: CLIPBOARD ==========
+    let clipTimer=null;
+    async function pasteFromClipboard(runPredict=true){
+      try{
+        const txt = await navigator.clipboard.readText();
+        if(!txt) throw new Error('Nothing in clipboard');
+        const digits = (txt.match(/\d/g)||[]).map(d=>parseInt(d,10));
+        if(digits.length<5){ el('clipStatus').textContent='Clipboard parsed digits < 5'; return; }
+        // keep last N (default 20)
+        const take = parseInt(el('fetchCount').value||'20',10);
+        const lastN = digits.slice(-take);
+        el('inputNumbers').value = lastN.join(',');
+        el('clipStatus').textContent = `Pasted ${lastN.length} digits from clipboard`;
+        renderSummary(lastN);
+        if(runPredict) document.getElementById('btnPredict').click();
+      }catch(err){
+        el('clipStatus').textContent = 'Clipboard error: '+err.message;
+      }
+    }
+    el('btnPaste').addEventListener('click', ()=>pasteFromClipboard(true));
+    el('clipAuto').addEventListener('change', (e)=>{
+      clearInterval(clipTimer); clipTimer=null;
+      if(e.target.checked){
+        const sec=Math.max(3, parseInt(el('clipInterval').value||'6',10));
+        clipTimer=setInterval(()=>pasteFromClipboard(true), sec*1000);
+        el('clipStatus').textContent='Auto-Poll ON (clipboard)';
+      }else{
+        el('clipStatus').textContent='Auto-Poll OFF';
+      }
+    });
+
+    // ========== AUTO-FETCH: DIRECT URL (JSON/CSV) ==========
+    let fetchTimer=null;
+    function parseRemotePayload(text, contentType){
+      try{
+        if((contentType||'').includes('json') || text.trim().startsWith('{') || text.trim().startsWith('[')){
+          const j = JSON.parse(text);
+          // patterns:
+          // [3,7,1,...]  OR  [{n:3},{number:7},{result:"1"}]  OR  {results:[...]}
+          let arr=null;
+          if(Array.isArray(j)) arr=j;
+          else if(Array.isArray(j.results)) arr=j.results;
+          else if(Array.isArray(j.data)) arr=j.data;
+          if(!arr) throw new Error('unknown JSON shape');
+
+          const nums = arr.map(x=>{
+            if(typeof x==='number') return x;
+            if(typeof x==='string') return parseInt(x.replace(/\D/g,''),10);
+            if(typeof x==='object'){
+              const cand = x.n ?? x.num ?? x.number ?? x.result ?? x.openCode ?? x.code ?? x.value;
+              if(typeof cand==='number') return cand;
+              if(typeof cand==='string') return parseInt(cand.replace(/\D/g,''),10);
+            }
+            return NaN;
+          }).map(v=>Math.max(0,Math.min(9, isNaN(v)?0:v)));
+          return nums.filter(v=>Number.isInteger(v));
+        }else{
+          // CSV
+          const nums = text.split(/[\s,;|]+/).filter(Boolean)
+            .map(v=>parseInt(v.replace(/\D/g,''),10))
+            .map(v=>Math.max(0,Math.min(9, isNaN(v)?0:v)));
+          return nums.filter(v=>Number.isInteger(v));
+        }
+      }catch(e){
+        throw new Error('parse failed: '+e.message);
+      }
+    }
+
+    async function doFetchOnce(runPredict=true){
+      const url=el('fetchUrl').value.trim();
+      if(!url){ el('fetchStatus').textContent='Please enter a URL'; return; }
+      try{
+        const res = await fetch(url, {cache:'no-store'});
+        const text = await res.text();
+        const nums = parseRemotePayload(text, res.headers.get('content-type')||'');
+        const take = Math.max(5, parseInt(el('fetchCount').value||'20',10));
+        const lastN = nums.slice(-take);
+        if(lastN.length<5) throw new Error('parsed digits < 5');
+        el('inputNumbers').value = lastN.join(',');
+        el('fetchStatus').textContent = `Fetched ${lastN.length} digits`;
+        renderSummary(lastN);
+        if(runPredict) document.getElementById('btnPredict').click();
+      }catch(e){
+        el('fetchStatus').textContent = 'Fetch error: '+e.message+' (कुछ साइट्स CORS के कारण direct fetch नहीं देतीं; ऐसे में Clipboard helper यूज़ करें)';
+      }
+    }
+
+    el('btnTestFetch').addEventListener('click', ()=>doFetchOnce(false));
+    el('btnStartFetch').addEventListener('click', ()=>{
+      clearInterval(fetchTimer); fetchTimer=null;
+      doFetchOnce(true);
+      const sec=Math.max(3, parseInt(el('fetchEvery').value||'5',10));
+      fetchTimer=setInterval(()=>doFetchOnce(true), sec*1000);
+      el('fetchStatus').textContent='Auto-Fetch ON';
+    });
+    el('btnStopFetch').addEventListener('click', ()=>{
+      clearInterval(fetchTimer); fetchTimer=null;
+      el('fetchStatus').textContent='Auto-Fetch OFF';
+    });
   </script>
 </body>
-  </html>
+</html>
