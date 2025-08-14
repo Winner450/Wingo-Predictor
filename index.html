@@ -1,127 +1,302 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Big Daddy Predictor</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Big Daddy — Real Predictor Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: radial-gradient(circle at top, #0f0f0f, #000);
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-    }
-    h1 {
-        text-align: center;
-        background: linear-gradient(90deg, #ff00ff, #00ffff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-    }
-    .card {
-        backdrop-filter: blur(12px);
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        padding: 20px;
-        width: 100%;
-        max-width: 500px;
-        box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
-    }
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-    }
-    input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: none;
-        outline: none;
-        margin-bottom: 15px;
-        font-size: 1rem;
-    }
-    button {
-        width: 100%;
-        padding: 12px;
-        border-radius: 10px;
-        background: linear-gradient(90deg, #ff00ff, #00ffff);
-        border: none;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    button:hover {
-        transform: scale(1.05);
-    }
-    .output {
-        margin-top: 20px;
-        padding: 15px;
-        background: rgba(0, 0, 0, 0.4);
-        border-radius: 10px;
-        text-align: center;
-    }
-    .confidence-bar {
-        height: 10px;
-        background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
-        border-radius: 5px;
-        transition: width 0.5s ease-in-out;
-    }
+  :root{
+    --bg1:#030615; --card:#071827; --accent1:#ff5f7a; --accent2:#7c5cff; --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg1),#000);color:#e6f6ff;margin:0;padding:28px}
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061026}
+  h1{margin:0;font-size:20px}
+  .muted{color:#9fb0d6}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid var(--glass);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+  label{display:block;margin-bottom:6px;font-weight:600}
+  input, select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+  .controls{display:flex;gap:8px;margin-top:10px}
+  button.btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#061026}
+  .result-box{display:flex;gap:12px;align-items:center;margin-top:12px}
+  .bubble{background:#021226;padding:14px;border-radius:10px;min-width:110px;text-align:center}
+  .digit{font-size:44px;font-weight:900}
+  .conf-meter{width:100%;height:14px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
+  .conf-fill{height:100%;width:0%;transition:width 800ms cubic-bezier(.2,.9,.2,1);background:linear-gradient(90deg,#00f0ff,#ff7ab6)}
+  table{width:100%;margin-top:12px;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+  tr:hover td{background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent)}
+  .patterns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);font-weight:700}
+  footer{margin-top:18px;text-align:center;color:#8da6d6}
+  @media(max-width:980px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<h1>🎯 Big Daddy Predictor</h1>
-
-<div class="card">
-    <label>Enter Period Number:</label>
-    <input type="number" id="periodInput" placeholder="e.g. 2025081401">
-
-    <button onclick="generatePrediction()">Predict</button>
-
-    <div class="output" id="outputBox" style="display:none;">
-        <h2>Prediction Result</h2>
-        <p id="predNumber"></p>
-        <p id="predSize"></p>
-        <p id="predPattern"></p>
-        <div style="margin-top:10px;">
-            <div class="confidence-bar" id="confidenceBar"></div>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">BD</div>
+        <div>
+          <h1>Big Daddy Predictor — Live</h1>
+          <div class="muted">Server-backed deterministic predictions. Replace backend algorithm as needed.</div>
         </div>
-        <p id="predConfidence"></p>
+      </div>
+      <div>
+        <button class="btn btn-primary" id="deployBtn">Deploy Repo</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT MAIN -->
+      <main>
+        <div class="card">
+          <label>Period Number</label>
+          <input id="periodInput" placeholder="e.g. 20250814-001" />
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <select id="productSelect" style="flex:1">
+              <option value="default">Product: Default</option>
+              <option value="wingo_blue">Product: Wingo Blue</option>
+              <option value="wingo_red">Product: Wingo Red</option>
+            </select>
+            <button class="btn btn-primary" id="predictBtn">Get Prediction</button>
+          </div>
+
+          <div class="result-box" id="resultArea" style="display:none">
+            <div class="bubble">
+              <div class="muted">Number</div>
+              <div class="digit" id="digitOut">0</div>
+            </div>
+            <div class="bubble">
+              <div class="muted">BIG / SMALL</div>
+              <div id="sizeOut" class="digit" style="font-size:20px">SMALL</div>
+            </div>
+            <div class="bubble" id="colorBubble">
+              <div class="muted">COLOR</div>
+              <div id="colorOut" class="digit" style="font-size:20px">BLUE</div>
+            </div>
+            <div style="flex:1">
+              <div class="muted">Confidence</div>
+              <div class="conf-meter" style="margin-top:6px"><div id="confFill" class="conf-fill"></div></div>
+              <div style="margin-top:6px"><span id="confText">--%</span> • Strategy Score: <b id="strScore">--</b></div>
+              <div class="patterns" id="patternsList"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <button class="btn" id="copyBtn">Copy Result</button>
+            <button class="btn" id="tgClientBtn">Send (Client→Telegram)</button>
+            <button class="btn" id="tgServerBtn">Send (Server Webhook)</button>
+          </div>
+
+          <div style="margin-top:14px">
+            <strong>Bulk Generator / Backtest</strong>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="bulkCount" type="number" min="3" max="200" value="10" />
+              <button class="btn" id="bulkBtn">Generate</button>
+            </div>
+            <div id="bulkOutput" style="margin-top:10px"></div>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>History</strong>
+          <table>
+            <thead><tr><th>Period</th><th>Product</th><th>Num</th><th>Size</th><th>Color</th><th>Conf</th></tr></thead>
+            <tbody id="historyTable"></tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside>
+        <div class="card">
+          <strong>Server Example</strong>
+          <div class="muted" style="margin-top:8px">Endpoint: <code>/api/getPrediction?period=...&product=...</code></div>
+          <pre style="background:#021226;padding:8px;border-radius:6px;color:#9be7d2;margin-top:8px">
+GET /api/getPrediction?period=20250814-001&product=wingo_blue
+Response:
+{
+  "period":"20250814-001",
+  "product":"wingo_blue",
+  "result": { "digit":7, "size":"BIG", "color":"RED", "confidence":89, "strategyScore":84, "patterns":[...] },
+  "meta":{...},
+  "ts":1630000000000
+}
+          </pre>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Webhook (Server)</strong>
+          <div class="muted" style="margin-top:8px">Send prediction to Telegram via server webhook:</div>
+          <pre style="background:#021226;padding:8px;border-radius:6px;color:#9be7d2;margin-top:8px">
+POST /api/webhook/telegram
+{ "token":"botXXX:...", "chatId":"12345678", "text":"Prediction: 7 | BIG | RED" }
+          </pre>
+        </div>
+
+      </aside>
     </div>
-</div>
+
+    <footer class="muted">Demo server + dashboard. Secure tokens & DB before production. सत साहेब</footer>
+  </div>
 
 <script>
-function generatePrediction() {
-    let period = document.getElementById("periodInput").value;
-    if (!period) {
-        alert("Please enter a Period Number!");
-        return;
+  const API_BASE = ''; // '' means same origin. If server remote, e.g. 'https://api.yourdomain.com'
+  const $ = id => document.getElementById(id);
+
+  async function callApi(period, product) {
+    const url = `${API_BASE}/api/getPrediction?period=${encodeURIComponent(period)}&product=${encodeURIComponent(product)}`;
+    const r = await fetch(url);
+    if(!r.ok) throw new Error('API error: '+r.status);
+    return await r.json();
+  }
+
+  function showPrediction(obj){
+    const result = obj.result;
+    $('digitOut').textContent = result.digit;
+    $('sizeOut').textContent = result.size;
+    $('colorOut').textContent = result.color;
+    $('confFill').style.width = result.confidence + '%';
+    $('confText').textContent = result.confidence + '%';
+    $('strScore').textContent = result.strategyScore;
+    const patternsList = $('patternsList');
+    patternsList.innerHTML = '';
+    result.patterns.forEach(p=>{
+      const el = document.createElement('div');
+      el.className = 'chip';
+      el.textContent = `${p.pattern}${p.matched? ' ✓' : ' ✕'}`;
+      patternsList.appendChild(el);
+    });
+    $('resultArea').style.display = 'flex';
+  }
+
+  async function fetchHistory(){
+    try{
+      const r = await fetch(API_BASE + '/api/history');
+      if(!r.ok) return;
+      const arr = await r.json();
+      const tbody = $('historyTable');
+      tbody.innerHTML = '';
+      arr.slice(0,50).forEach(it=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${it.period}</td><td>${it.product}</td><td>${it.digit}</td><td>${it.size}</td><td>${it.color}</td><td>${it.confidence}%</td>`;
+        tbody.appendChild(tr);
+      });
+    }catch(e){}
+  }
+
+  $('predictBtn').addEventListener('click', async ()=>{
+    const period = $('periodInput').value.trim();
+    const product = $('productSelect').value;
+    if(!period) return alert('Period डालो।');
+    try{
+      const data = await callApi(period, product);
+      showPrediction(data);
+      fetchHistory();
+    }catch(err){
+      alert('API error — fallback to client deterministic');
+      // client fallback: derive locally (same algorithm as server ideally)
+      const data = await deriveClient(period, product);
+      showPrediction(data);
     }
+  });
 
-    // Dummy logic for now - replace with API later
-    let number = Math.floor(Math.random() * 10);
-    let size = number >= 5 ? "BIG" : "SMALL";
-    let patterns = ["Mirror", "Repeat", "Alternate", "High Jump"];
-    let pattern = patterns[Math.floor(Math.random() * patterns.length)];
-    let confidence = Math.floor(Math.random() * 50) + 50;
+  // Copy / Telegram buttons
+  $('copyBtn').addEventListener('click', ()=>{
+    const text = `${$('digitOut').textContent} | ${$('sizeOut').textContent} | ${$('colorOut').textContent} • ${$('confText').textContent}`;
+    navigator.clipboard.writeText(text).then(()=> alert('Copied: '+text));
+  });
 
-    document.getElementById("predNumber").innerHTML = "Number: <b>" + number + "</b>";
-    document.getElementById("predSize").innerHTML = "Size: <b>" + size + "</b>";
-    document.getElementById("predPattern").innerHTML = "Pattern: <b>" + pattern + "</b>";
-    document.getElementById("confidenceBar").style.width = confidence + "%";
-    document.getElementById("predConfidence").innerHTML = "Confidence: " + confidence + "%";
+  // Client direct Telegram (not recommended for tokens) — this opens prompt for token/chat
+  $('tgClientBtn').addEventListener('click', async ()=>{
+    const token = prompt('Enter your Telegram bot token (botXXX:...)');
+    const chatId = prompt('Enter chat id');
+    if(!token||!chatId) return alert('token/chatId required');
+    const text = `Prediction: ${$('digitOut').textContent} | ${$('sizeOut').textContent} | ${$('colorOut').textContent}`;
+    try{
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({chat_id:chatId, text})});
+      alert('Sent to Telegram (client)');
+    }catch(e){ alert('Send failed: '+e.message); }
+  });
 
-    document.getElementById("outputBox").style.display = "block";
-}
+  // Server webhook (recommended)
+  $('tgServerBtn').addEventListener('click', async ()=>{
+    const token = prompt('Telegram bot token (server will forward):');
+    const chatId = prompt('Chat ID:');
+    if(!token||!chatId) return alert('Required');
+    const text = `Prediction: ${$('digitOut').textContent} | ${$('sizeOut').textContent} | ${$('colorOut').textContent}`;
+    try{
+      const r = await fetch(API_BASE + '/api/webhook/telegram', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({token, chatId, text})});
+      const j = await r.json();
+      if(j.ok) alert('Server forwarded to Telegram');
+      else alert('Webhook failed');
+    }catch(e){ alert('Webhook error: '+e.message); }
+  });
+
+  // Bulk generator
+  $('bulkBtn').addEventListener('click', async ()=>{
+    const n = Math.max(3, Math.min(200, Number($('bulkCount').value) || 10));
+    const out = $('bulkOutput');
+    out.innerHTML = '';
+    for(let i=0;i<n;i++){
+      const p = 'BULK-'+Date.now()+'-'+i;
+      try{
+        const d = await callApi(p, $('productSelect').value);
+        const div = document.createElement('div');
+        div.className='chip';
+        div.style.marginTop='6px';
+        div.textContent = `${p} → ${d.result.digit} | ${d.result.size} | ${d.result.color} • ${d.result.confidence}%`;
+        out.appendChild(div);
+      }catch(e){
+        const d = await deriveClient(p, $('productSelect').value);
+        const div = document.createElement('div');
+        div.className='chip';
+        div.style.marginTop='6px';
+        div.textContent = `${p} → ${d.result.digit} | ${d.result.size} | ${d.result.color} • ${d.result.confidence}% (client)`;
+        out.appendChild(div);
+      }
+    }
+  });
+
+  // simple client derive (mirror server logic minimally) - used as fallback
+  async function deriveClient(period, product='default'){
+    // lightweight client-side SHA-256
+    function buf2hex(buffer){return [...new Uint8Array(buffer)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+    const key = period + '|' + product + '|wingo_v2';
+    const enc = new TextEncoder().encode(key);
+    const digest = await crypto.subtle.digest('SHA-256', enc);
+    const hashHex = buf2hex(digest);
+    // use first 8 hex chars to form seed
+    const seed = parseInt(hashHex.slice(0,8), 16) >>> 0;
+    let x = seed;
+    function rng(){ x ^= (x << 13) >>> 0; x ^= (x >>> 17) >>> 0; x ^= (x << 5) >>> 0; x = x >>> 0; return x/0xffffffff; }
+    const digit = Math.floor(rng()*10);
+    const size = digit>=5?'BIG':'SMALL';
+    const colors=['RED','BLUE','GREEN']; const color = colors[ parseInt(hashHex.slice(8,10),16) % colors.length ];
+    const confidence = Math.min(99, Math.max(50, 60 + (parseInt(hashHex.slice(10,12),16) % 36)));
+    const patterns = [
+      {pattern:'OddEven', matched: digit%2===1},
+      {pattern:'HighLow', matched: digit>=5},
+      {pattern:'Mirror', matched: (parseInt(hashHex.slice(12,14),16)%2===0)}
+    ];
+    const strategyScore = Math.min(100, Math.round((confidence*0.6) + (patterns.filter(p=>p.matched).length*8)));
+    return { period, product, result:{digit,size,color,confidence,strategyScore,patterns}, meta:{seed,hashHex}, ts:Date.now() };
+  }
+
+  // on load try to fetch history
+  fetchHistory();
+
+  // deploy button
+  $('deployBtn').addEventListener('click', ()=> window.open('https://github.com/new?name=wingo-bigdaddy-predictor','_blank'));
 </script>
-
 </body>
 </html>
