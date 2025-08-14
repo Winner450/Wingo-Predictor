@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8" />
@@ -6,6 +6,7 @@
 <title>🎯 WinGo Predictor Pro</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <meta name="theme-color" content="#000000">
+
 <style>
 :root{
   --gold:#ffd700; --gold2:#f5d46b; --bg:#070a12; --panel:#0f1421; --panel2:#0b1020;
@@ -15,68 +16,103 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:radial-gradient(1000px 700px at 50% -20%,#0a0f1e,#070a12 55%,#04070f 100%);color:#fff;font:15.5px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
-body:before{content:"";position:fixed;inset:-200px;z-index:-1;pointer-events:none;opacity:.45;
-  background-image:radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.8) 0, transparent 60%),
-  radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,255,255,.5) 0, transparent 60%),
-  radial-gradient(1.2px 1.2px at 40% 80%, rgba(255,255,255,.45) 0, transparent 60%),
-  radial-gradient(1.6px 1.6px at 85% 20%, rgba(255,215,0,.75) 0, transparent 60%);
-  background-repeat:repeat; animation:drift 180s linear infinite}
+
+/* subtle stars */
+body:before{
+  content:""; position:fixed; inset:-200px; z-index:-1; pointer-events:none; opacity:.45;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.8) 0, transparent 60%),
+    radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,255,255,.5) 0, transparent 60%),
+    radial-gradient(1.2px 1.2px at 40% 80%, rgba(255,255,255,.45) 0, transparent 60%),
+    radial-gradient(1.6px 1.6px at 85% 20%, rgba(255,215,0,.75) 0, transparent 60%);
+  background-repeat:repeat;
+  animation: drift 180s linear infinite;
+}
 @keyframes drift{from{transform:translateY(0)} to{transform:translateY(200px)}}
-header{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);background:rgba(0,0,0,.7);border-bottom:1px solid #0e1422}
-.head{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
-.logo{font-weight:900;font-size:clamp(18px,4.2vw,22px);color:var(--gold);letter-spacing:.25px;white-space:nowrap}
-.goldline{height:3px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent)}
-.head .right{display:flex;gap:10px;align-items:center;color:#cbd5e1;font-size:13px}
-.wrap{max-width:1120px;margin:0 auto;padding:18px 16px 46px}
-.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
-.h1{font-size:18px;font-weight:800;margin:0 0 12px}
-.sub{color:var(--muted);font-size:13px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* Header */
+header{position:sticky; top:0; z-index:50; backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.7); border-bottom:1px solid #0e1422}
+.head{max-width:1120px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 16px}
+.logo{font-weight:900; font-size:clamp(18px,4.2vw,22px); color:var(--gold); letter-spacing:.25px; white-space:nowrap}
+.goldline{height:3px; background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent)}
+.head .right{display:flex; gap:10px; align-items:center; color:#cbd5e1; font-size:13px}
+
+/* Layout */
+.wrap{max-width:1120px; margin:0 auto; padding:18px 16px 46px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--edge);
+  border-radius:var(--r); box-shadow:var(--shadow); padding:16px}
+.h1{font-size:18px; font-weight:800; margin:0 0 12px}
+.sub{color:var(--muted); font-size:13px}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-label{font-size:12.5px;color:#d7dcec;font-weight:700;display:block;margin-bottom:6px}
-input,select{width:100%;padding:14px;background:#0a1020;border:2px solid #18233d;border-radius:12px;color:#fff;font-size:16px;outline:none}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
+/* Inputs */
+label{font-size:12.5px; color:#d7dcec; font-weight:700; display:block; margin-bottom:6px}
+input,select{width:100%; padding:14px; background:#0a1020; border:2px solid #18233d; border-radius:12px; color:#fff; font-size:16px; outline:none}
 input:focus,select:focus{border-color:var(--gold)}
 select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8893a8 50%),linear-gradient(135deg,#8893a8 50%,transparent 50%);
-  background-position:calc(100% - 20px) calc(1em + 2px),calc(100% - 15px) calc(1em + 2px);background-size:5px 5px,5px 5px;background-repeat:no-repeat}
-.btn{border:0;cursor:pointer;padding:12px 18px;border-radius:12px;font-weight:800}
-.btn.primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#000}
-.btn.dark{background:#17233e;border:1px solid #27385c;color:#e8eefc}
-.btn.ghost{background:transparent;border:1px dashed #374a73;color:#d1d8ea}
-.switch{display:inline-flex;align-items:center;gap:8px;color:#e0e6f3;font-size:13px}
-.switch input{width:18px;height:18px}
-.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  background-position:calc(100% - 20px) calc(1em + 2px),calc(100% - 15px) calc(1em + 2px); background-size:5px 5px,5px 5px; background-repeat:no-repeat}
+
+/* Buttons */
+.btn{border:0; cursor:pointer; padding:12px 18px; border-radius:12px; font-weight:800}
+.btn.primary{background:linear-gradient(180deg,var(--gold),var(--gold2)); color:#000}
+.btn.dark{background:#17233e; border:1px solid #27385c; color:#e8eefc}
+.btn.ghost{background:transparent; border:1px dashed #374a73; color:#d1d8ea}
+
+/* Tiny switches */
+.switch{display:inline-flex; align-items:center; gap:8px; color:#e0e6f3; font-size:13px}
+.switch input{width:18px; height:18px}
+
+/* Key/Value small cards */
+.kv{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
 @media (max-width:900px){.kv{grid-template-columns:1fr}}
-.box{background:#0a0f1c;border:1px solid #1a2238;border-radius:14px;padding:14px}
-.key{color:#a7b0c6;font-size:12px}.val{color:var(--gold);font-weight:900;font-size:30px}
-.line{height:10px;background:#15213a;border-radius:999px;overflow:hidden;margin:10px 0 2px}
-.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
-.badge{display:inline-flex;align-items:center;gap:8px;font-weight:800;border-radius:999px;padding:6px 10px;border:1px solid #2a3553;margin-right:8px}
-.badge.ok{color:var(--ok)}.badge.warn{color:var(--warn)}.badge.bad{color:var(--bad)}
-.pill{display:inline-block;border:1px solid #2a3553;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:8px}
-.history{font-size:12px;color:#cfd5e6;max-height:250px;overflow:auto}
-.hrow{padding:6px 0;border-bottom:1px dashed #24324f}
-.hud{position:fixed;right:14px;bottom:14px;background:#0c1427;border:1px solid #223359;border-radius:12px;padding:10px 12px;display:none;color:#d8e0f3;font-size:12px}
-.hud .t{color:var(--gold);font-weight:900}
-.compact #chartCard,.compact #histCard{display:none}
+.box{background:#0a0f1c; border:1px solid #1a2238; border-radius:14px; padding:14px}
+.key{color:#a7b0c6; font-size:12px}
+.val{color:var(--gold); font-weight:900; font-size:30px}
+
+/* Meter & badges */
+.line{height:10px; background:#15213a; border-radius:999px; overflow:hidden; margin:10px 0 2px}
+.bar{height:10px; width:0%; background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.badge{display:inline-flex; align-items:center; gap:8px; font-weight:800; border-radius:999px; padding:6px 10px; border:1px solid #2a3553; margin-right:8px}
+.badge.ok{color:var(--ok)} .badge.warn{color:var(--warn)} .badge.bad{color:var(--bad)}
+.pill{display:inline-block; border:1px solid #2a3553; border-radius:999px; padding:6px 10px; font-weight:800; margin-right:8px}
+
+/* History */
+.history{font-size:12px; color:#cfd5e6; max-height:250px; overflow:auto}
+.hrow{padding:6px 0; border-bottom:1px dashed #24324f}
+
+/* HUD */
+.hud{position:fixed; right:14px; bottom:14px; background:#0c1427; border:1px solid #223359; border-radius:12px; padding:10px 12px; display:none; color:#d8e0f3; font-size:12px}
+.hud .t{color:var(--gold); font-weight:900}
+
+/* Compact option hides charts/history */
+.compact #chartCard, .compact #histCard{display:none}
 </style>
 </head>
+
 <body>
 <header>
   <div class="head">
     <div class="logo">🎯 WinGo Predictor Pro</div>
-    <div class="right"><label class="switch"><input type="checkbox" id="compactToggle"> Compact</label></div>
+    <div class="right">
+      <label class="switch"><input type="checkbox" id="compactToggle"> Compact</label>
+    </div>
   </div>
   <div class="goldline"></div>
 </header>
 
 <div class="wrap" id="appRoot">
+  <!-- Controls -->
   <div class="card">
     <div class="h1">Quick Predict</div>
+
+    <!-- Row: period + strategy -->
     <div class="grid">
       <div>
         <label for="period">🧾 Period Number</label>
-        <input id="period" placeholder="e.g. 20250813100052810"/>
+        <input id="period" placeholder="e.g. 20250813100052810" />
         <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
       </div>
       <div>
@@ -97,6 +133,7 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8
       </div>
     </div>
 
+    <!-- Row: toggles -->
     <div class="row" style="margin-top:12px">
       <label class="switch"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
       <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON</label>
@@ -105,6 +142,7 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8
       <span class="sub" id="periodInfo">—</span>
     </div>
 
+    <!-- Row: main actions -->
     <div class="row" style="margin-top:10px">
       <button class="btn primary" id="btnPredict">🔮 Predict</button>
       <button class="btn dark" id="btnAuto">▶ Start Auto</button>
@@ -114,7 +152,8 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8
       <button class="btn ghost" id="btnSound">🔊 Test Sound</button>
     </div>
 
-    <div style="margin-top:12px;border-top:1px solid #1a2440;padding-top:12px">
+    <!-- Verify & Learn -->
+    <div style="margin-top:12px; border-top:1px solid #1a2440; padding-top:12px">
       <div class="row" style="gap:24px">
         <label class="switch"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
         <label class="switch"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
@@ -124,12 +163,14 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8
     </div>
   </div>
 
-  <div class="card" id="resultCard" style="margin-top:14px;display:none">
+  <!-- Result -->
+  <div class="card" id="resultCard" style="margin-top:14px; display:none">
     <div class="kv">
       <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
       <div class="box"><div class="key">🔢 Predicted</div><div class="val" id="vNum">—</div></div>
       <div class="box"><div class="key">📏 Size</div><div class="val" id="vSize">—</div></div>
     </div>
+
     <div style="margin-top:10px">
       <div class="key">🧠 Confidence <span id="hiAcc" class="pill" style="display:none">🔥 High Accuracy</span></div>
       <div class="line"><div class="bar" id="confBar"></div></div>
@@ -143,6 +184,7 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8
     </div>
   </div>
 
+  <!-- Charts & History -->
   <div class="grid" style="margin-top:14px">
     <div class="card" id="chartCard">
       <div class="h1">📊 Probability (0–9)</div>
@@ -155,29 +197,33 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8
   </div>
 </div>
 
+<!-- Auto HUD -->
 <div class="hud" id="hud">Auto: next in <span class="t" id="tick">—</span></div>
 
 <script>
-/* ---------- Utils ---------- */
+/* ---------- Utilities ---------- */
 const el=id=>document.getElementById(id);
-const root=document.getElementById('appRoot');
-const hud=el('hud'), tickEl=el('tick');
+const root = document.getElementById('appRoot');
+const hud  = el('hud'), tickEl=el('tick');
+
 const isDigits=s=>/^\d+$/.test(s||"");
 const clamp01=x=>Math.max(0,Math.min(1,x));
-const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s)};
+const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
 const argmax=a=>a.indexOf(Math.max(...a));
-const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break}}return a.join('')}};
-function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
+function hash32(str){let h=2166136261>>>0; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0;}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—'}
+function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
 const pct=x=>(x*100).toFixed(1)+'%';
 
 /* ---------- Notifications ---------- */
-async function ensureNotifyPerm(){ if(!('Notification' in window)) return false;
+async function ensureNotifyPerm(){
+  if(!('Notification' in window)) return false;
   if(Notification.permission==='granted') return true;
   if(Notification.permission==='denied') return false;
-  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }}
-async function fireNotify(tail,digit,size){
+  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
+}
+async function fireNotify(tail, digit, size){
   const ok=await ensureNotifyPerm(); if(!ok) return;
   try{
     const payload={ body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true };
@@ -187,72 +233,30 @@ async function fireNotify(tail,digit,size){
   }catch{}
 }
 
-/* ---------- Audio (coin ting 1s) ---------- */
+/* ---------- Audio: 1s coin ting ---------- */
 let audioCtx=null;
 function playTing(){
   if(!el('soundOn').checked) return;
   try{
     if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    const ctx=audioCtx,o1=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-    o1.type='triangle';o2.type='square';o1.frequency.value=1320;o2.frequency.value=880;
-    g.gain.setValueAtTime(.0001,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.9,ctx.currentTime+.02);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.98);
-    o1.frequency.exponentialRampToValueAtTime(1100,ctx.currentTime+.98);
-    o2.frequency.exponentialRampToValueAtTime(780,ctx.currentTime+.98);
-    o1.connect(g);o2.connect(g);g.connect(ctx.destination);
-    o1.start();o2.start();o1.stop(ctx.currentTime+1);o2.stop(ctx.currentTime+1);
+    const ctx=audioCtx, o1=ctx.createOscillator(), o2=ctx.createOscillator(), g=ctx.createGain();
+    o1.type='triangle'; o2.type='square'; o1.frequency.value=1320; o2.frequency.value=880;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.9, ctx.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+.98);
+    o1.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime+.98);
+    o2.frequency.exponentialRampToValueAtTime(780,  ctx.currentTime+.98);
+    o1.connect(g); o2.connect(g); g.connect(ctx.destination);
+    o1.start(); o2.start(); o1.stop(ctx.currentTime+1); o2.stop(ctx.currentTime+1);
   }catch{}
 }
 
-/* ---------- Learning Store (digits & size) ---------- */
-const LS_SIZE='WPP_SIZE2';            // [smallCount,bigCount]
-const LS_HIST='WPP_HIST2';            // recent size history "s"/"b"
+/* ---------- Learning store ---------- */
+const LS_SIZE='WPP_SIZE2';
 const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
 const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
-const pushHist =v=>{try{let h=(localStorage.getItem(LS_HIST)||''); h=(v+h).slice(0,60); localStorage.setItem(LS_HIST',h);}catch{}};
 
-/* ---------- Crowd Bias (from recent predictions) ---------- */
-function crowdBias(){
-  // Simple proxy: derive from local history tail (#hist UI) – Big streak => assume crowd leans Big
-  const hEl=el('hist'); let text=''; for(const n of hEl.children){ text+=n.textContent||'' }
-  const big=(text.match(/\(Big\)/g)||[]).length, small=(text.match(/\(Small\)/g)||[]).length;
-  const tot=big+small||1, pBig=big/tot;
-  // Momentum from tail values (visual recent order is newest top)
-  const streak = /#([5-9])/.test(text.substring(0,80)) ? 1 : 0;
-  return clamp01(0.5* pBig + 0.2* streak + 0.3*0.5); // mix to keep soft
-}
-
-/* ---------- Forex-style indicators on synthetic stream ---------- */
-function makeSeries(period, n=60){
-  // Build deterministic pseudo “price” from period bumps so indicators are stable across users.
-  const base = period.replace(/\D/g,''); if(!base) return Array(n).fill(0);
-  const rnd  = mulberry32(hash32('sr'+base));
-  const s=[]; let price=100;
-  for(let i=0;i<n;i++){ const r=(rnd()*2-1)*0.9; const d= (hash32(base+i+'k')%10)/9; const step = (d-0.5)+r*0.15;
-    price += step*2.2; s.push(price); }
-  return s;
-}
-const ema=(arr,p)=>{const k=2/(p+1); let e=arr[0]; const out=[e]; for(let i=1;i<arr.length;i++){e=arr[i]*k+e*(1-k); out.push(e)} return out}
-function rsi(arr,p=14){
-  let gains=0,losses=0; for(let i=1;i<=p;i++){const ch=arr[i]-arr[i-1]; gains+=Math.max(0,ch); losses+=Math.max(0,-ch)}
-  let rs=gains/Math.max(1e-9,losses), val=100-(100/(1+rs)), out=[...Array(p).fill(50),val];
-  for(let i=p+1;i<arr.length;i++){
-    const ch=arr[i]-arr[i-1]; gains=(gains*(p-1)+Math.max(0,ch))/p; losses=(losses*(p-1)+Math.max(0,-ch))/p;
-    rs=gains/Math.max(1e-9,losses); out.push(100-(100/(1+rs)));
-  } return out;
-}
-function bollPct(arr,p=20,k=2){
-  const out=[...Array(p-1).fill(0.5)];
-  for(let i=p-1;i<arr.length;i++){
-    const win=arr.slice(i-p+1,i+1), mean=win.reduce((a,b)=>a+b,0)/p;
-    const sd=Math.sqrt(win.reduce((a,b)=>a+(b-mean)**2,0)/p);
-    const upper=mean+k*sd, lower=mean-k*sd, v=(arr[i]-lower)/Math.max(1e-6,(upper-lower));
-    out.push(clamp01(v));
-  } return out;
-}
-
-/* ---------- Signals ---------- */
+/* ---------- Signals (robust, no direct last-digit) ---------- */
 function sigChecksum(p){ if(!isDigits(p)) return Array(10).fill(0.1);
   const s=[...p].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
   const v=Array(10).fill(0.1); v[t]+=0.28; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);}
@@ -262,7 +266,8 @@ function sigParity(p){ if(!isDigits(p)) return Array(10).fill(0.1);
   return normalize(v);}
 function sigHashedDistance(p){ if(!isDigits(p)) return Array(10).fill(0.1);
   const a=hash32(p+'d')%10, v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){ const d=Math.min((i-a+10)%10,(a-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d); } return normalize(v);}
+  for(let i=0;i<10;i++){ const d=Math.min((i-a+10)%10,(a-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d); }
+  return normalize(v);}
 function sigBucket(p,anti){ if(!isDigits(p)) return Array(10).fill(0.1);
   const m=(+p.slice(-3))%10, v=Array(10).fill(0.1), k=anti?0.16:0.34;
   v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45; return normalize(v);}
@@ -283,12 +288,7 @@ function sigGap(p){ if(!isDigits(p)) return Array(10).fill(0.1);
   for(let i=0;i<10;i++){const d=Math.min((i-a+10)%10,(a-i+10)%10); v[i]+=0.22*Math.exp(-0.38*d); }
   return normalize(v);}
 
-/* ---------- Auto-Learning & Regime ---------- */
-function regimeWeights(baseW, crowd){
-  // crowd pushes big (index 5..9) softly
-  const w=baseW.slice(); w[4]+= (crowd-0.5)*0.06; // distance signal strength
-  const s=w.reduce((a,b)=>a+b,0); return w.map(x=>x/s);
-}
+/* size-tilt */
 function sizeTilt(base,k){
   const s=loadSize(); const tot=(s[0]+s[1])||1, sb=s[0]/tot, bb=s[1]/tot;
   base=base.slice();
@@ -296,38 +296,8 @@ function sizeTilt(base,k){
   for(let i=5;i<10;i++) base[i]*=(1-k+k*bb);
   return normalize(base);
 }
-function trendState(){
-  // From stored history string 's'/'b': compute EMA & streak/vol
-  let h=''; try{h=localStorage.getItem('WPP_HIST2')||''}catch{}
-  const arr=[...h].map(ch=>ch==='b'?1:0); if(arr.length<5) return {trend:0.5, vol:0.2};
-  const alpha=.2; let emaV=arr[0]; for(let i=1;i<arr.length;i++) emaV=alpha*arr[i]+(1-alpha)*emaV;
-  const mean=arr.reduce((a,b)=>a+b,0)/arr.length;
-  const vol=Math.sqrt(arr.reduce((a,b)=>a+(b-mean)*(b-mean),0)/arr.length); // 0..0.5 approx
-  const last=arr[0]??0, prev=arr[1]??0, streak=(last===prev?1:0);
-  return {trend:emaV*0.7 + mean*0.3 + streak*0.05, vol:Math.min(.6,vol)};
-}
 
-/* ---------- Forex indicators blend to Big/Small bias ---------- */
-function forexBias(period){
-  const s=makeSeries(period,60);
-  const e12=ema(s,12), e26=ema(s,26);
-  const macd=e12.map((v,i)=>v-(e26[i]||v)), sig=ema(macd,9);
-  const r=rsi(s,14), bb=bollPct(s,20,2);
-
-  const last=s.length-1;
-  const up = (macd[last]>sig[last]?1:0)*0.35
-           + (r[last]>55?1:0)*0.25
-           + (bb[last]>0.55?1:0)*0.20
-           + ((s[last]>e12[last] && e12[last]>e26[last])?0.2:0);
-  const down=1-up;
-  // Convert to digit prior (Big vs Small spread evenly)
-  const v=Array(10).fill(0.1);
-  for(let i=0;i<5;i++) v[i]+=down*0.10;
-  for(let i=5;i<10;i++) v[i]+=up*0.10;
-  return normalize(v);
-}
-
-/* ---------- Predictor ---------- */
+/* Predictor */
 function predictLocal(period, mode, antiSeq, learnOn){
   const H={
     conservative:{temp:1.05,cap:0.60,jitter:0.05,adapt:0.12,learn:0.22,wb:[0.22,0.16,0.18,0.16,0.10],wa:[0.08,0.06,0.06,0.06]},
@@ -335,158 +305,8 @@ function predictLocal(period, mode, antiSeq, learnOn){
     aggressive  :{temp:1.08,cap:0.68,jitter:0.12,adapt:0.24,learn:0.34,wb:[0.18,0.18,0.22,0.16,0.10],wa:[0.10,0.06,0.06,0.04]}
   }[mode];
 
-  const crowd = crowdBias();
-  const regW  = regimeWeights(H.wb, crowd);
   const B1=sigChecksum(period), B2=sigParity(period), B3=sigHashedDistance(period), B4=sigBucket(period,antiSeq), B5=sigProfile(period);
   const A1=sigReverse(period),  A2=sigMirror(period),  A3=sigContinuous(period),   A4=sigGap(period);
-  const FX=forexBias(period);
-
-  let base=normalize(Array(10).fill(0).map((_,i)=> regW[0]*B1[i]+regW[1]*B2[i]+regW[2]*B3[i]+regW[3]*B4[i]+regW[4]*B5[i]));
-  let adv =normalize(Array(10).fill(0).map((_,i)=> H.wa[0]*A1[i]+H.wa[1]*A2[i]+H.wa[2]*A3[i]+H.wa[3]*A4[i]));
-  let mix =normalize(base.map((_,i)=> (base[i]*0.60 + adv[i]*0.20 + FX[i]*0.20)));
-
-  // regime from recent outcomes
-  const {trend, vol}=trendState(); // 0..1
-  // trend favors current big probability
-  for(let i=5;i<10;i++) mix[i]*=(0.95+0.10*trend);
-  for(let i=0;i<5;i++)  mix[i]*=(1.05-0.10*trend);
-  mix=normalize(mix);
-
-  // adapt vs top3 temperature boost
-  const sorted=mix.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  mix=normalize(mix.map(p=>p*(1+H.adapt*((p-t)/(t+1e-9)))));
-
-  if(learnOn) mix=sizeTilt(mix,H.learn);
-
-  // volatility discipline: high vol => reduce cap
-  const capAdj = H.cap - Math.min(0.08, vol*0.12);
-
-  // bootstrap
-  const rnd=mulberry32(hash32(period+'boot')); const B=96, j=H.jitter;
-  const agg=Array(10).fill(0), votes=Array(10).fill(0);
-  for(let b=0;b<B;b++){ const p=normalize(mix.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
-  let probs=normalize(agg).map(p=>Math.pow(p,1/H.temp)); probs=normalize(probs);
-  const iM=argmax(probs), mx=probs[iM];
-  if(mx>capAdj){ const excess=mx-capAdj; probs[iM]-=excess;
-    const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest;
-    for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
-
-  return {probs, stability:Math.max(...votes)/B};
-}
-
-/* ---------- Chart ---------- */
-let probChart=null;
-function drawChart(p){
-  const data=p.map(x=>Math.round(x*1000)/10), labels=[...Array(10).keys()].map(String);
-  if(probChart) probChart.destroy();
-  probChart=new Chart(el('probChart').getContext('2d'),{
-    type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
-    options:{responsive:true,scales:{y:{beginAtZero:true},x:{}}}
-  });
-}
-
-/* ---------- Render ---------- */
-function render(period,out,source='manual'){
-  const probs=out.probs, pick=argmax(probs);
-  drawChart(probs);
-
-  let H=0; probs.forEach(p=>{if(p>0) H+=-p*Math.log(p)}); 
-  const entropy=clamp01(1-H/Math.log(10)), stab=clamp01(out.stability), score=clamp01(.55*entropy+.45*stab);
-
-  el('resultCard').style.display='block';
-  el('vPeriod').textContent=period;
-  el('vNum').textContent=pick;
-  el('vSize').textContent=pick>=5?'Big':'Small';
-  el('confBar').style.width=(score*100).toFixed(1)+'%';
-  el('hiAcc').style.display=score>=0.86?'inline-block':'none';
-  el('scoreP').textContent=`Score ${(score*100).toFixed(0)}%`;
-
-  const big=probs.slice(5).reduce((a,b)=>a+b,0); const small=1-big;
-  el('bsPct').textContent=`Big: ${pct(big)} | Small: ${pct(small)}`;
-
-  let sig='Play',cls='ok'; if(entropy<0.18 && stab<0.30){sig='Wait';cls='bad'}
-  else if(entropy<0.18 || stab<0.30){sig='Caution';cls='warn'}
-  const ps=el('playSignal'); ps.textContent=sig; ps.className='badge '+cls;
-
-  const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
-  el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
-  el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
-
-  const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
-  [...h.children].slice(16).forEach(n=>n.remove());
-
-  if(source==='auto' && el('autoNext').checked){
-    fireNotify(String(period).slice(-3), pick, (pick>=5?'Big':'Small'));
-    playTing();
-  }
-}
-
-/* ---------- Actions ---------- */
-let autoTimer=null,nextAt=0,hudTimer=null,busy=false;
-function startHud(){ hud.style.display='block'; clearInterval(hudTimer);
-  hudTimer=setInterval(()=>{const left=Math.max(0,Math.floor((nextAt-Date.now())/1000));
-    const mm=String(Math.floor(left/60)).padStart(2,'0'), ss=String(left%60).padStart(2,'0'); tickEl.textContent=`${mm}:${ss}`;},200)}
-function stopHud(){hud.style.display='none';clearInterval(hudTimer);tickEl.textContent='—'}
-function startAuto(){
-  const sec=+document.querySelector('input[name="preset"]:checked').value||30;
-  clearInterval(autoTimer);
-  const once=()=>{ nextAt=Date.now()+sec*1000; startHud();
-    const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur);
-    run('auto'); };
-  once(); autoTimer=setInterval(once, sec*1000);
-  el('btnAuto').textContent='⏸ Stop Auto'; el('btnAuto').classList.remove('dark'); el('btnAuto').classList.add('primary');
-}
-function stopAuto(){ clearInterval(autoTimer); autoTimer=null; stopHud();
-  el('btnAuto').textContent='▶ Start Auto'; el('btnAuto').classList.remove('primary'); el('btnAuto').classList.add('dark'); }
-
-async function run(source='manual'){
-  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
-  const p=el('period').value.trim(); if(!isDigits(p)){alert('Valid period number भरें');return;}
-  el('periodInfo').textContent='Period: '+describePeriod(p);
-  const out=predictLocal(p, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
-  render(p,out,source);
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  el('btnPredict').addEventListener('click', ()=>run('manual'));
-  el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') run('manual'); });
-  el('btnAuto').addEventListener('click', ()=>{ if(autoTimer){stopAuto()} else {startAuto()} });
-  el('btnClear').addEventListener('click', ()=>{
-    stopAuto(); el('autoNext').checked=false; el('period').value=''; el('periodInfo').textContent='—';
-    el('resultCard').style.display='none'; el('hist').textContent='—'; if(probChart){probChart.destroy();probChart=null;}
-  });
-  el('btnCopy').addEventListener('click', async ()=>{
-    const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{}
-  });
-  el('btnCopySafe').addEventListener('click', ()=>{
-    const s=el('top2').textContent.replace('Safe set: ','').trim();
-    if(!s||s==='—'){alert('पहले Predict करें');return;}
-    navigator.clipboard.writeText(s).then(()=>alert('Safe set copied'));
-  });
-  el('btnSound').addEventListener('click', playTing);
-  el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
-  el('compactToggle').addEventListener('change', e=>{ if(e.target.checked) root.classList.add('compact'); else root.classList.remove('compact'); });
-
-  // Verify & Learn -> updates Beta counts + history
-  el('btnVerify').addEventListener('click', ()=>{
-    const pick=el('vNum').textContent.trim();
-    if(!pick||pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9aa4b6'; return; }
-    const ch=document.querySelector('input[name="actSize"]:checked');
-    if(!ch){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9aa4b6'; return; }
-    const actual=ch.value, predicted=(+pick>=5)?'big':'small', win=(actual===predicted);
-    if(win){ el('verifyMsg').textContent=`WIN ✔ size ${predicted.toUpperCase()}`; el('verifyMsg').style.color='var(--ok)'; }
-    else{ el('verifyMsg').textContent=`LOSS ✘ picked ${predicted.toUpperCase()} • actual ${actual.toUpperCase()}`; el('verifyMsg').style.color='var(--bad)'; }
-    try{
-      const s=loadSize(); if(actual==='small') s[0]++; else s[1]++; saveSize(s);
-      let h=(localStorage.getItem(LS_HIST)||''); h=(actual==='big'?'b':'s')+h; localStorage.setItem(LS_HIST',h.slice(0,60));
-    }catch{}
-  });
-});
-</script>
-</body>
-</html> A1=sigReverse(period),  A2=sigMirror(period),  A3=sigContinuous(period),   A4=sigGap(period);
 
   let base=normalize(Array(10).fill(0).map((_,i)=> H.wb[0]*B1[i]+H.wb[1]*B2[i]+H.wb[2]*B3[i]+H.wb[3]*B4[i]+H.wb[4]*B5[i]));
   const adv =normalize(Array(10).fill(0).map((_,i)=> H.wa[0]*A1[i]+H.wa[1]*A2[i]+H.wa[2]*A3[i]+H.wa[3]*A4[i]));
@@ -583,53 +403,4 @@ async function run(source='manual'){
   if(busy) return; busy=true; setTimeout(()=>busy=false,120);
   const p=el('period').value.trim(); if(!isDigits(p)){ alert('Valid period number भरें'); return; }
   el('periodInfo').textContent='Period: '+describePeriod(p);
-  const out=predictLocal(p, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
-  render(p,out,source);
-}
-
-/* Bindings */
-document.addEventListener('DOMContentLoaded', ()=>{
-  el('btnPredict').addEventListener('click', ()=>run('manual'));
-  el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') run('manual'); });
-
-  el('btnAuto').addEventListener('click', ()=>{
-    if(autoTimer){ stopAuto(); } else { startAuto(); }
-  });
-
-  el('btnClear').addEventListener('click', ()=>{
-    stopAuto(); el('autoNext').checked=false;
-    el('period').value=''; el('periodInfo').textContent='—'; el('resultCard').style.display='none';
-    el('hist').textContent='—'; if(probChart){probChart.destroy(); probChart=null;}
-  });
-
-  el('btnCopy').addEventListener('click', async ()=>{
-    const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{}
-  });
-  el('btnCopySafe').addEventListener('click', ()=>{
-    const s=el('top2').textContent.replace('Safe set: ','').trim();
-    if(!s||s==='—'){ alert('पहले Predict करें'); return; }
-    navigator.clipboard.writeText(s).then(()=>alert('Safe set copied'));
-  });
-
-  el('btnSound').addEventListener('click', playTing);
-  el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
-
-  el('compactToggle').addEventListener('change', e=>{
-    if(e.target.checked) root.classList.add('compact'); else root.classList.remove('compact');
-  });
-
-  el('btnVerify').addEventListener('click', ()=>{
-    const pick=el('vNum').textContent.trim();
-    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9aa4b6'; return; }
-    const ch=document.querySelector('input[name="actSize"]:checked');
-    if(!ch){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9aa4b6'; return; }
-    const actual=ch.value, predicted=(+pick>=5)?'big':'small', win=(actual===predicted);
-    if(win){ el('verifyMsg').textContent=`WIN ✔ size ${predicted.toUpperCase()}`; el('verifyMsg').style.color='var(--ok)'; }
-    else{ el('verifyMsg').textContent=`LOSS ✘ picked ${predicted.toUpperCase()} • actual ${actual.toUpperCase()}`; el('verifyMsg').style.color='var(--bad)'; }
-    if(el('learnOn').checked){ const s=loadSize(); if(actual==='small') s[0]++; else s[1]++; saveSize(s); }
-  });
-});
-</script>
-</body>
-</html>
+  const out=predictLocal(p, el('mode').
