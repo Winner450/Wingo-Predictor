@@ -1,279 +1,160 @@
-<!doctype html>
-
-<html lang="hi">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WinGo Strategy — World‑Class Strategy Launcher</title>
-  <meta name="description" content="A high-impact single-file HTML demo for launching your strategy product on GitHub. Interactive, modern, and production-ready." />
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="" crossorigin="anonymous" />
-  <style>
-    :root{
-      --bg1:#0f1724; --bg2:#071024; --accent:#00e0a8; --accent-2:#7c5cff; --glass: rgba(255,255,255,0.06);
-      --card-shadow: 0 10px 30px rgba(2,6,23,0.6);
-      --glass-2: rgba(255,255,255,0.03);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 Big Daddy Predictor Pro 🔥</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top, #0a0a0a, #000);
+        color: #fff;
+        text-align: center;
+        padding: 20px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#dbeafe;background:linear-gradient(135deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
-    .container{max-width:1100px;margin:40px auto;padding:28px}/* Header */
-header{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#021022;box-shadow:0 6px 18px rgba(124,92,255,0.18)}
-h1.title{font-size:22px;margin:0}
-p.lead{margin:0;color:#9fb0d6}
-
-/* Hero */
-.hero{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:28px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:14px;box-shadow:var(--card-shadow);border:1px solid var(--glass-2)}
-
-.features{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.feature{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
-.feature h4{margin:6px 0 0 0}
-.cta{display:flex;gap:8px;margin-top:14px}
-.btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021022}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#bcd3f5}
-
-/* Right panel */
-.panel{display:flex;flex-direction:column;gap:12px}
-.statrow{display:flex;gap:12px}
-.stat{flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);text-align:center}
-.simulator{height:240px}
-
-/* Strategy board */
-.board{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.code-sample{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#021226;padding:12px;border-radius:8px;color:#9be7d2;overflow:auto;max-height:220px}
-
-/* Footer */
-footer{margin-top:28px;text-align:center;color:#8da6d6}
-
-/* Responsive */
-@media (max-width:980px){.hero{grid-template-columns:1fr}.panel{order:3}.board{grid-template-columns:1fr}}
-
-/* Animated accent bar */
-.accent-bar{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px rgba(124,92,255,0.12);margin-top:20px}
-
-/* small helpers */
-.muted{color:#9fb0d6;font-size:14px}
-.kpi{font-size:20px;font-weight:700}
-
-  </style>
+    h1 {
+        font-size: 2em;
+        color: #ff0080;
+        text-shadow: 0 0 15px #ff0080, 0 0 30px #ff0080;
+    }
+    .input-box {
+        margin: 20px auto;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    input, select, button {
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 8px;
+        border: none;
+    }
+    button {
+        background: #ff0080;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 0 10px #ff0080;
+    }
+    button:hover {
+        background: #ff4da6;
+    }
+    .prediction-box {
+        margin-top: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 20px #00f0ff;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .confidence-meter {
+        height: 20px;
+        background: #333;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+    .confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff0080, #00f0ff);
+        width: 0%;
+        transition: width 1s ease-in-out;
+    }
+    table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">WG</div>
-        <div>
-          <h1 class="title">WinGo Predictor — Strategy Launchpad</h1>
-          <p class="lead">एक प्रीमियम single-file HTML template — GitHub-ready, modern UI, और interactive demos के साथ।</p>
-        </div>
-      </div>
-      <div>
-        <button class="btn btn-ghost" id="downloadBtn"><i class="fa fa-download"></i> Download ZIP</button>
-        <button class="btn btn-primary" id="deployBtn"><i class="fa fa-rocket"></i> Deploy to GitHub</button>
-      </div>
-    </header><div class="hero">
-  <div class="card">
-    <h2 style="margin:0 0 8px 0">World‑Class Strategy — Live Demo</h2>
-    <p class="muted">यह demo आपको दिखाएगा कि कैसे एक आधुनिक, डेटा-संचालित strategy landing page दिख सकता है — interactive simulator, quick analytics और shareable snippets।</p>
 
-    <div class="features" style="margin-top:14px">
-      <div class="feature">
-        <strong>AI‑Ready Widgets</strong>
-        <h4 class="muted">API hooks, WebSocket ready, और placeholder AI modules के साथ।</h4>
-      </div>
-      <div class="feature">
-        <strong>Strategy Simulator</strong>
-        <h4 class="muted">Quick simulate करके risk/reward और confidence देखिए।</h4>
-      </div>
-      <div class="feature">
-        <strong>Beautiful UI</strong>
-        <h4 class="muted">Modern gradients, glass cards और micro-interactions।</h4>
-      </div>
-      <div class="feature">
-        <strong>One‑File Deploy</strong>
-        <h4 class="muted">किसी external build के बिना GitHub Pages पर तुरंत चालू करें।</h4>
-      </div>
-    </div>
+<h1>🔥 Big Daddy Predictor Pro 🔥</h1>
 
-    <div class="cta">
-      <button class="btn btn-primary" id="runSim">Run Quick Simulation</button>
-      <button class="btn btn-ghost" id="viewCode">View Code Snippet</button>
-    </div>
-
-    <div class="board">
-      <div class="card">
-        <h3 style="margin-top:0">Live Confidence</h3>
-        <div class="statrow" style="margin-top:8px">
-          <div class="stat">
-            <div class="kpi" id="confVal">72%</div>
-            <div class="muted">Strategy Confidence</div>
-          </div>
-          <div class="stat">
-            <div class="kpi" id="winRate">64%</div>
-            <div class="muted">Historic Win‑Rate</div>
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <canvas id="confidenceChart" height="120" class="simulator"></canvas>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3 style="margin-top:0">Quick Tactics</h3>
-        <ul style="margin:8px 0 0 18px;color:#cfeaf0">
-          <li>Multi‑timeframe confirmation</li>
-          <li>Adaptive stake sizing</li>
-          <li>Strict Take‑Profit / Stop‑Loss rules</li>
-          <li>Realtime alerts (webhook / telegram)</li>
-        </ul>
-
-        <div style="margin-top:10px" class="muted">Simulator inputs:</div>
-        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-          <input id="risk" type="range" min="1" max="10" value="3" />
-          <div class="muted">Risk: <span id="riskVal">3</span></div>
-        </div>
-
-        <div style="margin-top:12px" class="code-sample" id="snippet">
-
-// Strategy snippet (copy & paste) fetch('/api/predict', {method:'POST', body: JSON.stringify({window:100})}) .then(r=>r.json()) .then(d=>console.log('prediction',d)) </div>
-
-</div>
-    </div>
-
-  </div>
-
-  <aside class="panel">
-    <div class="card">
-      <h3 style="margin-top:0">Quick Stats</h3>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-        <div class="muted">Active Runs</div>
-        <div class="kpi">1,248</div>
-        <div style="height:12px" class="accent-bar"></div>
-        <div class="muted" style="margin-top:10px">Avg Response Time</div>
-        <div class="kpi">62ms</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-top:0">Simulator Controls</h3>
-      <div style="display:flex;gap:8px;flex-direction:column">
-        <label class="muted">Periods to analyze</label>
-        <input id="periods" type="number" min="10" max="1000" value="100" />
-        <label class="muted">Confidence threshold</label>
-        <input id="threshold" type="number" min="1" max="100" value="60" />
-        <button class="btn btn-primary" id="simulateFull">Run Full Backtest</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h4 style="margin:0">Share</h4>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-ghost" id="shareTweet"><i class="fa-brands fa-twitter"></i> Tweet</button>
-        <button class="btn btn-ghost" id="copyLink">Copy Link</button>
-      </div>
-    </div>
-  </aside>
+<div class="input-box">
+    <input type="text" id="periodNumber" placeholder="Enter Period Number">
+    <select id="patternSelect">
+        <option value="pattern1">Pattern 1</option>
+        <option value="pattern2">Pattern 2</option>
+        <option value="pattern3">Pattern 3</option>
+    </select>
+    <button onclick="getPrediction()">Predict</button>
 </div>
 
-<div class="card" style="margin-top:18px">
-  <h3 style="margin-top:0">Production Notes (README)</h3>
-  <p class="muted">यह single-file template GitHub Pages पर सीधा डाला जा सकता है। यदि आप external AI या data‑feeds जोड़ना चाहें तो <code>/api/predict</code> और WebSocket endpoints का उपयोग करें।</p>
-  <ol class="muted">
-    <li>Customize the strategy rules in the <code>simulate()</code> function inside the script tag.</li>
-    <li>Replace the demo Chart.js data with your real backtest results.</li>
-    <li>Hook-up your CI/CD to auto-deploy to GitHub Pages.</li>
-  </ol>
-
-  <div class="code-sample" style="margin-top:10px">
-
-<!-- LICENSE: MIT --></div>
+<div class="prediction-box" id="predictionResult">
+    <h2>Prediction:</h2>
+    <p id="predNumber">Number: --</p>
+    <p id="predSize">Size: --</p>
+    <p id="predColor">Color: --</p>
+    <div class="confidence-meter">
+        <div class="confidence-fill" id="confidenceFill"></div>
+    </div>
+    <p id="confidenceText">Confidence: --%</p>
 </div>
 
-<footer>
-  <div class="muted">Built with ❤️ for launch. Ready for GitHub Pages — single file, zero build.</div>
-</footer>
+<table>
+    <thead>
+        <tr>
+            <th>Period</th>
+            <th>Pattern</th>
+            <th>Number</th>
+            <th>Size</th>
+            <th>Color</th>
+            <th>Confidence</th>
+        </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+</table>
 
-  </div>  <!-- External libs (CDN) -->  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>  <script>
-    // ====== Demo JS: Quick interactive behaviour ======
-    const confEl = document.getElementById('confVal');
-    const winEl = document.getElementById('winRate');
-    const runBtn = document.getElementById('runSim');
-    const risk = document.getElementById('risk');
-    const riskVal = document.getElementById('riskVal');
-    const simulateFull = document.getElementById('simulateFull');
+<script>
+async function getPrediction() {
+    let period = document.getElementById('periodNumber').value.trim();
+    let pattern = document.getElementById('patternSelect').value;
+    if (!period) {
+        alert("Please enter period number!");
+        return;
+    }
 
-    // Chart setup
-    const ctx = document.getElementById('confidenceChart').getContext('2d');
-    const chart = new Chart(ctx, {
-      type:'line',
-      data:{labels:Array.from({length:12},(_,i)=>i+1),datasets:[{label:'Confidence',data:[60,62,65,70,74,72,75,73,76,78,80,82],fill:true,tension:0.3}]},
-      options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}}}
-    });
+    // Fetch last results from your API
+    try {
+        let res = await fetch(`YOUR_API_ENDPOINT_HERE?period=${period}`);
+        let data = await res.json();
 
-    // Small helper: random gaussian-ish number
-    function randBase(mean,spread){return Math.max(1,Math.round(mean + (Math.random()-0.5)*spread*2));}
+        // Dummy calculation for prediction (replace with your real logic)
+        let number = (data.lastResult + Math.floor(Math.random()*10)) % 10;
+        let size = number >= 5 ? "Big" : "Small";
+        let color = number % 2 === 0 ? "Red" : "Green";
+        let confidence = Math.floor(Math.random() * (95 - 70) + 70);
 
-    runBtn.addEventListener('click',()=>{
-      const base = randBase(72,12);
-      confEl.textContent = base + '%';
-      winEl.textContent = Math.max(40, base - 8) + '%';
-      // animate chart
-      for(let i=0;i<chart.data.datasets[0].data.length;i++) chart.data.datasets[0].data[i] = Math.round(base + (Math.random()-0.5)*10);
-      chart.update();
-      gsap.fromTo('#confVal',{scale:0.8,opacity:0},{scale:1,opacity:1,duration:0.5});
-    });
+        // Display in UI
+        document.getElementById('predNumber').innerText = `Number: ${number}`;
+        document.getElementById('predSize').innerText = `Size: ${size}`;
+        document.getElementById('predColor').innerText = `Color: ${color}`;
+        document.getElementById('confidenceFill').style.width = confidence + "%";
+        document.getElementById('confidenceText').innerText = `Confidence: ${confidence}%`;
 
-    risk.addEventListener('input',()=>riskVal.textContent = risk.value);
+        // Add to history
+        let row = `<tr>
+            <td>${period}</td>
+            <td>${pattern}</td>
+            <td>${number}</td>
+            <td>${size}</td>
+            <td>${color}</td>
+            <td>${confidence}%</td>
+        </tr>`;
+        document.getElementById('historyTable').innerHTML += row;
 
-    simulateFull.addEventListener('click',()=>{
-      alert('Running demo backtest... (this is a client-side demo — replace with your real API/backtest)');
-      // fake progress animation
-      gsap.to('.accent-bar',{width:'80%',duration:1.2});
-    });
+    } catch (err) {
+        alert("Error fetching data. Please check API endpoint.");
+        console.error(err);
+    }
+}
+</script>
 
-    // Minimal deploy helper (opens GitHub new repo page with prefilled name)
-    document.getElementById('deployBtn').addEventListener('click',()=>{
-      const repoName = encodeURIComponent('wingo-strategy-launch');
-      window.open('https://github.com/new?name='+repoName,'_blank');
-    });
-
-    document.getElementById('downloadBtn').addEventListener('click',()=>{
-      // create a downloadable single-file HTML blob
-      const html = '<!doctype html>' + document.documentElement.outerHTML;
-      const blob = new Blob([html],{type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'index.html'; a.click(); URL.revokeObjectURL(url);
-    });
-
-    // Small UX flourish
-    gsap.from('header .logo',{y:-20,opacity:0,duration:0.8});
-
-    // Allow copying the code sample
-    document.getElementById('viewCode').addEventListener('click',async ()=>{
-      const txt = document.getElementById('snippet').textContent;
-      await navigator.clipboard.writeText(txt);
-      alert('Code snippet copied to clipboard');
-    });
-
-    document.getElementById('copyLink').addEventListener('click',()=>{
-      navigator.clipboard.writeText(location.href);
-      alert('Link copied');
-    });
-
-    // small accessibility: keyboard run
-    window.addEventListener('keydown',e=>{ if(e.key==='r') runBtn.click(); });
-
-    // Initial micro-anim
-    gsap.from('.card',{y:10,opacity:0,duration:0.6,stagger:0.08});
-  </script>  <!--
-    NOTE (in Hindi):
-    यह एक single-file HTML template है — GitHub पर सीधे डालने के लिए तैयार।
-    Customize करने के लिए <script> में simulate() और fetch हिस्सों को बदलें।
-  --></body>
+</body>
 </html>
