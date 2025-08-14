@@ -13,12 +13,22 @@
   --card:#14161b; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
   --radius:16px; --shadow:0 12px 26px rgba(0,0,0,.35);
 }
-*{box-sizing:border-box} body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
 
-/* Header */
-header{position:sticky;top:0;z-index:100;background:#000;border-bottom:1px solid #0f1117}
-.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
-.logo{font-weight:800;font-size:clamp(18px,4.4vw,22px);color:var(--gold);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* === Top Golden line === */
+.topgold{
+  position:sticky; top:0; z-index:120;
+  background:linear-gradient(90deg,#ffea80,#ffd700,#f5c400);
+  color:#000; font-weight:900; letter-spacing:.3px;
+  display:flex; align-items:center; justify-content:center;
+  height:44px; padding:0 12px; box-shadow:0 2px 10px rgba(0,0,0,.35);
+  text-transform:uppercase;
+}
+.topgold .title{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+header{position:sticky; top:44px; z-index:100; background:#000; border-bottom:1px solid #0f1117}
+.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.logo{font-weight:800;font-size:clamp(18px,4.4vw,22px);color:var(--gold)}
 .right{display:flex;align-items:center;gap:10px;color:#cbd5e1;font-size:13px}
 
 .container{max-width:1180px;margin:0 auto;padding:18px 16px 38px}
@@ -61,17 +71,16 @@ input:focus,select:focus{border-color:var(--gold)}
 </style>
 </head>
 <body>
+<!-- गोल्डन लाइन -->
+<div class="topgold"><div class="title">🎯 WINGO PREDICTOR PRO</div></div>
 <header>
   <div class="bar">
-    <div class="logo">🎯 WinGo Predictor Pro</div>
-    <div class="right">
-      <label class="switch"><input type="checkbox" id="compactToggle"> Compact View</label>
-    </div>
+    <div class="logo">WinGo Predictor Pro</div>
+    <div class="right"><label class="switch"><input type="checkbox" id="compactToggle"> Compact View</label></div>
   </div>
 </header>
 
 <div class="container" id="appRoot">
-  <!-- CONTROL -->
   <div class="card">
     <div class="h1">Quick Predict</div>
     <div class="grid">
@@ -86,6 +95,7 @@ input:focus,select:focus{border-color:var(--gold)}
           <option value="balanced" selected>Normal</option>
           <option value="conservative">Confidence</option>
           <option value="aggressive">Very Confident</option>
+          <option value="beast">💥 Beast Mode (best)</option>
         </select>
         <div class="row" style="margin-top:8px">
           <label class="switch"><input id="autoNext" type="checkbox"> Auto Next</label>
@@ -106,27 +116,23 @@ input:focus,select:focus{border-color:var(--gold)}
 
     <div class="hr"></div>
 
-    <!-- 🧮 2-Level Plan controls -->
+    <!-- Verify & Learn (Big/Small) -->
     <div class="grid">
       <div>
-        <label>💰 Bankroll</label>
-        <input id="bankroll" type="number" min="1" value="1000"/>
-        <div class="sub">कुल बैलेंस (यूनिट/₹ जैसा चाहें)</div>
+        <label>✅ Actual size — optional (Learning)</label>
+        <div class="row">
+          <label class="switch"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
+          <label class="switch"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
+        </div>
       </div>
-      <div>
-        <label>⚖️ Payout Odds</label>
-        <input id="odds" type="number" step="0.01" value="1.95"/>
-        <div class="sub">डिफ़ॉल्ट 1.95 (WinGo प्रकार)</div>
-      </div>
-      <div>
-        <label>🛑 Risk per cycle (max)</label>
-        <input id="riskCap" type="number" step="0.1" value="2"/>
-        <div class="sub">% of bankroll for L1+L2 (cap)</div>
+      <div class="row" style="align-items:end">
+        <button class="btn sec" id="btnVerify">Verify & Learn</button>
+        <span class="helper" id="verifyMsg">—</span>
       </div>
     </div>
   </div>
 
-  <!-- RESULT + PLAN -->
+  <!-- RESULT + 2-Level Plan -->
   <div class="card" id="resultCard" style="margin-top:14px;display:none">
     <div class="kv">
       <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
@@ -164,7 +170,6 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
-  <!-- CHARTS + HISTORY -->
   <div class="grid2" style="margin-top:14px">
     <div class="card">
       <div class="h1">📊 Probability (0–9)</div>
@@ -211,7 +216,7 @@ function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slic
 function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-/* ===== Priors (debiased) ===== */
+/* ===== Priors (debiased/robust) ===== */
 function priorPeriodDigits(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const d=[...period].map(Number);
@@ -243,7 +248,7 @@ function priorChecksum(period){
 }
 function priorDistanceHashed(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const seedDigit = hash32(period+'d')%10;
+  const seedDigit = hash32(period+'d')%10;  // debiased anchor
   const v=Array(10).fill(0.1);
   for(let i=0;i<10;i++){const d=Math.min((i-seedDigit+10)%10,(seedDigit-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);}
   return normalize(v);
@@ -259,13 +264,15 @@ function regimeWeights(w){
   const sum=out.reduce((a,b)=>a+b,0); return out.map(x=>x/sum);
 }
 
-/* ===== Predictor ===== */
+/* ===== Predictor (adds BEAST MODE) ===== */
 function predictLocal(period, mode, antiSeq, learnOn){
-  const hyper={
+  const baseCfg={
     conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.34,0.16,0.18,0.18,0.14],learnBoost:0.25},
     balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.32,0.18,0.20,0.18,0.12],learnBoost:0.30},
-    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.35}
-  }[mode];
+    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.35},
+    beast       :{temp:1.02,cap:0.55,jitter:0.04,adapt:0.26,w:[0.36,0.18,0.22,0.16,0.08],learnBoost:0.40} // tighter temp/cap, stronger learn
+  };
+  const hyper=baseCfg[mode]||baseCfg.balanced;
 
   const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistanceHashed(period);
   const w=regimeWeights(hyper.w);
@@ -283,7 +290,7 @@ function predictLocal(period, mode, antiSeq, learnOn){
   }
 
   const seed=hash32(period); const rnd=mulberry32(seed);
-  const B=72,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
+  const B=84,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
   for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
   let probs=normalize(agg).map(p=>Math.pow(p,1/hyper.temp)); probs=normalize(probs);
   const iM=argmax(probs), mx=probs[iM];
@@ -304,20 +311,18 @@ function renderCharts(probs){
   });
 }
 
-/* ===== Level Plan (2-step) ===== */
+/* ===== 2-Level Plan (Half-Kelly capped) ===== */
 function computePlan(pBig, odds, bankroll, riskCapPct){
-  const p = Math.max(pBig, 1-pBig);               // primary side prob
-  const b = odds - 1;                             // net odds (e.g. 0.95)
-  const edge = p*b - (1-p);                       // EV per 1 stake
-  // Half-Kelly fraction for even-money like bets, clipped
-  let f = edge/(b); f = Math.max(0, Math.min(f, 0.10)); // cap 10% theoretical
-  f = f/2;                                        // half-kelly
-  const cap = bankroll * (riskCapPct/100);        // cycle risk cap
-  const stake1 = Math.max(1, Math.min(bankroll*f, cap*0.6)); // 60% of cap
-  // Level-2: लक्ष्य कि कुल मिलाकर EV+ रहे, पर risk cap न टूटे
-  const need = stake1/(odds-1);                   // approx recoup if L2 wins
-  const stake2 = Math.max(1, Math.min(need*1.05, cap - stake1));
-  return {stake1: Math.floor(stake1), stake2: Math.floor(stake2), sideProb:p, edge};
+  const p = Math.max(pBig, 1-pBig);          // primary side prob
+  const b = Math.max(odds-1, 0.01);
+  const edge = p*b - (1-p);
+  let f = Math.max(0, Math.min(edge/b, 0.10)); // <=10%
+  f = f/2;                                     // half-kelly
+  const cap = bankroll*(riskCapPct/100);
+  const s1 = Math.max(1, Math.min(bankroll*f, cap*0.6));
+  const need = s1/b;                            // approx recover
+  const s2 = Math.max(1, Math.min(need*1.05, cap - s1));
+  return {stake1:Math.floor(s1), stake2:Math.floor(s2), sideProb:p, edge};
 }
 
 /* ===== Render ===== */
@@ -325,20 +330,18 @@ function renderResult(period, out, source='manual'){
   const probs=out.probs.slice(); const pick=argmax(probs);
   renderCharts(probs);
 
-  // confidence
   let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
   const stability=clamp01(out.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
 
   const pBig = probs.slice(5).reduce((a,b)=>a+b,0), pSmall = 1-pBig;
   const primarySide = (pBig>=pSmall)?'BIG':'SMALL';
 
-  // plan
-  const bankroll = Math.max(1, +el('bankroll').value||1000);
-  const odds = Math.max(1.01, +el('odds').value||1.95);
-  const riskCap = Math.max(0.1, +el('riskCap').value||2);
+  const bankroll = Math.max(1, +document.getElementById('bankroll')?.value||1000);
+  const odds = Math.max(1.01, +document.getElementById('odds')?.value||1.95);
+  const riskCap = Math.max(0.1, +document.getElementById('riskCap')?.value||2);
   const plan = computePlan(pBig, odds, bankroll, riskCap);
 
-  // UI fill
+  // UI
   el('resultCard').style.display='block';
   el('vPeriod').textContent=period;
   el('vNum').textContent=pick;
@@ -350,11 +353,10 @@ function renderResult(period, out, source='manual'){
   el('pSmall').textContent=(pSmall*100).toFixed(1)+'%';
   el('sideText').innerHTML = primarySide==='BIG' ? '<span class="big">BIG</span>' : '<span class="small">SMALL</span>';
   el('sideBadge').textContent = `edge ${(100*plan.edge).toFixed(1)}%`;
-
   el('stakeL1').textContent = plan.stake1.toString();
   el('stakeL2').textContent = plan.stake2.toString();
   el('tgtL1').textContent   = primarySide;
-  el('tgtL2').textContent   = (primarySide==='BIG'?'BIG':'SMALL'); // 2-level same-side by default
+  el('tgtL2').textContent   = primarySide;
 
   const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.28) issues.push('unstable');
   let signal='Play',cls='ok'; if(issues.length===1){signal='Caution';cls='warn'} if(issues.length>=2){signal='Wait';cls='bad'}
@@ -394,6 +396,15 @@ function startAuto(){
 
 /* ===== Bindings ===== */
 document.addEventListener('DOMContentLoaded', ()=>{
+  // bankroll & odds inputs for plan
+  const planControls = document.createElement('div');
+  planControls.className='grid';
+  planControls.innerHTML = `
+    <div><label>💰 Bankroll</label><input id="bankroll" type="number" min="1" value="1000"/><div class="sub">कुल बैलेंस</div></div>
+    <div><label>⚖️ Payout Odds</label><input id="odds" type="number" step="0.01" value="1.95"/><div class="sub">डिफ़ॉल्ट 1.95</div></div>
+    <div><label>🛑 Risk per cycle (max)</label><input id="riskCap" type="number" step="0.1" value="2"/><div class="sub">% of bankroll</div></div>`;
+  document.querySelector('.card .hr').before(planControls); // top card में जोड़ दिया
+
   el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
   el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
   el('btnClear').addEventListener('click', ()=>{
@@ -411,7 +422,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
 
-  // Verify & Learn — colored WIN/LOSS
+  // Verify & Learn — green/red
   el('btnVerify').addEventListener('click', ()=>{
     const pick = el('vNum').textContent.trim();
-    if(!pick || pick==='—'){ el('verifyMsg').textContent='पह
+    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9ca3af'; return; }
+    const chosen = document.querySelector('input[name="actSize"]:checked');
+    if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9ca3af'; return; }
+
+    const actualSize = chosen.value;                 // 'small' | 'big'
+    const predictedSize = (+pick>=5)?'big':'small';
+    const win = (actualSize===predictedSize);
+
+    if(win){ el('verifyMsg').textContent='WIN ✔'; el('verifyMsg').style.color='var(--ok)'; }
+    else   { el('verifyMsg').textContent=`LOSS ✘ (picked ${predictedSize.toUpperCase()})`; el('verifyMsg').style.color='var(--bad)'; }
+
+    if(el('learnOn').checked){
+      const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
+    }
+  });
+});
+</script>
+</body>
+</html>
