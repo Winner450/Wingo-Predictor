@@ -9,7 +9,8 @@
     :root{
       --gold:#FFD700; --gold-2:#f5d46b; --ink:#e5e7eb;
       --bg1:#0b0b0b; --bg2:#000; --card:#121212; --stroke:#1f2937;
-      --ok:#22c55e; --warn:#f59e0b; --bad:#f87171; --highlight:#101820;
+      --ok:#22c55e; --warn:#f59e0b; --bad:#f87171;
+      --goodBg:#0f1a12; --warnBg:#1b1506; --badBg:#1a0e10;
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:18px;
     }
@@ -34,6 +35,7 @@
     .card{
       background:var(--card); border:1px solid rgba(255,255,255,.06);
       border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+      transition: background .25s, border-color .25s;
     }
     .grid2{ display:grid; grid-template-columns:1.6fr 1fr; gap:16px }
     @media (max-width:900px){ .grid2{ grid-template-columns:1fr } }
@@ -58,39 +60,42 @@
       background:#1f2937; color:#e5e7eb; box-shadow:none; border:1px solid #2b3442;
     }
     .tag{ display:inline-block; padding:6px 10px; border:1px solid #2b3442; border-radius:999px; font-size:12px; color:#cbd5e1 }
-    .pill{ display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid #2b3442; margin-right:6px }
+    .pill{ display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid #2b3442; margin-right:6px; font-weight:700 }
     .ok{ color:var(--ok) } .warn{ color:var(--warn) } .bad{ color:var(--bad) }
 
-    /* result */
-    .kv{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px }
+    /* result: BIGGER primary boxes, smaller Big/Small cards */
+    .kv{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px }
     @media (max-width:900px){ .kv{ grid-template-columns:repeat(2,1fr) } }
-    .kv .box{ background:#0a0a0a; border:1px solid #222; border-radius:12px; padding:12px }
+    .kv .box{
+      background:#0a0a0a; border:1px solid #222; border-radius:14px; padding:16px;
+    }
     .key{ color:#9ca3af; font-size:13px }
-    .val{ font-weight:900; font-size:22px; color:var(--gold) }
+    .val{ font-weight:900; font-size:30px; color:var(--gold) } /* bigger */
 
     .bigSmallRow{
-      margin-top:12px; display:grid; grid-template-columns:1.2fr 0.9fr 0.9fr; gap:14px;
+      margin-top:12px; display:grid; grid-template-columns:1.4fr 0.8fr 0.8fr; gap:12px;
     }
     .statCard{
-      background:var(--highlight); border:1px solid #1b2631; border-radius:14px; padding:14px;
+      background:#0d0f12; border:1px solid #202a36; border-radius:12px; padding:12px; /* slightly smaller */
     }
-    .valXL{ font-weight:900; font-size:32px; color:var(--gold) }
+    .valXL{ font-weight:900; font-size:24px; color:var(--gold) } /* smaller than before */
+    .badge{ display:inline-block; padding:4px 8px; border-radius:8px; font-size:12px; background:#1a1a1a; border:1px solid #2a2a2a; margin-left:8px }
 
     .line{ height:10px; background:#1f2937; border-radius:999px; overflow:hidden; margin:8px 0 2px 0 }
     .bar{ height:10px; width:0%; background:linear-gradient(90deg,var(--gold-2),var(--gold)) }
 
-    /* charts area */
+    /* charts */
     .gridCharts{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px }
     @media (max-width:900px){ .gridCharts{ grid-template-columns:1fr } }
+
+    /* history */
     .history{ font-size:12px; color:#cbd5e1; max-height:200px; overflow:auto }
     .hrow{ padding:6px 0; border-bottom:1px dashed #222 }
 
-    /* verify & fireworks */
-    .verifyGrid{ display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center }
-    @media (max-width:680px){ .verifyGrid{ grid-template-columns:1fr 1fr; } }
-    #fireworks{
-      position:fixed; inset:0; pointer-events:none; display:none;
-    }
+    /* signal theming on result card */
+    .theme-good{ background:var(--goodBg); border-color:#173021 }
+    .theme-warn{ background:var(--warnBg); border-color:#3e2d08 }
+    .theme-bad { background:var(--badBg);  border-color:#3b1722 }
   </style>
 </head>
 <body>
@@ -157,7 +162,7 @@
 
       <div class="bigSmallRow">
         <div class="statCard">
-          <div class="key">🧠 Confidence</div>
+          <div class="key">🧠 Confidence <span class="badge" id="hiAcc" style="display:none">🔥 High Accuracy Mode</span></div>
           <div class="line"><div class="bar" id="confBar"></div></div>
         </div>
         <div class="statCard">
@@ -175,19 +180,6 @@
         <span id="top2" class="pill">Safe set: —</span>
         <span id="top3" class="pill">Top-3: —</span>
         <span id="reasons" class="pill">—</span>
-      </div>
-
-      <!-- Verify / Live check -->
-      <div class="card" style="margin-top:14px; background:#0e0e0e; border-color:#202a36">
-        <div class="verifyGrid">
-          <div>
-            <label for="actual">✅ Actual result (single digit 0–9)</label>
-            <input id="actual" placeholder="e.g. 7" />
-          </div>
-          <button class="btn" id="btnVerify">Verify</button>
-          <button class="btn secondary" id="btnLive">Live Check (experimental)</button>
-        </div>
-        <div class="meta" id="verifyMsg" style="margin-top:8px">Actual भरें या Live Check आज़माएँ (CORS पर depend).</div>
       </div>
     </div>
 
@@ -210,12 +202,6 @@
     </div>
 
   </div>
-
-  <!-- Fireworks canvas + celebration sound -->
-  <canvas id="fireworks"></canvas>
-  <audio id="celebrate">
-    <source src="https://actions.google.com/sounds/v1/ambiences/large_crowd_cheer.ogg" type="audio/ogg">
-  </audio>
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -240,7 +226,8 @@
     }
     function describePeriod(p){ return isDigits(p) ? `len ${p.length} • tail ${p.slice(-4)}` : '—'; }
 
-    // ---------- model ----------
+    // ---------- improved model ----------
+    // Base prior from the period digits
     function periodPrior(periodStr){
       if(!isDigits(periodStr)) return Array(10).fill(0.1);
       const d = periodStr.split('').map(n=>+n);
@@ -252,6 +239,7 @@
       const freq = Array(10).fill(0); d.forEach(x=>freq[x]++);
       const v = Array(10).fill(0.1);
 
+      // deterministic anchors
       v[mod10] += 0.7;
       v[(last+10)%10] += 0.35;
       v[(last+1)%10]  += 0.18;
@@ -260,27 +248,43 @@
       v[(mod7*5)%10]  += 0.20;
       if(last2%2===0){ for(let i=0;i<10;i+=2) v[i]+=0.08; }
       else{ for(let i=1;i<10;i+=2) v[i]+=0.08; }
-      for(let i=0;i<10;i++) v[i] += 0.02*freq[i];
 
+      // rarity bonus (digits that appear less in the period string)
+      const maxF = Math.max(...freq), minF = Math.min(...freq);
+      for(let i=0;i<10;i++){
+        const rarity = (maxF-minF) ? (maxF - freq[i])/(maxF-minF) : 0;
+        v[i] += 0.06*rarity;
+      }
       return normalize(v);
     }
 
+    // Stochastic ensemble + adaptive weights
     function predictFromPeriod(periodStr, mode){
       const hyper = {
-        conservative:{ temp:1.04, maxCap:0.58, jitter:0.05 },   // "Confidence"
-        balanced    :{ temp:1.06, maxCap:0.62, jitter:0.08 },   // "Normal"
-        aggressive  :{ temp:1.08, maxCap:0.66, jitter:0.12 }    // "Very Confident"
-      }[mode] || { temp:1.06, maxCap:0.62, jitter:0.08 };
+        conservative:{ temp:1.04, maxCap:0.58, jitter:0.05, adapt:0.12 },   // "Confidence"
+        balanced    :{ temp:1.06, maxCap:0.62, jitter:0.08, adapt:0.18 },   // "Normal"
+        aggressive  :{ temp:1.08, maxCap:0.66, jitter:0.12, adapt:0.24 }    // "Very Confident"
+      }[mode] || { temp:1.06, maxCap:0.62, jitter:0.08, adapt:0.18 };
 
       const base = periodPrior(periodStr);
-      const B=60, j=hyper.jitter;
+
+      // adaptive emphasis: push top few a bit more, flatten tail
+      const sorted = base.slice().sort((a,b)=>b-a);
+      const t = (sorted[2]||0.1); // third highest as pivot
+      const adapt = base.map(p => p * (1 + hyper.adapt*((p - t)/(t+1e-9))));
+      let prior = normalize(adapt);
+
+      // bootstrap aggregation
+      const B=64, j=hyper.jitter;
       let agg=Array(10).fill(0), votes=Array(10).fill(0);
       for(let b=0;b<B;b++){
-        const p = normalize(base.map(x => Math.max(0, x*(1 + (Math.random()*2-1)*j))));
+        const p = normalize(prior.map(x => Math.max(0, x*(1 + (Math.random()*2-1)*j))));
         for(let i=0;i<10;i++) agg[i]+=p[i];
         votes[argmax(p)]++;
       }
       let probs = normalize(agg);
+
+      // temperature + cap
       probs = normalize(probs.map(p=>Math.pow(p, 1/hyper.temp)));
       const mx = Math.max(...probs);
       if(mx>hyper.maxCap){
@@ -290,6 +294,7 @@
         for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale;
         probs = normalize(probs);
       }
+
       const stability = Math.max(...votes)/B;
       return { probs, stability };
     }
@@ -316,112 +321,68 @@
       return {big, small};
     }
 
-    // ---------- fireworks ----------
-    const fwCanvas = document.getElementById('fireworks');
-    const fctx = fwCanvas.getContext('2d');
-    function runFireworks(ms=3000){
-      fwCanvas.width = innerWidth; fwCanvas.height = innerHeight; fwCanvas.style.display='block';
-      const particles=[];
-      const spawn = ()=>{
-        const cx=Math.random()*fwCanvas.width, cy=Math.random()*fwCanvas.height*0.6 + 60;
-        const count=80;
-        for(let i=0;i<count;i++){
-          const a = Math.random()*Math.PI*2, sp=Math.random()*3+1.5;
-          particles.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:60,color:`hsl(${Math.random()*360},100%,60%)`});
-        }
-      };
-      let frame=0; const timer=setInterval(spawn, 300);
-      const loop=()=>{
-        fctx.fillStyle='rgba(0,0,0,0.2)'; fctx.fillRect(0,0,fwCanvas.width,fwCanvas.height);
-        particles.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.03; p.life--; });
-        for(const p of particles){
-          fctx.fillStyle=p.color; fctx.fillRect(p.x,p.y,2,2);
-        }
-        for(let i=particles.length-1;i>=0;i--) if(particles[i].life<=0) particles.splice(i,1);
-        frame++; if(frame<ms/16) requestAnimationFrame(loop); else { clearInterval(timer); fwCanvas.style.display='none'; }
-      };
-      requestAnimationFrame(loop);
-      const audio = document.getElementById('celebrate'); audio.currentTime=0; audio.play().catch(()=>{});
-      setTimeout(()=>audio.pause(), ms);
-    }
-
     function renderResult(periodStr, out){
       const probs = out.probs.slice();
       const predicted = argmax(probs);
       const {big, small} = renderCharts(probs);
 
-      // confidence by entropy
+      // confidence by entropy + stability combo
       let H=0; probs.forEach(p=>{ if(p>0) H += -p*Math.log(p); });
-      const confidence = clamp01(1 - H/Math.log(10));
+      const entropyConf = clamp01(1 - H/Math.log(10));
+      const stability = clamp01(out.stability ?? 0);
+      const accScore = clamp01(0.55*entropyConf + 0.45*stability); // combined score
+
       const opp = (predicted>=5)? argmax(probs.slice(0,5)) : 5 + argmax(probs.slice(5));
 
       // fill UI
-      document.getElementById('resultCard').style.display='block';
+      const card = document.getElementById('resultCard');
+      card.style.display='block';
       el('vPeriod').textContent = periodStr;
       el('vNum').textContent = predicted;
       el('vSize').textContent = predicted>=5 ? 'Big' : 'Small';
       el('vBackup').textContent = opp;
       el('vBig').textContent = fmtPct(big);
       el('vSmall').textContent = fmtPct(small);
-      el('confBar').style.width = (confidence*100).toFixed(1)+'%';
+      el('confBar').style.width = (accScore*100).toFixed(1)+'%';
 
-      // signal
-      const reasons=[];
-      if(confidence<0.18) reasons.push('low entropy');
-      if((out.stability??0)<0.28) reasons.push('unstable');
-      let signal='Play', cls='ok';
-      if(reasons.length===1){ signal='Caution'; cls='warn'; }
-      if(reasons.length>=2){ signal='Wait'; cls='bad'; }
+      // high accuracy badge
+      el('hiAcc').style.display = accScore>=0.85 ? 'inline-block' : 'none';
+
+      // signal + theme
+      let signal='Play', cls='ok', theme='theme-good';
+      const issues=[];
+      if(entropyConf<0.18) issues.push('low entropy');
+      if(stability<0.28)   issues.push('unstable');
+
+      if(issues.length===1){ signal='Caution'; cls='warn'; theme='theme-warn'; }
+      if(issues.length>=2){ signal='Wait'; cls='bad'; theme='theme-bad'; }
+      card.classList.remove('theme-good','theme-warn','theme-bad');
+      card.classList.add(theme);
 
       const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
       el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
       el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
       el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
-      el('reasons').textContent = reasons.length ? ('Reasons: '+reasons.join(', ')) : 'Reasons: good signal';
+      el('reasons').textContent = issues.length ? ('Reasons: '+issues.join(', ')) : `Score: ${(accScore*100).toFixed(0)}%`;
 
-      // history (keep max 10 latest)
+      // history (max 10 latest)
       const stamp=new Date().toLocaleTimeString();
       const h=el('hist');
       if(h.textContent==='—') h.textContent='';
       h.insertAdjacentHTML('afterbegin',
-        `<div class="hrow">⏱ ${stamp} • Period ${periodStr} → #${predicted} (${predicted>=5?'Big':'Small'}) • conf ${(confidence*100).toFixed(0)}% • stab ${((out.stability??0)*100).toFixed(0)}%</div>`
+        `<div class="hrow">⏱ ${stamp} • Period ${periodStr} → #${predicted} (${predicted>=5?'Big':'Small'}) • score ${(accScore*100).toFixed(0)}%</div>`
       );
-      // trim to 10
       const rows=[...h.children];
       rows.slice(10).forEach(r=>r.remove());
     }
 
-    // ---------- optional “live check” (best-effort) ----------
-    async function tryLiveFetch(period){
-      // कई साइट्स CORS ब्लॉक करती हैं; graceful failure दिखाएँ
-      const tryUrls = [
-        // अगर कभी सार्वजनिक endpoint मिले तो यहाँ डालें:
-        // उदाहरण placeholders (शायद काम न करें)
-        `https://bdgop.com/api/lottery/result?lottery=WinGo&gameCode=WinGo_30S&period=${period}`,
-        `https://bdgop.com/#/saasLottery/WinGo?gameCode=WinGo_30S&lottery=WinGo&period=${period}`
-      ];
-      for(const url of tryUrls){
-        try{
-          const res = await fetch(url, {mode:'cors'});
-          if(!res.ok) continue;
-          const text = await res.text();
-          // कोई 0–9 अंक ढूँढने की ट्राई (बहुत ढीला parser)
-          const m = text.match(/["']?(?:result|openNum|number)["']?\s*[:=]\s*["']?(\d)["']?/i);
-          if(m) return m[1];
-        }catch(_e){ /* CORS fail, move on */ }
-      }
-      throw new Error('CORS/endpoint not available');
-    }
-
     // ---------- actions ----------
-    let lastOut=null;
-
     async function runPredict(){
       const pr = el('period').value.trim();
       if(!pr || !isDigits(pr)){ alert('Valid period number भरें (केवल digits)'); return; }
       el('periodInfo').textContent = 'Period: '+describePeriod(pr);
-      lastOut = predictFromPeriod(pr, el('mode').value);
-      renderResult(pr, lastOut);
+      const out = predictFromPeriod(pr, el('mode').value);
+      renderResult(pr, out);
     }
 
     function startAuto(){
@@ -434,7 +395,7 @@
       }, sec*1000);
     }
 
-    // event listeners
+    // events
     el('btnPredict').addEventListener('click', runPredict);
     el('btnClear').addEventListener('click', ()=>{
       clearInterval(autoTimer); autoTimer=null;
@@ -454,32 +415,6 @@
     el('autoNext').addEventListener('change', e=>{
       clearInterval(autoTimer); autoTimer=null;
       if(e.target.checked) startAuto();
-    });
-
-    // verify (manual)
-    el('btnVerify').addEventListener('click', ()=>{
-      const act = el('actual').value.trim();
-      if(!/^[0-9]$/.test(act)){ el('verifyMsg').textContent='एक अंक 0–9 भरें.'; return; }
-      const period = el('vPeriod').textContent.trim();
-      const pick = el('vNum').textContent.trim();
-      const win = (act === pick);
-      el('verifyMsg').textContent = win ? `WIN ✔ — period ${period} • picked ${pick} • actual ${act}` :
-                                         `LOSS ✘ — period ${period} • picked ${pick} • actual ${act}`;
-      if(win){ runFireworks(3000); }
-    });
-
-    // live check (best effort)
-    el('btnLive').addEventListener('click', async ()=>{
-      const period = el('vPeriod').textContent.trim() || el('period').value.trim();
-      if(!isDigits(period)){ el('verifyMsg').textContent='पहले वैध period भरें/प्रिडिक्ट करें.'; return; }
-      el('verifyMsg').textContent = 'Trying live check...';
-      try{
-        const actual = await tryLiveFetch(period);
-        el('actual').value = actual;
-        el('verifyMsg').textContent = `Live fetched: ${actual} (verify किए गए डेटा पर निर्भर)`;
-      }catch(e){
-        el('verifyMsg').textContent = 'Live fetch उपलब्ध नहीं (CORS/endpoint). कृपया actual अंक मैनुअली भरें।';
-      }
     });
   });
   </script>
