@@ -1,690 +1,317 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>WinGo Predictor Pro — Ultra Premium (Weights + Tuner)</title>
-<meta name="theme-color" content="#061018"/>
-<meta name="description" content="WinGo Predictor Pro — ensemble + sliders + tuner (upload JSON/CSV) — production-style single-file."/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>🎯 WinGo Predictor Pro</title>
 <style>
-/* ---------- Theme & basic ---------- */
-:root{
-  --bg:#031018; --panel:#0d1722; --accent:#12dfb8; --muted:#8eaec6; --text:#e9f6ff;
-  --gold1:#ffeea3; --gold2:#f6c44b; --outline:rgba(255,255,255,0.06);
-  --shadow:0 26px 80px rgba(0,0,0,0.6); --mono:ui-monospace, SFMono-Regular, Menlo, Monaco;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#031018,#020413);color:var(--text);font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif}
-.container{max-width:1240px;margin:18px auto;padding:0 16px}
-.header{position:relative;padding:14px 18px;border-radius:999px;text-align:center;font-weight:900;background:linear-gradient(90deg,var(--gold1),var(--gold2));margin-bottom:16px}
-.header .bgstar{position:absolute;inset:0;opacity:.16;background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;mix-blend-mode:screen}
-.card{background:linear-gradient(180deg,var(--panel),#071018);border-radius:14px;padding:12px;border:1px solid var(--outline);box-shadow:var(--shadow);margin-bottom:12px}
-h3{margin:0 0 8px}
-.label{color:var(--muted);font-size:.9rem;margin-bottom:6px}
-.note{color:#9fbcd8;font-size:.88rem}
-.input,.select{width:100%;padding:10px 12px;border-radius:10px;background:#07131a;border:1px solid var(--outline);color:var(--text);outline:none}
-.btn{padding:10px 12px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
-.btn.primary{background:linear-gradient(180deg,var(--accent),#11a8e6);color:#041616}
-.btn.ghost{background:transparent;border:1px solid var(--outline);color:var(--text)}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.grid3{display:grid;grid-template-columns:1.6fr .9fr .9fr;gap:12px}
-@media (max-width:1000px){ .grid3{grid-template-columns:1fr} }
-.grid2{display:grid;grid-template-columns:1fr .9fr;gap:12px}
-.tabbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
-.tab-btn{padding:10px;border-radius:10px;background:#07161b;border:1px solid var(--outline);cursor:pointer;font-weight:800}
-.tab-btn.active{background:#0b2430;border-color:var(--accent)}
-.bars{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;height:170px;align-items:end}
-.bar{position:relative;border-radius:10px;background:#071b22;border:1px solid #0f2a36;overflow:hidden}
-.bar-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#12dfb8,#11a8e6)}
-.bar small{position:absolute;bottom:-18px;width:100%;text-align:center;color:var(--muted)}
-.result-box{background:linear-gradient(180deg,#07131a,#041018);border-radius:10px;padding:10px;border:1px solid var(--outline)}
-.result-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
-.result-row:last-child{border-bottom:0}
-.kv{color:var(--muted);font-weight:700}
-.val{font-weight:900}
-.chip{padding:6px 10px;border-radius:999px;font-weight:900;display:inline-flex;align-items:center;background:rgba(255,255,255,0.03)}
-.chip.soft{color:#10c48f;background:rgba(16,196,143,0.08);border:1px solid rgba(16,196,143,0.12)}
-.chip.money{color:#ffd76b;background:rgba(255,215,107,0.10);border:1px solid rgba(255,215,107,0.12)}
-.slider{width:100%}
-.progress{height:8px;border-radius:999px;background:#07121a;border:1px solid #0d2430;overflow:hidden}
-.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#11a8e6)}
-.modal-back{position:fixed;inset:0;background:rgba(2,6,10,0.6);display:none;align-items:center;justify-content:center;z-index:9999}
-.modal{background:linear-gradient(180deg,#08131a,#041018);padding:16px;border-radius:12px;border:1px solid var(--outline);width:min(920px,96%);box-shadow:var(--shadow)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;padding:10px 14px;border-radius:12px;background:#06121a;border:1px solid var(--outline);z-index:9999}
-.hidden{display:none}
-.small{font-size:.86rem;color:var(--muted)}
+  :root{
+    --bg:#0b0b0b;
+    --panel:#121212;
+    --muted:#9aa0a6;
+    --text:#e8eaed;
+    --brand:#ffe04d;
+    --border:rgba(255,255,255,.08);
+    --border-2:rgba(255,255,255,.14);
+    --error:#ff6961;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+    background: linear-gradient(180deg,#0a0a0a 0%, #000 100%);
+    color:var(--text);
+  }
+
+  /* Header */
+  .app-header{
+    position: sticky; top:0; z-index:50;
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+    padding:12px 16px;
+  }
+  .brand-title{font-weight:800; color:var(--brand); letter-spacing:.3px; font-size:clamp(16px,3.6vw,22px)}
+  .sub{display:block; font-weight:500; color:var(--muted); font-size:12px; margin-top:2px}
+
+  /* Layout */
+  .main-wrap{padding:16px; padding-top:clamp(68px, 8vh, 92px)}
+  .container{max-width:980px; margin:0 auto}
+  .card{
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:18px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .title{font-size:18px; font-weight:700; margin:0 0 12px}
+
+  /* Form */
+  .grid{display:grid; gap:12px}
+  @media (min-width:720px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
+  label{display:block; color:var(--muted); font-size:13px; margin:6px 0}
+  input, select{
+    width:100%; padding:12px 12px; border-radius:12px; outline:none;
+    background:#0a0a0a; color:var(--text); border:1px solid var(--border-2);
+  }
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .chip{display:inline-flex; align-items:center; gap:8px; background:#0a0a0a; border:1px solid var(--border-2); padding:8px 10px; border-radius:10px; font-size:13px; color:var(--muted)}
+
+  /* Buttons */
+  .btn{
+    appearance:none; border:none; cursor:pointer; font-weight:700;
+    padding:12px 16px; border-radius:12px; background:#1f2937; color:#fff;
+  }
+  .btn.primary{background:var(--brand); color:#1a1a1a}
+  .btn.ghost{background:transparent; border:1px solid var(--border-2)}
+  .btn:disabled{opacity:.6; cursor:not-allowed}
+
+  /* Footer info */
+  .muted{color:var(--muted); font-size:12px}
+
+  /* Modal */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.55);
+    display:flex; align-items:center; justify-content:center; z-index:60;
+  }
+  .modal-card{
+    width:min(520px, 92vw);
+    background:var(--panel); color:var(--text);
+    border:1px solid var(--border); border-radius:16px; padding:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  .modal-head{font-size:18px; font-weight:800; margin:0 0 10px}
+  .error{color:var(--error); margin-top:6px; font-size:13px}
+
+  /* Toast */
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:18px; background:#111; color:#fff; border:1px solid var(--border);
+    border-radius:12px; padding:10px 14px; z-index:70; opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="bgstar" aria-hidden="true"></div>
-    <div style="position:relative;z-index:1">WINGO PREDICTOR PRO — ULTRA (Weights + Tuner)</div>
+
+<header class="app-header">
+  <div class="container">
+    <div class="brand-title">WinGo Predictor <b>Pro</b></div>
+    <small class="sub">Quick predict • Smart validation • Learning</small>
   </div>
+</header>
 
-  <!-- Controls -->
-  <div class="card">
-    <h3>⚙️ Controls</h3>
-    <div class="grid3">
-      <div>
-        <div class="label">LIVE_API_URL (optional)</div>
-        <input id="apiUrl" class="input" placeholder="https://raw.githubusercontent.com/.../history.json"/>
-      </div>
-      <div>
-        <div class="label">Ensemble Preset</div>
-        <select id="blendPreset" class="input">
-          <option value="default" selected>Balanced</option>
-          <option value="hash">Hash-heavy</option>
-          <option value="freq">Freq-heavy</option>
-          <option value="recency">Recency-heavy</option>
-          <option value="custom">Custom (use sliders)</option>
-        </select>
-      </div>
-      <div>
-        <div class="label">Auto Interval</div>
-        <select id="autoInterval" class="input">
-          <option value="0" selected>Off</option>
-          <option value="30">30s</option>
-          <option value="38">38s</option>
-          <option value="60">60s</option>
-        </select>
-      </div>
-    </div>
+<main class="main-wrap">
+  <div class="container">
+    <section class="card">
+      <h2 class="title">Quick Predict</h2>
 
-    <div style="margin-top:10px" class="row">
-      <div style="flex:1">
-        <div class="label">Decision Threshold (High)</div>
-        <input id="threshold" type="number" min="0.5" max="0.95" step="0.01" class="input" value="0.75"/>
-      </div>
-      <div style="flex:0 0 120px">
-        <button id="btnApply" class="btn primary" style="width:100%">Apply</button>
-      </div>
-      <div style="flex:0 0 220px;display:flex;gap:6px;justify-content:flex-end">
-        <button id="btnConnect" class="btn ghost">Connect API</button>
-        <button id="btnSample" class="btn ghost">Load Sample</button>
-        <button id="btnExport" class="btn ghost">Export CSV</button>
-        <button id="btnImport" class="btn ghost">Upload</button>
-      </div>
-    </div>
-
-    <div style="margin-top:8px" class="small">Use Upload → Tune Weights for automatic tuning on your historical dataset. Then Apply the best weights.</div>
-  </div>
-
-  <!-- Weights Sliders & Tuner -->
-  <div class="card">
-    <h3>🔧 Ensemble Weights</h3>
-    <div class="small">Adjust sliders and click Apply — or run automatic tuning on your uploaded history.</div>
-    <div style="display:grid;grid-template-columns:1fr 120px;gap:10px;margin-top:12px;align-items:center">
-      <div>
-        <div class="label">Hash Weight <span id="wHashVal" class="small" style="float:right">0.45</span></div>
-        <input id="wHash" type="range" min="0" max="1" step="0.01" value="0.45" class="slider"/>
-        <div class="label">Frequency Weight <span id="wFreqVal" class="small" style="float:right">0.25</span></div>
-        <input id="wFreq" type="range" min="0" max="1" step="0.01" value="0.25" class="slider"/>
-        <div class="label">Recency Weight <span id="wRecVal" class="small" style="float:right">0.20</span></div>
-        <input id="wRec" type="range" min="0" max="1" step="0.01" value="0.20" class="slider"/>
-        <div class="label">Entropy Weight <span id="wEntVal" class="small" style="float:right">0.10</span></div>
-        <input id="wEnt" type="range" min="0" max="1" step="0.01" value="0.10" class="slider"/>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div class="label">Weights normalize to sum=1 (auto)</div>
-        <button id="btnNormalize" class="btn ghost">Normalize</button>
-        <button id="btnTune" class="btn primary">Tune Weights</button>
-        <button id="btnApplyWeights" class="btn primary">Apply Weights</button>
-        <div id="tuneStatus" class="small" style="margin-top:8px">Tuner: idle</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Upload / Check area -->
-  <div class="card">
-    <h3>🔍 Check by Period</h3>
-    <div class="row">
-      <input id="periodInput" class="input" placeholder="Enter Period number..."/>
-      <button id="btnCheck" class="btn">Check</button>
-      <div style="margin-left:auto" class="small" id="autoBadge">Auto: Off</div>
-    </div>
-    <div id="periodError" class="small" style="color:#ff7676;display:none;margin-top:8px"></div>
-
-    <div style="margin-top:12px" class="grid2">
-      <div class="card" style="margin:0">
-        <h3>Result</h3>
-        <div class="result-box">
-          <div class="result-row"><div class="kv">Input</div><div class="val mono" id="res-input">—</div></div>
-          <div class="result-row"><div class="kv">Period</div><div class="val mono" id="res-period">—</div></div>
-          <div class="result-row"><div class="kv">Digit</div><div class="val mono" id="res-digit">—</div></div>
-          <div class="result-row"><div class="kv">Type</div><div class="val mono" id="res-type">—</div></div>
-          <div class="result-row"><div class="kv">Color</div><div class="val mono" id="res-color">—</div></div>
-          <div class="result-row"><div class="kv">Confidence</div><div class="val mono" id="res-conf">—</div></div>
-          <div class="result-row"><div class="kv">Decision</div><div class="val" id="res-decision"><span class="chip">—</span></div></div>
+      <div class="grid cols-2">
+        <div>
+          <label>Period Number</label>
+          <!-- अगर आपकी ऐप में कोई और ID है, JS resolver अपने-आप पकड़ लेगा -->
+          <input id="periodInput" type="text" inputmode="numeric" placeholder="e.g. 202508141000003076">
         </div>
 
-        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-          <button id="btnSave" class="btn ghost">Save Local</button>
-          <button id="btnLoad" class="btn ghost">Load Local</button>
-          <button id="btnClear" class="btn ghost">Clear</button>
-          <button id="btnSim" class="btn ghost">Simulate +5</button>
+        <div>
+          <label>Strategy</label>
+          <select id="strategy">
+            <option>Normal</option>
+            <option>Anti-sequence</option>
+            <option>High-variance</option>
+          </select>
         </div>
       </div>
 
-      <div class="card" style="margin:0">
-        <h3>Dataset Upload & Tuning</h3>
-        <div class="small">Upload a JSON array or CSV (header: period,num[,type,color,confidence,ts])</div>
-        <input id="fileInput" type="file" accept=".json,.csv" style="margin-top:8px"/>
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <button id="btnPreview" class="btn ghost">Preview</button>
-          <button id="btnRunTune" class="btn primary">Run Tune (Default 300 iters)</button>
-        </div>
-        <div id="previewBox" style="margin-top:10px;max-height:180px;overflow:auto"></div>
+      <div class="row" style="margin:12px 0">
+        <span class="chip"><input id="autoNext" type="checkbox" checked> Auto Next (30s)</span>
+        <span class="chip"><input id="antiSeq" type="checkbox"> Anti-sequence</span>
+        <span class="chip"><input id="learningOn" type="checkbox" checked> Learning ON</span>
+        <button id="btnNotify" class="btn ghost">🔔 Notifications</button>
       </div>
+
+      <div class="row">
+        <button id="btnPredict" class="btn primary">Predict</button>
+        <button id="btnClear" class="btn">Clear</button>
+        <button id="btnCopy" class="btn">Copy Result</button>
+      </div>
+
+      <p id="periodMeta" class="muted" style="margin-top:10px">Period: len <span id="lenMeta">0</span></p>
+
+      <hr style="border-color:var(--border); border-width:0 0 1px; margin:16px 0">
+
+      <div class="grid cols-2">
+        <div>
+          <label>Actual result (optional preview)</label>
+          <input id="actualPreview" type="text" inputmode="numeric" placeholder="e.g. 5">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="btnVerifyLearn" class="btn">Verify &amp; Learn</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Verify & Learn Modal -->
+<div id="verifyModal" class="modal-backdrop" hidden>
+  <div class="modal-card">
+    <h3 class="modal-head">Verify Previous Period</h3>
+    <p class="muted" style="margin-top:-6px">Previous period अपने-आप सेट है; बस last result (0–9) दर्ज करें।</p>
+
+    <label>Previous Period (auto)</label>
+    <input id="prevPeriodInput" type="text" readonly>
+
+    <label style="margin-top:10px">Last Result (0–9)</label>
+    <input id="actualDigitInput" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" placeholder="e.g. 5"/>
+
+    <p id="verifyError" class="error" style="display:none"></p>
+
+    <div class="row" style="justify-content:flex-end; margin-top:12px">
+      <button id="verifyCancel" class="btn ghost">Cancel</button>
+      <button id="verifySubmit" class="btn primary">Verify</button>
     </div>
   </div>
-
-  <!-- Tabs: Prob / Preds / Patterns / Stats -->
-  <div class="tabbtns">
-    <div class="tab-btn active" data-tab="tab-prob">Probability</div>
-    <div class="tab-btn" data-tab="tab-preds">Predictions</div>
-    <div class="tab-btn" data-tab="tab-patterns">Patterns</div>
-    <div class="tab-btn" data-tab="tab-stats">Stats</div>
-  </div>
-
-  <div id="tab-prob" class="card tab-pane active">
-    <h3>📊 Probability</h3>
-    <div id="probBars" class="bars"></div>
-    <div style="margin-top:10px" class="small">Top: <span id="probTop">—</span> • Bottom: <span id="probBottom">—</span></div>
-    <div style="margin-top:10px" class="card"><canvas id="probCanvas" height="140" style="width:100%"></canvas></div>
-  </div>
-
-  <div id="tab-preds" class="card tab-pane">
-    <h3>🕒 Recent Predictions</h3>
-    <div id="predList"></div>
-  </div>
-
-  <div id="tab-patterns" class="card tab-pane">
-    <h3>Patterns</h3>
-    <div id="patBS" class="pattern-line"></div>
-    <div id="patCR" class="pattern-line" style="margin-top:10px"></div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <div style="flex:1"><h4>Hot</h4><div id="hotList" class="pattern-line"></div></div>
-      <div style="flex:1"><h4>Cold</h4><div id="coldList" class="pattern-line"></div></div>
-    </div>
-  </div>
-
-  <div id="tab-stats" class="card tab-pane">
-    <h3>Stats</h3>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-      <div class="card"><div class="small">Total</div><div id="stTotal" class="val">—</div></div>
-      <div class="card"><div class="small">Money Magnet Rate</div><div id="stMM" class="val">—</div><div class="progress"><span id="stMMP" style="width:0%"></span></div></div>
-      <div class="card"><div class="small">Avg Confidence</div><div id="stAvg" class="val">—</div><div class="progress"><span id="stAvgP" style="width:0%"></span></div></div>
-      <div class="card"><div class="small">Top Digit</div><div id="stTop" class="val">—</div></div>
-    </div>
-    <div style="margin-top:12px" class="card"><canvas id="distCanvas" height="160" style="width:100%"></canvas></div>
-  </div>
-
 </div>
 
-<!-- modal -->
-<div id="modalBack" class="modal-back"><div class="modal"><h4 id="modalTitle">Modal</h4><div id="modalBody"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button id="modalClose" class="btn ghost">Close</button><button id="modalOk" class="btn primary">OK</button></div></div></div>
-
-<div id="toast" class="toast hidden"><div id="toastText"></div></div>
+<div id="toast" class="toast"></div>
 
 <script>
-/* ========= Utilities ========= */
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
-const toast = (m,ms=1400)=>{ const t=$('#toast'); $('#toastText').textContent=m; t.classList.remove('hidden'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.add('hidden'),ms); };
+  // ---------- Helpers ----------
+  const $ = (s)=>document.querySelector(s);
 
-/* ========= Deterministic Hash (fnv1a-like) ========= */
-function fnv1a(str){
-  let h = 0x811c9dc5 >>> 0;
-  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h ^ (h >>> 16), 0x45d9f3b) >>> 0; h = (h + ((h<<3)>>>0) + ((h<<7)>>>0)) >>> 0; }
-  return h >>> 0;
-}
-const periodDigit = p => fnv1a(String(p)) % 10;
-const digitColor = (d,p) => { const h=fnv1a(String(p)); const parity = ((h>>>3) ^ (h>>>7) ^ (h>>>11)) & 1; return ((d%2)^parity) ? 'Red' : 'Green'; };
+  function toast(msg){
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(window.__t);
+    window.__t = setTimeout(()=>el.classList.remove("show"), 1800);
+  }
 
-/* ========= Predictor Components ========= */
-function hashPredict(period){ const d = periodDigit(period); const h = fnv1a(String(period)); const base = 0.62 + ((h & 1023)/1023)*0.28; return {digit:d, score:base, src:'hash'}; }
-function freqPredict(history, window=40){ const slice = history.slice(0,window); const counts = Array(10).fill(0); slice.forEach(h=>counts[h.num]++); const top = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c - a.c || a.i - b.i)[0]; const score = 0.5 + (top.c / Math.max(1,slice.length)) * 0.45; return {digit:top.i, score:clamp(score,0.5,0.95), src:'freq'}; }
-function recencyPredict(history){ const last = Array(10).fill(null); for(let i=0;i<history.length;i++){ const d=history[i].num; if(last[d]===null) last[d]=i; } const gaps = last.map((g,i)=>({i,g: g===null?1000:g})); gaps.sort((a,b)=>b.g - a.g || a.i - b.i); const chosen = gaps[0]; const score = clamp(0.55 + Math.min(chosen.g,60)/60 * 0.4, 0.5, 0.95); return {digit:chosen.i, score, src:'recency'}; }
-function entropyPredict(period){ const h = fnv1a(String(period)+'ent'); const digit = (h>>>2) % 10; const score = 0.55 + ((h & 255)/255) * 0.35; return {digit, score:clamp(score,0.5,0.95), src:'entropy'}; }
-
-/* ========= Ensemble & Final confidence ========= */
-function ensemblePredict(period, history, weights){
-  const comps = [ hashPredict(period), freqPredict(history,40), recencyPredict(history), entropyPredict(period) ];
-  const weightMap = { hash:weights.hash, freq:weights.freq, recency:weights.recency, entropy:weights.entropy };
-  const scoreMap = Array(10).fill(0);
-  comps.forEach(c => { const w = weightMap[c.src]||0; scoreMap[c.digit] += w * c.score; });
-  let best = 0, bestVal=-Infinity; scoreMap.forEach((v,i)=>{ if(v>bestVal){bestVal=v;best=i;} });
-  const maxPossible = (weights.hash+weights.freq+weights.recency+weights.entropy) * 0.95;
-  const minPossible = (weights.hash+weights.freq+weights.recency+weights.entropy) * 0.5;
-  const norm = (maxPossible === minPossible) ? 0.5 : ((bestVal - minPossible) / (maxPossible - minPossible));
-  const finalScore = clamp(0.5 + norm * 0.45, 0.5, 0.95);
-  return { digit:best, score:finalScore, comps };
-}
-function computeConfidenceFinal(digit, rawScore, history){
-  const total = Math.max(1, history.length);
-  let freq=0; for(let i=0;i<history.length;i++) if(history[i].num===digit) freq++;
-  const rate = freq/total;
-  let recPenalty=0; const lastIdx = history.findIndex(h=>h.num===digit);
-  if(lastIdx!==-1){ if(lastIdx<=2) recPenalty=0.07; else if(lastIdx<=6) recPenalty=0.03; }
-  const prior = 0.72; const N = Math.min(100, history.length); const k=10; const alpha = N/(N+k);
-  const adjusted = clamp(rawScore - recPenalty + (rate<0.05?0.03:0), 0.5, 0.95);
-  return clamp(alpha*adjusted + (1-alpha)*prior, 0.5, 0.95);
-}
-
-/* ========= App State ========= */
-const State = {
-  history: [], // newest-first
-  weights: { hash:0.45, freq:0.25, recency:0.20, entropy:0.10 },
-  threshold: 0.75,
-  autoTimer: null, autoSec:0
-};
-
-/* ========= Helpers: normalize incoming history ========= */
-function normalizeIncoming(arr){
-  const out=[];
-  (arr||[]).forEach((r,i)=>{
-    const period = r.period ?? (1000+i);
-    const num = Number.isInteger(r.num)? clamp(r.num,0,9) : periodDigit(period);
-    const type = r.type ?? (num>=5? 'Big':'Small');
-    const color = r.color ?? digitColor(num, period);
-    const conf = (typeof r.confidence==='number') ? clamp(r.confidence,0.5,0.95) : computeConfidenceFinal(num, 0.72, out);
-    const ts = r.ts ?? (Date.now()-i*60000);
-    out.push({ period, num, type, color, confidence: conf, ts });
-  });
-  return out;
-}
-
-/* ========= UI Wiring ========= */
-function bindUI(){
-  // tab buttons
-  $$('.tab-btn').forEach(b=> b.addEventListener('click', ()=> switchTab(b.dataset.tab)));
-  // sliders
-  ['wHash','wFreq','wRec','wEnt'].forEach(id=>{
-    $(idSelector(id)).addEventListener('input', onSliderChange);
-  });
-  $('#btnNormalize').addEventListener('click', normalizeSliders);
-  $('#btnApplyWeights').addEventListener('click', applySlidersToWeights);
-  $('#blendPreset').addEventListener('change', onPresetChange);
-  $('#btnTune').addEventListener('click', ()=>{ $('#btnRunTune').click(); });
-
-  // periodic control
-  $('#btnApply').addEventListener('click', ()=>{
-    State.threshold = parseFloat($('#threshold').value) || 0.75;
-    toast('Settings applied');
+  $("#periodInput").addEventListener("input", ()=>{
+    $("#lenMeta").textContent = ($("#periodInput").value||"").length;
   });
 
-  // check
-  $('#btnCheck').addEventListener('click', async ()=>{
-    $('#btnCheck').classList.add('toggled'); setTimeout(()=>$('#btnCheck').classList.remove('toggled'),200);
-    const p = $('#periodInput').value.trim();
-    if(!p){ $('#periodError').style.display='block'; $('#periodError').textContent='Enter period'; return; }
-    $('#periodError').style.display='none';
-    await showProcessing(3000);
-    const out = runPrediction(p);
-    State.history.unshift({ period: out.period, num: out.digit, type: out.type, color: out.color, confidence: out.conf, ts: Date.now() });
-    if(State.history.length>2000) State.history=State.history.slice(0,2000);
-    rebuild();
-    showResult(out);
+  // Robust period resolver: अलग IDs/नाम होने पर भी period इनपुट ढूँढेगा
+  function getPeriodInputEl(){
+    const candidates = [
+      "#periodInput", "#period-number", "#periodNumber", "#period_id",
+      "input[name='period']", "input[data-role='period']"
+    ];
+    for(const sel of candidates){
+      const el = document.querySelector(sel);
+      if(el) return el;
+    }
+    // Fallback: कोई भी बड़ा numeric इनपुट (लंबाई >= 12)
+    const inputs = Array.from(document.querySelectorAll("input"));
+    const guess = inputs.find(i => /^\d{12,}$/.test(i.value || ""));
+    return guess || null;
+  }
+  function getCurrentPeriod(){
+    const el = getPeriodInputEl();
+    return el ? (el.value || "").trim() : "";
+  }
+  function focusPeriod(){
+    const el = getPeriodInputEl();
+    if(el){ el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"}); }
+  }
+
+  // Previous period calc (leading zeros preserved)
+  function getPrevPeriod(periodId){
+    if(!periodId || !/^\d+$/.test(periodId)) return "";
+    const len = periodId.length;
+    const prev = (BigInt(periodId) - 1n).toString();
+    return prev.padStart(len, "0");
+  }
+
+  // Predict (placeholder)
+  $("#btnPredict").addEventListener("click", ()=>{
+    const p = getCurrentPeriod();
+    if(!p) return toast("Enter period number.");
+    toast("Predicted ✔ (demo)");
   });
 
-  $('#btnSave').addEventListener('click', ()=>{ localStorage.setItem('wingo_hist_v3', JSON.stringify(State.history)); toast('Saved locally'); });
-  $('#btnLoad').addEventListener('click', ()=>{ try{ const s=JSON.parse(localStorage.getItem('wingo_hist_v3')||'null'); if(Array.isArray(s)){ State.history = normalizeIncoming(s); rebuild(); toast('Loaded'); } else toast('No local data'); }catch(e){ toast('Load fail'); }});
-  $('#btnClear').addEventListener('click', ()=>{ State.history=[]; rebuild(); toast('Cleared'); });
-  $('#btnSim').addEventListener('click', ()=> simulate(5));
-  $('#btnExport').addEventListener('click', exportCSV);
-
-  // file upload & preview & tuner
-  $('#btnImport').addEventListener('click', ()=> $('#fileInput').click());
-  $('#fileInput').addEventListener('change', handleFile);
-  $('#btnPreview').addEventListener('click', previewUploaded);
-  $('#btnRunTune').addEventListener('click', ()=> runTune(300));
-
-  // connect API
-  $('#btnConnect').addEventListener('click', async ()=>{
-    const url = $('#apiUrl').value.trim(); if(!url){ toast('Paste LIVE_API_URL'); return; }
-    try{ toast('Fetching API...'); const res = await fetch(url,{cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); State.history = normalizeIncoming(json.history || json.data || json); rebuild(); $('#probSource').textContent='(from API)'; toast('API loaded'); }catch(e){ console.error(e); toast('API failed'); }
+  // Clear
+  $("#btnClear").addEventListener("click", ()=>{
+    const el = getPeriodInputEl();
+    if(el) el.value = "";
+    $("#actualPreview").value = "";
+    $("#lenMeta").textContent = "0";
+    toast("Cleared.");
   });
 
-  // modal controls
-  $('#modalClose').addEventListener('click', hideModal);
-  $('#modalOk').addEventListener('click', ()=> { if(modalOk) modalOk(); });
-
-  // weight tuner: runTune triggered via button
-}
-
-/* helper id selector for sliders */
-function idSelector(id){ return '#'+id; }
-
-/* slider handler */
-function onSliderChange(){
-  const h = parseFloat($('#wHash').value);
-  const f = parseFloat($('#wFreq').value);
-  const r = parseFloat($('#wRec').value);
-  const e = parseFloat($('#wEnt').value);
-  $('#wHashVal').textContent = h.toFixed(2);
-  $('#wFreqVal').textContent = f.toFixed(2);
-  $('#wRecVal').textContent = r.toFixed(2);
-  $('#wEntVal').textContent = e.toFixed(2);
-  // don't auto-apply until user presses Apply Weights
-}
-
-/* normalize sliders so sum=1 */
-function normalizeSliders(){
-  let h = parseFloat($('#wHash').value), f=parseFloat($('#wFreq').value), r=parseFloat($('#wRec').value), e=parseFloat($('#wEnt').value);
-  const s = h+f+r+e || 1;
-  h/=s; f/=s; r/=s; e/=s;
-  $('#wHash').value=h.toFixed(2); $('#wFreq').value=f.toFixed(2); $('#wRec').value=r.toFixed(2); $('#wEnt').value=e.toFixed(2);
-  onSliderChange();
-  toast('Normalized');
-}
-
-/* apply sliders to app weights */
-function applySlidersToWeights(){
-  const h=parseFloat($('#wHash').value), f=parseFloat($('#wFreq').value), r=parseFloat($('#wRec').value), e=parseFloat($('#wEnt').value);
-  const s=h+f+r+e || 1;
-  State.weights = { hash: h/s, freq: f/s, recency: r/s, entropy: e/s };
-  toast('Weights applied');
-  rebuild();
-}
-
-/* preset change */
-function onPresetChange(){
-  const v = $('#blendPreset').value;
-  if(v==='default'){ State.weights={hash:0.45,freq:0.25,recency:0.2,entropy:0.1}; }
-  else if(v==='hash'){ State.weights={hash:0.6,freq:0.2,recency:0.12,entropy:0.08}; }
-  else if(v==='freq'){ State.weights={hash:0.25,freq:0.45,recency:0.2,entropy:0.1}; }
-  else if(v==='recency'){ State.weights={hash:0.25,freq:0.2,recency:0.45,entropy:0.1}; }
-  else if(v==='custom'){ /* keep as is */ }
-  // sync sliders
-  const w = State.weights;
-  $('#wHash').value=w.hash.toFixed(2); $('#wFreq').value=w.freq.toFixed(2); $('#wRec').value=w.recency.toFixed(2); $('#wEnt').value=w.entropy.toFixed(2);
-  onSliderChange();
-  toast('Preset loaded');
-}
-
-/* ========= Prediction flow ========= */
-function runPrediction(periodInput){
-  const s = String(periodInput).replace(/\D/g,'');
-  const period = s.length>=4 ? s : ('000000'+s).slice(-6);
-  const ens = ensemblePredict(period, State.history, State.weights);
-  const conf = computeConfidenceFinal(ens.digit, ens.score, State.history);
-  const type = ens.digit >= 5 ? 'Big' : 'Small';
-  const color = digitColor(ens.digit, period);
-  return { input: periodInput, period: Number(period), digit: ens.digit, type, color, conf, breakdown: ens.comps };
-}
-function showResult(out){
-  $('#res-input').textContent = out.input;
-  $('#res-period').textContent = out.period;
-  $('#res-digit').textContent = '#' + out.digit;
-  $('#res-type').textContent = out.type;
-  $('#res-color').textContent = out.color;
-  $('#res-conf').textContent = (out.conf * 100).toFixed(1) + '%';
-  const container = document.getElementById('res-decision');
-  const el = document.createElement('div'); el.innerHTML = out.conf >= State.threshold ? '<div class="chip money">Money Magnet 🧲</div>' : '<div class="chip soft">Soft 💚</div>';
-  container.parentNode.replaceChild(el.firstElementChild, container);
-}
-
-/* ========= UI Rendering from State.history ========= */
-function updateProbs(){
-  const counts = Array(10).fill(0);
-  State.history.forEach(h=>counts[h.num] = (counts[h.num]||0)+1);
-  const total = Math.max(1, State.history.length);
-  State.probs = counts.map(c=>c/total);
-}
-function renderBars(){
-  updateProbs();
-  const box = $('#probBars'); box.innerHTML='';
-  const max = Math.max(...State.probs, 0.01);
-  State.probs.forEach((p,i)=>{
-    const el = document.createElement('div'); el.className='bar'; el.innerHTML = `<div class="bar-fill" style="height:${(p/max)*100}%"></div><small>${i}</small>`;
-    box.appendChild(el);
-  });
-  const sorted = State.probs.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
-  $('#probTop').textContent = `${sorted[0].i} (${(sorted[0].v*100).toFixed(1)}%)`;
-  $('#probBottom').textContent = `${sorted[sorted.length-1].i} (${(sorted[sorted.length-1].v*100).toFixed(1)}%)`;
-
-  // canvas mini spark
-  const c = $('#probCanvas'), ctx=c.getContext('2d'); const w=c.width=c.clientWidth, h=c.height=140; ctx.clearRect(0,0,w,h);
-  const pad=12, bw=(w-pad*2)/10 - 6, base = h-22; ctx.font='12px '+(getComputedStyle(document.body).fontFamily||'monospace');
-  State.probs.forEach((p,i)=>{ const x=pad+i*(bw+6), bh=Math.max(4,p*h*0.86), y=base-bh; const g=ctx.createLinearGradient(0,y,0,y+bh); g.addColorStop(0,'#12dfb8'); g.addColorStop(1,'#11a8e6'); ctx.fillStyle=g; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle='#082a32'; ctx.strokeRect(x,y,bw,bh); ctx.fillStyle='#9fbdd4'; ctx.fillText(String(i), x + bw/2 - 4, h - 6); });
-}
-function renderPredList(){
-  const wrap = $('#predList'); wrap.innerHTML='';
-  const show = State.history.slice(0,80);
-  show.forEach(h=>{ const row=document.createElement('div'); row.className='pred-row'; const time=new Date(h.ts).toLocaleTimeString(); row.innerHTML = `<div class="mono">🕒 ${time}</div><div class="mono">tail ${h.period} → <b>#${h.num}</b> (${h.type}) • <span class="small">${h.color}</span></div><div>${ h.confidence >= State.threshold ? '<span class="chip money">Money Magnet 🧲</span>' : '<span class="chip soft">Soft 💚</span>' }</div>`; wrap.appendChild(row); });
-}
-function renderPatterns(){
-  const hist = State.history.slice(0,40);
-  $('#patBS').innerHTML=''; $('#patCR').innerHTML='';
-  hist.forEach(h=>{ const a=document.createElement('div'); a.className='p-pill '+(h.type==='Big'?'p-bg':'p-sm'); a.textContent=h.type; $('#patBS').appendChild(a); const b=document.createElement('div'); b.className='p-pill '+(h.color==='Green'?'p-green':'p-red'); b.textContent=h.color; $('#patCR').appendChild(b); });
-  const counts = Array(10).fill(0); hist.forEach(h=>counts[h.num]++);
-  const arr = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c - a.c);
-  $('#hotList').innerHTML = arr.slice(0,3).map(x=>`<div class="p-pill">${x.i} <span class="small">(${x.c})</span></div>`).join('');
-  $('#coldList').innerHTML = arr.slice(-3).reverse().map(x=>`<div class="p-pill">${x.i} <span class="small">(${x.c})</span></div>`).join('');
-  const lastSeen = new Map(); const gaps=[];
-  hist.forEach((h,idx)=>{ const prev = lastSeen.get(h.num); const gap = prev==null ? '—' : (idx-prev); lastSeen.set(h.num, idx); gaps.push({num:h.num,gap}); });
-  $('#gapMap').innerHTML = gaps.map(g=>`<div class="p-pill">#${g.num} <span class="small">gap:${g.gap}</span></div>`).join('');
-}
-function renderStats(){
-  const hist=State.history, total=hist.length; $('#stTotal').textContent=String(total);
-  const mm = hist.filter(h=>h.confidence >= State.threshold).length; const mmRate = total? mm/total:0; $('#stMM').textContent=(mmRate*100).toFixed(1)+'%'; $('#stMMP').style.width=(mmRate*100)+'%';
-  const avg = total? (hist.reduce((a,b)=>a+b.confidence,0)/total):0; $('#stAvg').textContent=(avg*100).toFixed(1)+'%'; $('#stAvgP').style.width = ((avg-0.5)/0.45*100)+'%';
-  const counts = Array(10).fill(0); hist.forEach(h=>counts[h.num]++); const top = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c - a.c)[0]||{i:'—',c:0}; $('#stTop').textContent = `${top.i} (${ total? (top.c/total*100).toFixed(1) : '0.0'}%)`;
-  // dist canvas
-  const c=$('#distCanvas'), ctx=c.getContext('2d'); const w=c.width=c.clientWidth, h=c.height=160; ctx.clearRect(0,0,w,h);
-  const pad=12, bw=(w-pad*2)/10 - 6, base=h-20, mx=Math.max(...counts,1); ctx.font='12px '+(getComputedStyle(document.body).fontFamily||'monospace');
-  counts.forEach((cv,i)=>{ const x=pad+i*(bw+6), bh=Math.max(4, cv/mx*(h*0.82)), y=base-bh; ctx.fillStyle='#071a22'; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle='#102b38'; ctx.strokeRect(x,y,bw,bh); ctx.fillStyle='#9fbdd4'; ctx.fillText(String(i), x+bw/2 - 4, h - 6); });
-}
-
-/* ========= Rebuild UI ========= */
-function rebuild(){ renderBars(); renderPredList(); renderPatterns(); renderStats(); $('#threshold').value = State.threshold.toFixed(2); $('#wHash').value = State.weights.hash.toFixed(2); $('#wFreq').value=State.weights.freq.toFixed(2); $('#wRec').value=State.weights.recency.toFixed(2); $('#wEnt').value=State.weights.entropy.toFixed(2); onSliderChange(); }
-
-/* ========= Processing Spinner ========= */
-function showProcessing(ms=2000){ return new Promise(res=>{ const wrapper=document.createElement('div'); wrapper.className='processing'; wrapper.id='procTemp'; wrapper.innerHTML=`<div class="spin"><div class="ring"></div><div class="dollar">$</div></div><div class="note" style="font-weight:800">Processing…</div>`; const anchor = $('#btnCheck').parentNode; anchor.appendChild(wrapper); setTimeout(()=>{ wrapper.remove(); res(); }, ms); }); }
-
-/* ========= File handling (upload preview) ========= */
-let uploadedData = null;
-function handleFile(e){
-  const f = e.target.files && e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = (ev)=>{
-    const txt = ev.target.result;
-    // try JSON then CSV
+  // Copy (placeholder)
+  $("#btnCopy").addEventListener("click", async ()=>{
     try{
-      const json = JSON.parse(txt);
-      if(Array.isArray(json)){ uploadedData = normalizeIncoming(json); $('#previewBox').innerHTML = `<div class="small">Loaded JSON array — ${uploadedData.length} records</div>`; toast('JSON loaded'); return; }
-      else { toast('JSON must be array'); uploadedData = null; return; }
-    }catch(err){
-      // try CSV parse
-      const lines = txt.split(/\r?\n/).map(r=>r.trim()).filter(Boolean);
-      if(lines.length<1){ toast('Empty file'); uploadedData=null; return; }
-      const hdr = lines[0].split(',').map(s=>s.trim().toLowerCase());
-      const rows = lines.slice(1).map(l => l.split(',').map(s=>s.trim()));
-      const arr = rows.map(r=>{
-        const obj={};
-        hdr.forEach((h,i)=> obj[h]=r[i]);
-        return obj;
-      });
-      // map CSV fields to expected
-      const mapped = arr.map((o,i)=>{
-        const period = o.period ?? o.Period ?? (Date.now()+i);
-        const num = (o.num!==undefined && o.num!=='' ) ? parseInt(o.num,10) : undefined;
-        return { period, num };
-      });
-      uploadedData = normalizeIncoming(mapped);
-      $('#previewBox').innerHTML = `<div class="small">Parsed CSV — ${uploadedData.length} records</div>`;
-      toast('CSV parsed');
+      const txt = `Period: ${getCurrentPeriod() || "-"} | Strategy: ${$("#strategy").value}`;
+      await navigator.clipboard.writeText(txt);
+      toast("Copied.");
+    }catch(e){ toast("Copy failed."); }
+  });
+
+  // ---------- Verify & Learn ----------
+  function openVerifyModal(){
+    const cur = getCurrentPeriod();
+    const expectedPrev = getPrevPeriod(cur);
+    $("#prevPeriodInput").value = expectedPrev;
+    $("#actualDigitInput").value = "";
+    $("#verifyError").style.display = "none";
+    $("#verifyModal").hidden = false;
+
+    if(!expectedPrev){
+      showVerifyError("Current period खाली/गलत है। पहले Period Number भरें।");
     }
-  };
-  reader.readAsText(f);
-}
-function previewUploaded(){
-  if(!uploadedData){ toast('No file uploaded'); return; }
-  const preview = uploadedData.slice(0,50).map(x=>`period:${x.period} -> #${x.num} (${x.type})`).join('<br>');
-  showModal('Preview (first 50)', `<div style="max-height:300px;overflow:auto">${preview}</div>`);
-}<!->continue the script and closing tags -->
-<script>
-/* ========= Tuner (random search) ========= */
-async function runTune(iterations=300){
-  if(!uploadedData){ toast('Upload a dataset first'); return; }
-  $('#tuneStatus').textContent = 'Tuning…'; $('#tuneStatus').style.color = '#ffd86b';
-  await new Promise(r=>setTimeout(r,30));
-  const data = uploadedData.slice(); // newest-first
-  const warmup = 8;
-  const totalEval = Math.min(120, Math.max(0, data.length - warmup));
-  if(totalEval <= 0){ $('#tuneStatus').textContent='Tuning failed — dataset too small'; return; }
-  const evalIdxs = [];
-  for(let k=warmup;k<warmup+totalEval;k++) evalIdxs.push(k);
-  let best = { score:-1, weights:State.weights };
-  const startTime = performance.now();
-  for(let it=0; it<iterations; it++){
-    const a = Math.random()+0.01, b=Math.random()+0.01, c=Math.random()+0.01, d=Math.random()+0.01;
-    const sum = a+b+c+d;
-    const cand = { hash: a/sum, freq: b/sum, recency: c/sum, entropy: d/sum };
-    let hits = 0, tot = 0;
-    for(const idx of evalIdxs){
-      const prefix = data.slice(idx+1); // newest-first prefix
-      const target = data[idx];
-      const ens = ensemblePredict(String(target.period), prefix, cand);
-      if(ens.digit === target.num) hits++;
-      tot++;
-    }
-    const acc = tot? (hits/tot) : 0;
-    if(acc > best.score){
-      best = { score: acc, weights: cand };
-    }
-    if(it%20===0) { $('#tuneStatus').textContent = `Tuning… ${it}/${iterations} (best ${(best.score*100).toFixed(2)}%)`; await new Promise(r=>setTimeout(r,1)); }
   }
-  const elapsed = ((performance.now() - startTime)/1000).toFixed(1);
-  $('#tuneStatus').textContent = `Done — best ${(best.score*100).toFixed(2)}% (time ${elapsed}s)`;
-  $('#tuneStatus').style.color = '#9feacb';
-  showModal('Tuning results', `<div class="small">Best accuracy: <b>${(best.score*100).toFixed(2)}%</b></div>
-    <div style="margin-top:8px">Weights: <pre>${JSON.stringify(best.weights,null,2)}</pre></div>
-    <div style="margin-top:8px" class="small">Apply best weights?</div>`, false, ()=>{ State.weights = best.weights; rebuild(); hideModal(); toast('Best weights applied'); });
-}
+  function closeVerifyModal(){ $("#verifyModal").hidden = true; }
 
-/* ========= Run prediction (as before) ========= */
-function runPredictionDirect(period){
-  const s = String(period).replace(/\D/g,'');
-  const periodStr = s.length>=4 ? s : ('000000'+s).slice(-6);
-  const ens = ensemblePredict(periodStr, State.history, State.weights);
-  const conf = computeConfidenceFinal(ens.digit, ens.score, State.history);
-  const type = ens.digit>=5 ? 'Big':'Small';
-  const color = digitColor(ens.digit, periodStr);
-  return { input: period, period: Number(periodStr), digit: ens.digit, type, color, conf };
-}
+  $("#btnVerifyLearn").addEventListener("click", openVerifyModal);
+  $("#verifyCancel").addEventListener("click", closeVerifyModal);
 
-/* ========= runPrediction wrapper ========= */
-function runPrediction(period){
-  return runPredictionDirect(period);
-}
+  // Last Result में सिर्फ 1 digit रहने दें (यूज़र 12165 टाइप करे तो भी पहले वाला ही बचे)
+  $("#actualDigitInput").addEventListener("input", (e)=>{
+    e.target.value = (e.target.value.match(/\d/) || [""])[0];
+  });
 
-/* ========= Simulate ========= */
-function simulate(n=5){
-  let cur = $('#periodInput').value.trim() || String(Date.now());
-  cur = cur.replace(/\D/g,'') || String(Date.now());
-  const results=[];
-  for(let i=0;i<n;i++){
-    let num = parseInt(cur,10) || Date.now(); num++; cur = String(num);
-    const out = runPrediction(cur);
-    State.history.unshift({ period: out.period, num: out.digit, type: out.type, color: out.color, confidence: out.conf, ts: Date.now()-i*1000 });
-    results.push(out);
+  $("#verifySubmit").addEventListener("click", ()=>{
+    const cur = getCurrentPeriod();
+    const expectedPrev = getPrevPeriod(cur);
+    const prevShown = $("#prevPeriodInput").value.trim();
+    const digit = $("#actualDigitInput").value.trim();
+
+    if(!expectedPrev){
+      showVerifyError("Invalid current period. पहले Period Number डालें।");
+      focusPeriod();
+      return;
+    }
+    if(prevShown !== expectedPrev){
+      $("#prevPeriodInput").value = expectedPrev;
+      return showVerifyError(`Previous period mismatch. होना चाहिए: ${expectedPrev}`);
+    }
+    if(!/^[0-9]$/.test(digit)){
+      return showVerifyError("Last result केवल 0–9 का एक अंक दें।");
+    }
+
+    try{
+      verifyAndLearn(prevShown, Number(digit));   // ← अपनी असली learning logic कॉल करें
+      closeVerifyModal();
+      toast("Verified & learned from previous period.");
+    }catch(e){
+      console.error(e);
+      showVerifyError("कुछ समस्या आई, बाद में पुनः प्रयास करें।");
+    }
+  });
+
+  function showVerifyError(msg){
+    const el = $("#verifyError");
+    el.textContent = msg;
+    el.style.display = "block";
   }
-  if(State.history.length>2000) State.history = State.history.slice(0,2000);
-  rebuild();
-  showModal('Simulated', `<pre>${results.map(r=>`period:${r.period} -> #${r.digit} (${r.type}) ${r.color} ${ (r.conf*100).toFixed(1) }%`).join('\n')}</pre>`);
-}
 
-/* ========= Export CSV ========= */
-function exportCSV(){
-  if(!State.history.length){ toast('No history'); return; }
-  const hdr = ['period','num','type','color','confidence','ts'];
-  const rows = State.history.map(h=> [h.period,h.num,h.type,h.color,h.confidence.toFixed(3), new Date(h.ts).toISOString()].join(','));
-  const csv = [hdr.join(','), ...rows].join('\n');
-  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='wingo_history.csv'; a.click(); URL.revokeObjectURL(url);
-  toast('Exported CSV');
-}
-
-/* ========= Modal ========= */
-let modalOk = null;
-function showModal(title, bodyHTML, showTextarea=false, okHandler=null){
-  $('#modalBack').style.display='flex'; $('#modalTitle').textContent = title;
-  if(showTextarea){ $('#modalBody').innerHTML = `<textarea id="modalTextarea" style="width:100%;height:220px;background:#04101a;color:var(--text);border:1px solid var(--outline);padding:8px;border-radius:8px"></textarea>`; }
-  else $('#modalBody').innerHTML = bodyHTML;
-  modalOk = okHandler;
-}
-function hideModal(){ $('#modalBack').style.display='none'; $('#modalBody').innerHTML=''; modalOk=null; }
-$('#modalOk').addEventListener('click', ()=>{ if(typeof modalOk === 'function') modalOk(); else hideModal(); });
-
-/* ========= File preview & import helpers ========= */
-function previewUploaded(){ if(!uploadedData){ toast('No uploaded dataset'); return; } const list = uploadedData.slice(0,50).map(x=>`period:${x.period} -> #${x.num}`).join('<br>'); showModal('Preview (first 50)', `<div style="max-height:360px;overflow:auto">${list}</div>`); }
-function importFromModal(){ try{ const txt = $('#modalTextarea').value.trim(); if(!txt){ toast('Empty'); return; } const parsed = JSON.parse(txt); if(!Array.isArray(parsed)){ toast('JSON array required'); return; } const norm = normalizeIncoming(parsed); State.history = norm; rebuild(); hideModal(); toast('Imported'); }catch(e){ console.error(e); toast('Import failed'); } }
-
-/* ========= init ========= */
-function init(){
-  // wire up UI listeners
-  bindUI();
-  // defaults
-  State.weights = { hash:0.45, freq:0.25, recency:0.2, entropy:0.1 };
-  $('#wHash').value = State.weights.hash.toFixed(2); $('#wFreq').value=State.weights.freq.toFixed(2); $('#wRec').value=State.weights.recency.toFixed(2); $('#wEnt').value=State.weights.entropy.toFixed(2);
-  onSliderChange();
-  // load local history or sample
-  try{
-    const s = JSON.parse(localStorage.getItem('wingo_hist_v3')||'null');
-    if(Array.isArray(s) && s.length){ State.history = normalizeIncoming(s); $('#probSource') && ($('#probSource').textContent='(from local)'); } else loadSample();
-  }catch(e){ loadSample(); }
-  rebuild();
-  (async ()=>{ await showProcessing(1200); rebuild(); })();
-  // wire preview/tune buttons
-  $('#btnRunTune').addEventListener('click', ()=> runTune(300));
-  $('#btnPreview').addEventListener('click', previewUploaded);
-}
-
-/* ========= Sample load ========= */
-function loadSample(){
-  const sample = [
-    {period:20250814100051634,num:6,confidence:.76},
-    {period:20250814100051633,num:8,confidence:.72},
-    {period:20250814100051632,num:0,confidence:.68},
-    {period:20250814100051631,num:8,confidence:.70},
-    {period:20250814100051630,num:2,confidence:.73},
-    {period:20250814100051629,num:5,confidence:.79},
-    {period:20250814100051628,num:4,confidence:.64},
-    {period:20250814100051627,num:6,confidence:.72},
-    {period:20250814100051626,num:7,confidence:.86},
-    {period:20250814100051625,num:3,confidence:.68},
-    {period:20250814100051624,num:1,confidence:.65},
-    {period:20250814100051623,num:9,confidence:.83},
-    {period:20250814100051622,num:8,confidence:.77},
-    {period:20250814100051621,num:0,confidence:.61},
-    {period:20250814100051620,num:8,confidence:.68},
-    {period:20250814100051619,num:2,confidence:.71},
-    {period:20250814100051618,num:5,confidence:.80},
-    {period:20250814100051617,num:4,confidence:.58},
-    {period:20250814100051616,num:6,confidence:.73},
-    {period:20250814100051615,num:7,confidence:.88}
-  ];
-  State.history = normalizeIncoming(sample);
-  $('#probSource') && ($('#probSource').textContent='(from sample)');
-  toast('Sample loaded');
-}
-
-/* ========= switchTab ========= */
-function switchTab(id){ $$('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id)); $$('.tab-pane').forEach(p=>p.classList.toggle('active', p.id===id)); }
-
-/* ========= attach file input handlers ========= */
-$('#fileInput').addEventListener('change', handleFile);
-$('#btnImport').addEventListener('click', ()=> $('#fileInput').click());
-
-/* ========= start ========= */
-init();
-
-/* ========= expose API for debugging ========= */
-window.Wingo = { State, runPrediction, runPredictionDirect, importUploaded:()=>{ if(uploadedData){ State.history = uploadedData; rebuild(); toast('Imported uploaded dataset'); } } };
+  // ---- YOUR IMPLEMENTATION HOOK ----
+  // इसे अपनी वास्तविक storage/model अपडेट से बदलें
+  function verifyAndLearn(prevPeriod, digit){
+    // saveResult(prevPeriod, digit);
+    // model.updateFrom(prevPeriod, digit);
+    console.log("Learning from", prevPeriod, "digit", digit);
+  }
 </script>
 </body>
 </html>
