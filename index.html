@@ -9,34 +9,41 @@
 <style>
 :root{
   --gold:#ffd700; --gold-2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
-  --card:#14161b; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-  --radius:16px; --shadow:0 12px 26px rgba(0,0,0,.35);
+  --card:#12141a; --panel:#0d1016; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+  --radius:16px; --shadow:0 14px 28px rgba(0,0,0,.38);
 }
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+body{margin:0;background:radial-gradient(1200px 500px at 10% -10%,rgba(255,215,0,.05),transparent),linear-gradient(160deg,#0a0b0f,#000);color:#fff;font:15.5px/1.5 ui-sans-serif,system-ui,Segoe UI,Roboto}
 
-/* Header (golden, clean) */
-header{position:sticky;top:0;z-index:100;background:#000;border-bottom:1px solid #0f1117}
-.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
-.logo{font-weight:800;font-size:clamp(18px,4.4vw,22px);color:var(--gold);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.right{display:flex;align-items:center;gap:10px;color:#cbd5e1;font-size:13px}
+/* GOLDEN TOP BAR */
+.topbar{
+  position:sticky; top:0; z-index:1000; height:54px;
+  background:linear-gradient(90deg,#1b1b1b 0%, #111 9%, #ffc107 9%, #ffd700 50%, #f5d46b 91%, #111 91%, #1b1b1b 100%);
+  border-bottom:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center;
+  box-shadow:inset 0 -1px 0 rgba(0,0,0,.6);
+}
+.brand{display:flex; align-items:center; gap:10px; padding:0 14px; background:#000; border-radius:999px; box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.dot{width:10px;height:10px;border-radius:50%;background:#ffd700;box-shadow:0 0 0 3px rgba(255,215,0,.15),0 0 18px #ffd700}
+.title{font-weight:900; letter-spacing:.3px; color:#ffd700; font-size:18px; white-space:nowrap}
 
-.container{max-width:1180px;margin:0 auto;padding:18px 16px 38px}
+/* LAYOUT */
+.container{max-width:1180px;margin:16px auto 48px;padding:0 16px}
 .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
 .h1{font-size:18px;font-weight:800;margin:0 0 10px}
-.sub{color:var(--muted);font-size:13px;margin-top:6px}
-.grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px}
+.sub{color:var(--muted);font-size:12.8px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
 label{font-size:13px;color:#d8dbe2;font-weight:700;margin-bottom:6px;display:block}
-input,select{width:100%;padding:14px;background:#0c0f14;border:2px solid #202636;border-radius:12px;color:#fff;font-size:16px;outline:none}
+input,select{width:100%;padding:14px;background:#0b0f15;border:2px solid #202636;border-radius:12px;color:#fff;font-size:16px;outline:none}
 input:focus,select:focus{border-color:var(--gold)}
 
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
+.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:900;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
 .btn.sec{background:#1e2636;color:#e5e7eb;border:1px solid #2a3448}
 .switch{display:inline-flex;gap:8px;align-items:center;color:#e0e3ea;font-size:13px}
 .chip{display:inline-flex;align-items:center;gap:8px;background:#0e121a;border:1px solid #1f2636;border-radius:999px;padding:8px 12px;color:#cfd4e1;font-weight:700}
 
+/* RESULT */
 .kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media (max-width:900px){.kv{grid-template-columns:1fr}}
 .box{background:#0b0f15;border:1px solid #1a2130;border-radius:14px;padding:14px}
@@ -45,23 +52,25 @@ input:focus,select:focus{border-color:var(--gold)}
 .bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
 .pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:6px}
 .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:900px){.grid2{grid-template-columns:1fr}}
-.history{font-size:12px;color:#cfd4e1;max-height:220px;overflow:auto}
+.history{font-size:12px;color:#cfd4e1;max-height:240px;overflow:auto}
 .hrow{padding:6px 0;border-bottom:1px dashed #21293a}
 .helper{font-size:12px;color:#9ca3af}
 .hr{height:1px;background:#1a2130;margin:12px 0}
+
+/* pattern pack group */
+.pack{display:flex;gap:8px;flex-wrap:wrap}
+.pack .chip{padding:6px 10px}
+.biasBadge{font-size:12px;color:#cbd5e1;margin-left:4px}
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="logo">🎯 WinGo Predictor Pro</div>
-    <div class="right">
-      <label class="switch"><input type="checkbox" id="compactToggle"> Compact View</label>
-    </div>
-  </div>
-</header>
+<!-- GOLDEN HEADER -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><div class="title">WINGO PREDICTOR PRO</div></div>
+</div>
 
 <div class="container" id="appRoot">
   <!-- CONTROL -->
@@ -71,7 +80,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div>
         <label for="period">🧾 Period Number</label>
         <input id="period" placeholder="e.g. 20250813100052810"/>
-        <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
+        <div class="sub">लम्बा period ID • सिर्फ digits (0–9)</div>
       </div>
       <div>
         <label for="mode">Strategy</label>
@@ -80,6 +89,7 @@ input:focus,select:focus{border-color:var(--gold)}
           <option value="conservative">Confidence</option>
           <option value="aggressive">Very Confident</option>
         </select>
+
         <div class="row" style="margin-top:8px">
           <label class="switch"><input id="autoNext" type="checkbox"> Auto Next</label>
           <label class="switch">⏱ Interval
@@ -89,8 +99,25 @@ input:focus,select:focus{border-color:var(--gold)}
             </select>
           </label>
           <label class="switch"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
-          <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON</label>
+          <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON <span id="bias" class="biasBadge">—</span></label>
           <button class="btn sec" id="notifyBtn">🔔 Notifications</button>
+        </div>
+
+        <!-- Pattern Pack (optional, neat chips) -->
+        <div class="sub" style="margin-top:6px">Pattern Pack (optional)</div>
+        <div class="pack">
+          <label class="chip"><input id="pReverse" type="checkbox"> Reverse</label>
+          <label class="chip"><input id="pMirror"  type="checkbox"> Mirror</label>
+          <label class="chip"><input id="pCont"    type="checkbox"> Continuous</label>
+          <label class="chip"><input id="pGap"     type="checkbox"> Gap/Skip</label>
+          <label class="chip"><input id="pGuard"   type="checkbox" checked> Adversarial Guard</label>
+          <label class="chip">Confidence gate
+            <select id="gate" style="margin-left:8px;padding:4px 8px;border-radius:8px;border:1px solid #2a3448;background:#0d1320;color:#fff">
+              <option value="0.45">Normal</option>
+              <option value="0.55" selected>High</option>
+              <option value="0.65">Very High</option>
+            </select>
+          </label>
         </div>
       </div>
     </div>
@@ -151,7 +178,7 @@ input:focus,select:focus{border-color:var(--gold)}
 </div>
 
 <script>
-/* ---------- Notifications (SW optional) ---------- */
+/* ---------- Notifications ---------- */
 (async function setupSW(){
   if('serviceWorker' in navigator){
     try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; }catch{}
@@ -166,34 +193,30 @@ async function ensureNotifyPerm(){
 async function notifyPopup({tail,digit,size}){
   try{
     const ok = await ensureNotifyPerm(); if(!ok) return;
-    // Try SW first
     try{
       const reg = await navigator.serviceWorker.ready;
       if(reg && reg.showNotification){
         await reg.showNotification(`Next • ${tail}`,{
           body:`#${digit} • ${size}`,tag:`wingo-${tail}`,renotify:true,requireInteraction:true,
           icon:'/icons/icon-192.png',badge:'/icons/icon-192.png',vibrate:[80,30,80]
-        });
-        return;
+        }); return;
       }
     }catch{}
-    // Fallback (foreground)
     new Notification(`Next • ${tail}`,{ body:`#${digit} • ${size}` });
   }catch{}
 }
 
-/* ---------- Coin "ding" sound (1s) ---------- */
+/* ---------- Coin ding (1s) ---------- */
 let audioCtx=null;
 function playDing(){
   try{
     audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
     const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-    o.type='triangle'; o.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-    // quick coin-like pitch drop
+    o.type='triangle'; o.frequency.setValueAtTime(880, audioCtx.currentTime);
     o.frequency.exponentialRampToValueAtTime(660, audioCtx.currentTime+0.15);
     g.gain.setValueAtTime(0.001, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.5, audioCtx.currentTime+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.9);
+    g.gain.exponentialRampToValueAtTime(0.55, audioCtx.currentTime+0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.95);
     o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+1.0);
   }catch{}
 }
@@ -208,20 +231,23 @@ function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slic
 function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-/* ---------- Size-only learning store ---------- */
+/* ---------- Size-learning store ---------- */
 const LS_SIZE='WPP_SIZE2';
 const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
 const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+function renderBias(){
+  const s=loadSize(); const total=(s[0]+s[1])||1; const big=Math.round((s[1]/total)*100);
+  el('bias').textContent = `Bias Big ${big}%`;
+}
 
-/* ---------- Patterns / Priors (no trivial tail bias) ---------- */
+/* ---------- Base Priors ---------- */
 function priorPeriodDigits(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const d=[...period].map(Number);
   const s=d.reduce((a,b)=>a+b,0), mod10=s%10, mod7=s%7;
   const freq=Array(10).fill(0); d.forEach(x=>freq[x]++);
   const v=Array(10).fill(0.1);
-  v[mod10]+=0.44;                                // checksum-ish
-  v[(mod7*3)%10]+=0.22; v[(mod7*5)%10]+=0.20;    // cyclic
+  v[mod10]+=0.44; v[(mod7*3)%10]+=0.22; v[(mod7*5)%10]+=0.20;
   const mx=Math.max(...freq), mn=Math.min(...freq);
   for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.06*r}
   return normalize(v);
@@ -245,24 +271,36 @@ function priorChecksum(period){
 }
 function priorDistanceHashed(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const seedDigit = hash32(period+'d')%10;  // decoy center (not last digit)
+  const seedDigit = hash32(period+'d')%10;
   const v=Array(10).fill(0.1);
   for(let i=0;i<10;i++){const d=Math.min((i-seedDigit+10)%10,(seedDigit-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);}
+  return normalize(v);
+}
+
+/* ---------- Pattern Pack (light weights) ---------- */
+function patternPack(period,{rev,mir,cont,gap}){
+  const v=Array(10).fill(0.1);
+  if(!isDigits(period)) return v;
+  const t1=(+period.slice(-1))%10, t2=(+period.slice(-2))%10, t3=(+period.slice(-3))%10;
+  if(rev){ v[(10-t2)%10]+=0.18; v[(10-t3)%10]+=0.10; }
+  if(mir){ v[(9-t1)]+=0.20; }
+  if(cont){ v[(t1+1)%10]+=0.16; v[(t1+2)%10]+=0.10; }
+  if(gap){  v[(t1+3)%10]+=0.12; v[(t1+5)%10]+=0.08; }
   return normalize(v);
 }
 
 /* regime tilt (size bias only) */
 function regimeWeights(w){
   const s=loadSize(); const big=s[1]/(s[0]+s[1]); const out=w.slice();
-  if(big>0.62||big<0.38) out[4]+=0.02;   // distance signal a bit stronger
+  if(big>0.62||big<0.38) out[4]+=0.02;   // distance a bit stronger
   const sum=out.reduce((a,b)=>a+b,0); return out.map(x=>x/sum);
 }
 
-/* ---------- Predictor (meta-ensemble + learning) ---------- */
-function predictLocal(period, mode, antiSeq, learnOn){
+/* ---------- Predictor ---------- */
+function predictLocal(period, mode, antiSeq, learnOn, packFlags, guard, gate){
   const hyper={
-    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.34,0.16,0.18,0.18,0.14],learnBoost:0.25},
-    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.32,0.18,0.20,0.18,0.12],learnBoost:0.30},
+    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.33,0.16,0.18,0.18,0.15],learnBoost:0.25},
+    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.31,0.18,0.20,0.18,0.13],learnBoost:0.30},
     aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.35}
   }[mode];
 
@@ -270,16 +308,26 @@ function predictLocal(period, mode, antiSeq, learnOn){
         P2=priorParity(period),
         P3=priorBucket(period,antiSeq),
         P4=priorChecksum(period),
-        P5=priorDistanceHashed(period);
+        P5=priorDistanceHashed(period),
+        PP=patternPack(period,packFlags);
 
   const w=regimeWeights(hyper.w);
-  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
+  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i] + 0.12*PP[i]));
 
-  // adaptive sharpening vs 3rd-best threshold
+  // adversarial guard → flatten too-linear ramps
+  if(guard){
+    const ramp=(i)=>Math.abs(base[i]-((base[(i+1)%10]+base[(i+9)%10])/2));
+    const mean = base.reduce((a,b)=>a+b,0)/10, lin = base.map((_,i)=>ramp(i)).reduce((a,b)=>a+b,0)/10;
+    if(lin<0.01){ // “suspicious” straight 0→9 ramp
+      base=normalize(base.map(p=> (p*0.8 + mean*0.2) ));
+    }
+  }
+
+  // adaptive sharpening vs 3rd-best
   const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
   base=normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
 
-  // size-learning push (Beta-like)
+  // size-learning push
   if(learnOn){
     const sz=loadSize(); const total=(sz[0]+sz[1])||1;
     const smallBias=sz[0]/total, bigBias=sz[1]/total, k=hyper.learnBoost;
@@ -288,7 +336,7 @@ function predictLocal(period, mode, antiSeq, learnOn){
     base=normalize(base);
   }
 
-  // bootstrap + temperature + capping
+  // bootstrap
   const seed=hash32(period); const rnd=mulberry32(seed);
   const B=72,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
   for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
@@ -296,7 +344,12 @@ function predictLocal(period, mode, antiSeq, learnOn){
   const iM=argmax(probs), mx=probs[iM];
   if(mx>hyper.cap){ const excess=mx-hyper.cap; probs[iM]-=excess; const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
   const stability=Math.max(...votes)/B;
-  return {probs,stability};
+
+  // confidence score + gate
+  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
+  let score=clamp01(0.55*entropy+0.45*stability);
+  const pass = score>=gate;
+  return {probs,stability,score,pass};
 }
 
 /* ---------- Chart ---------- */
@@ -317,10 +370,7 @@ function renderResult(period, out, source='manual'){
   const probs=out.probs.slice(); const pick=argmax(probs);
   renderCharts(probs);
 
-  // confidence
-  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
-  const stability=clamp01(out.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
-
+  const score=out.score;
   el('resultCard').style.display='block';
   el('vPeriod').textContent=period;
   el('vNum').textContent=pick;
@@ -328,18 +378,17 @@ function renderResult(period, out, source='manual'){
   el('confBar').style.width=(score*100).toFixed(1)+'%';
   el('hiAcc').style.display=score>=0.85?'inline-flex':'none';
 
-  const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.28) issues.push('unstable');
-  let signal='Play',cls='ok'; if(issues.length===1){signal='Caution';cls='warn'} if(issues.length>=2){signal='Wait';cls='bad'}
+  let signal='Play',cls='ok';
+  if(!out.pass){signal='Wait';cls='bad'}
+  else if(score<0.6){signal='Caution';cls='warn'}
   el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
 
   el('reasons').textContent=`Score ${(score*100).toFixed(0)}%`;
 
-  // history
   const h=el('hist'); if(h.textContent==='—') h.textContent='';
   h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
-  [...h.children].slice(14).forEach(n=>n.remove());
+  [...h.children].slice(16).forEach(n=>n.remove());
 
-  // auto: notify + sound
   if(source==='auto' && el('autoNext').checked){
     notifyPopup({tail:String(period).slice(-3), digit:pick, size:(pick>=5?'Big':'Small')});
     playDing();
@@ -349,10 +398,19 @@ function renderResult(period, out, source='manual'){
 /* ---------- Actions ---------- */
 let autoTimer=null, busy=false;
 async function runPredict(source='manual'){
-  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
+  if(busy) return; busy=true; setTimeout(()=>busy=false,110);
   const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
   el('periodInfo').textContent='Period: '+describePeriod(pr);
-  const out=predictLocal(pr, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
+
+  const out=predictLocal(
+    pr,
+    el('mode').value,
+    el('antiSeq').checked,
+    el('learnOn').checked,
+    {rev:el('pReverse').checked, mir:el('pMirror').checked, cont:el('pCont').checked, gap:el('pGap').checked},
+    el('pGuard').checked,
+    parseFloat(el('gate').value||'0.55')
+  );
   renderResult(pr,out,source);
 }
 function startAuto(){
@@ -366,6 +424,7 @@ function startAuto(){
 
 /* ---------- Bindings ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
+  renderBias();
   el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
   el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
   el('btnClear').addEventListener('click', ()=>{
@@ -374,37 +433,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if(probChart){probChart.destroy();probChart=null}
   });
   el('btnCopy').addEventListener('click', async ()=>{
-    const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{}
-  });
-  el('autoNext').addEventListener('change', async e=>{
-    clearInterval(autoTimer); autoTimer=null;
-    if(e.target.checked){ await ensureNotifyPerm(); startAuto(); }
-  });
-  el('autoEvery').addEventListener('change', ()=>{ if(el('autoNext').checked){ startAuto(); } });
-  el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
-
-  // Verify & Learn — colored WIN/LOSS
-  el('btnVerify').addEventListener('click', ()=>{
-    const pick = el('vNum').textContent.trim();
-    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9ca3af'; return; }
-    const chosen = document.querySelector('input[name="actSize"]:checked');
-    if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9ca3af'; return; }
-    const actualSize = chosen.value;              // 'small' | 'big'
-    const predictedSize = (+pick>=5)?'big':'small';
-    const win = (actualSize===predictedSize);
-    if(win){
-      el('verifyMsg').textContent = `WIN ✔ size ${predictedSize.toUpperCase()}`;
-      el('verifyMsg').style.color = 'var(--ok)';
-    }else{
-      el('verifyMsg').textContent = `LOSS ✘ picked ${predictedSize.toUpperCase()} • actual ${actualSize.toUpperCase()}`;
-      el('verifyMsg').style.color = 'var(--bad)';
-    }
-    if(el('learnOn').checked){
-      const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
-    }
-  });
-});
-</script>
-</body>
-</html>
+    const txt=`Period: ${el('vPeriod').textContent}, Number: ${
