@@ -11,7 +11,6 @@
     --muted:#9aa0a6;
     --text:#e8eaed;
     --brand:#ffe04d;
-    --accent:#2ea043;
     --border:rgba(255,255,255,.08);
     --border-2:rgba(255,255,255,.14);
     --error:#ff6961;
@@ -19,7 +18,7 @@
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
     background: linear-gradient(180deg,#0a0a0a 0%, #000 100%);
     color:var(--text);
   }
@@ -79,6 +78,7 @@
   }
   .modal-head{font-size:18px; font-weight:800; margin:0 0 10px}
   .error{color:var(--error); margin-top:6px; font-size:13px}
+
   /* Toast */
   .toast{
     position:fixed; left:50%; transform:translateX(-50%);
@@ -106,6 +106,7 @@
       <div class="grid cols-2">
         <div>
           <label>Period Number</label>
+          <!-- अगर आपकी ऐप में कोई और ID है, JS resolver अपने-आप पकड़ लेगा -->
           <input id="periodInput" type="text" inputmode="numeric" placeholder="e.g. 202508141000003076">
         </div>
 
@@ -144,7 +145,7 @@
       </div>
 
       <div class="row" style="margin-top:12px">
-        <button id="btnVerifyLearn" class="btn accent">Verify &amp; Learn</button>
+        <button id="btnVerifyLearn" class="btn">Verify &amp; Learn</button>
       </div>
     </section>
   </div>
@@ -160,7 +161,7 @@
     <input id="prevPeriodInput" type="text" readonly>
 
     <label style="margin-top:10px">Last Result (0–9)</label>
-    <input id="actualDigitInput" type="number" min="0" max="9" placeholder="e.g. 5"/>
+    <input id="actualDigitInput" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" placeholder="e.g. 5"/>
 
     <p id="verifyError" class="error" style="display:none"></p>
 
@@ -174,7 +175,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  // Helpers
+  // ---------- Helpers ----------
   const $ = (s)=>document.querySelector(s);
 
   function toast(msg){
@@ -185,12 +186,35 @@
     window.__t = setTimeout(()=>el.classList.remove("show"), 1800);
   }
 
-  // Meta update
   $("#periodInput").addEventListener("input", ()=>{
     $("#lenMeta").textContent = ($("#periodInput").value||"").length;
   });
 
-  // Prev period calc that preserves leading zeros
+  // Robust period resolver: अलग IDs/नाम होने पर भी period इनपुट ढूँढेगा
+  function getPeriodInputEl(){
+    const candidates = [
+      "#periodInput", "#period-number", "#periodNumber", "#period_id",
+      "input[name='period']", "input[data-role='period']"
+    ];
+    for(const sel of candidates){
+      const el = document.querySelector(sel);
+      if(el) return el;
+    }
+    // Fallback: कोई भी बड़ा numeric इनपुट (लंबाई >= 12)
+    const inputs = Array.from(document.querySelectorAll("input"));
+    const guess = inputs.find(i => /^\d{12,}$/.test(i.value || ""));
+    return guess || null;
+  }
+  function getCurrentPeriod(){
+    const el = getPeriodInputEl();
+    return el ? (el.value || "").trim() : "";
+  }
+  function focusPeriod(){
+    const el = getPeriodInputEl();
+    if(el){ el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"}); }
+  }
+
+  // Previous period calc (leading zeros preserved)
   function getPrevPeriod(periodId){
     if(!periodId || !/^\d+$/.test(periodId)) return "";
     const len = periodId.length;
@@ -200,14 +224,15 @@
 
   // Predict (placeholder)
   $("#btnPredict").addEventListener("click", ()=>{
-    const p = $("#periodInput").value.trim();
+    const p = getCurrentPeriod();
     if(!p) return toast("Enter period number.");
     toast("Predicted ✔ (demo)");
   });
 
   // Clear
   $("#btnClear").addEventListener("click", ()=>{
-    $("#periodInput").value = "";
+    const el = getPeriodInputEl();
+    if(el) el.value = "";
     $("#actualPreview").value = "";
     $("#lenMeta").textContent = "0";
     toast("Cleared.");
@@ -216,7 +241,7 @@
   // Copy (placeholder)
   $("#btnCopy").addEventListener("click", async ()=>{
     try{
-      const txt = `Period: ${$("#periodInput").value || "-"} | Strategy: ${$("#strategy").value}`;
+      const txt = `Period: ${getCurrentPeriod() || "-"} | Strategy: ${$("#strategy").value}`;
       await navigator.clipboard.writeText(txt);
       toast("Copied.");
     }catch(e){ toast("Copy failed."); }
@@ -224,36 +249,48 @@
 
   // ---------- Verify & Learn ----------
   function openVerifyModal(){
-    const cur = $("#periodInput").value.trim();
+    const cur = getCurrentPeriod();
     const expectedPrev = getPrevPeriod(cur);
     $("#prevPeriodInput").value = expectedPrev;
     $("#actualDigitInput").value = "";
     $("#verifyError").style.display = "none";
     $("#verifyModal").hidden = false;
+
+    if(!expectedPrev){
+      showVerifyError("Current period खाली/गलत है। पहले Period Number भरें।");
+    }
   }
   function closeVerifyModal(){ $("#verifyModal").hidden = true; }
 
   $("#btnVerifyLearn").addEventListener("click", openVerifyModal);
   $("#verifyCancel").addEventListener("click", closeVerifyModal);
 
+  // Last Result में सिर्फ 1 digit रहने दें (यूज़र 12165 टाइप करे तो भी पहले वाला ही बचे)
+  $("#actualDigitInput").addEventListener("input", (e)=>{
+    e.target.value = (e.target.value.match(/\d/) || [""])[0];
+  });
+
   $("#verifySubmit").addEventListener("click", ()=>{
-    const cur = $("#periodInput").value.trim();
+    const cur = getCurrentPeriod();
     const expectedPrev = getPrevPeriod(cur);
     const prevShown = $("#prevPeriodInput").value.trim();
     const digit = $("#actualDigitInput").value.trim();
 
     if(!expectedPrev){
-      return showVerifyError("Invalid current period.");
+      showVerifyError("Invalid current period. पहले Period Number डालें।");
+      focusPeriod();
+      return;
     }
     if(prevShown !== expectedPrev){
-      return showVerifyError(`Previous period mismatch. Expected ${expectedPrev}`);
+      $("#prevPeriodInput").value = expectedPrev;
+      return showVerifyError(`Previous period mismatch. होना चाहिए: ${expectedPrev}`);
     }
     if(!/^[0-9]$/.test(digit)){
-      return showVerifyError("Last result 0–9 में दें।");
+      return showVerifyError("Last result केवल 0–9 का एक अंक दें।");
     }
 
     try{
-      verifyAndLearn(prevShown, Number(digit));   // ← integrate your real learning here
+      verifyAndLearn(prevShown, Number(digit));   // ← अपनी असली learning logic कॉल करें
       closeVerifyModal();
       toast("Verified & learned from previous period.");
     }catch(e){
@@ -269,15 +306,12 @@
   }
 
   // ---- YOUR IMPLEMENTATION HOOK ----
-  // Replace this stub with your actual storage/model update.
+  // इसे अपनी वास्तविक storage/model अपडेट से बदलें
   function verifyAndLearn(prevPeriod, digit){
-    // Example: persist & update weights
     // saveResult(prevPeriod, digit);
     // model.updateFrom(prevPeriod, digit);
-    // For now just simulate:
     console.log("Learning from", prevPeriod, "digit", digit);
   }
-
 </script>
 </body>
 </html>
