@@ -1,368 +1,283 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>🎯 WinGo Predictor Pro</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{
-  --gold:#ffd700; --gold-2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
-  --bg:#0a0a0a; --panel:#111216; --card:#14161b; --stroke:#222533;
-  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-  --radius:16px; --shadow:0 12px 26px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box} body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
-header{position:sticky;top:0;z-index:5;background:#000;border-bottom:1px solid #0f1117}
-.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
-.logo{font-weight:800;font-size:22px;color:var(--gold);letter-spacing:.2px}
-.container{max-width:1180px;margin:0 auto;padding:18px 16px 38px}
-.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
-.h1{font-size:18px;font-weight:800;margin:0 0 10px}
-.sub{color:var(--muted);font-size:13px;margin-top:6px}
-.grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
-label{font-size:13px;color:#d8dbe2;font-weight:700;margin-bottom:6px;display:block}
-input,select{width:100%;padding:14px 14px;background:#0c0f14;border:2px solid #202636;border-radius:12px;color:#fff;font-size:16px;outline:none}
-input:focus,select:focus{border-color:var(--gold)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
-.btn.sec{background:#1e2636;color:#e5e7eb;border:1px solid #2a3448}
-.switch{display:inline-flex;gap:8px;align-items:center;color:var(--ink);font-size:13px}
-.chip{display:inline-flex;align-items:center;gap:8px;background:#0e121a;border:1px solid #1f2636;border-radius:999px;padding:8px 12px;color:#cfd4e1;font-weight:700}
-.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media (max-width:900px){.kv{grid-template-columns:1fr}}
-.box{background:#0b0f15;border:1px solid #1a2130;border-radius:14px;padding:14px}
-.key{color:#a1a8b8;font-size:12px}
-.val{color:var(--gold);font-weight:900;font-size:30px}
-.line{height:10px;background:#1c2534;border-radius:999px;overflow:hidden;margin:10px 0 2px}
-.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
-.pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:6px}
-.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:900px){.grid2{grid-template-columns:1fr}}
-.history{font-size:12px;color:#cfd4e1;max-height:220px;overflow:auto}
-.hrow{padding:6px 0;border-bottom:1px dashed #21293a}
-.helper{font-size:12px;color:#9ca3af}
-footer{color:#6b7280;text-align:center;font-size:12px;margin-top:16px}
-.hr{height:1px;background:#1a2130;margin:12px 0}
+  :root{
+    --bg:#0b0b0b;
+    --panel:#121212;
+    --muted:#9aa0a6;
+    --text:#e8eaed;
+    --brand:#ffe04d;
+    --accent:#2ea043;
+    --border:rgba(255,255,255,.08);
+    --border-2:rgba(255,255,255,.14);
+    --error:#ff6961;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    background: linear-gradient(180deg,#0a0a0a 0%, #000 100%);
+    color:var(--text);
+  }
+
+  /* Header */
+  .app-header{
+    position: sticky; top:0; z-index:50;
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+    padding:12px 16px;
+  }
+  .brand-title{font-weight:800; color:var(--brand); letter-spacing:.3px; font-size:clamp(16px,3.6vw,22px)}
+  .sub{display:block; font-weight:500; color:var(--muted); font-size:12px; margin-top:2px}
+
+  /* Layout */
+  .main-wrap{padding:16px; padding-top:clamp(68px, 8vh, 92px)}
+  .container{max-width:980px; margin:0 auto}
+  .card{
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:18px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .title{font-size:18px; font-weight:700; margin:0 0 12px}
+
+  /* Form */
+  .grid{display:grid; gap:12px}
+  @media (min-width:720px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
+  label{display:block; color:var(--muted); font-size:13px; margin:6px 0}
+  input, select{
+    width:100%; padding:12px 12px; border-radius:12px; outline:none;
+    background:#0a0a0a; color:var(--text); border:1px solid var(--border-2);
+  }
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .chip{display:inline-flex; align-items:center; gap:8px; background:#0a0a0a; border:1px solid var(--border-2); padding:8px 10px; border-radius:10px; font-size:13px; color:var(--muted)}
+
+  /* Buttons */
+  .btn{
+    appearance:none; border:none; cursor:pointer; font-weight:700;
+    padding:12px 16px; border-radius:12px; background:#1f2937; color:#fff;
+  }
+  .btn.primary{background:var(--brand); color:#1a1a1a}
+  .btn.ghost{background:transparent; border:1px solid var(--border-2)}
+  .btn:disabled{opacity:.6; cursor:not-allowed}
+
+  /* Footer info */
+  .muted{color:var(--muted); font-size:12px}
+
+  /* Modal */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.55);
+    display:flex; align-items:center; justify-content:center; z-index:60;
+  }
+  .modal-card{
+    width:min(520px, 92vw);
+    background:var(--panel); color:var(--text);
+    border:1px solid var(--border); border-radius:16px; padding:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  .modal-head{font-size:18px; font-weight:800; margin:0 0 10px}
+  .error{color:var(--error); margin-top:6px; font-size:13px}
+  /* Toast */
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:18px; background:#111; color:#fff; border:1px solid var(--border);
+    border-radius:12px; padding:10px 14px; z-index:70; opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="logo">🎯 WinGo Predictor Pro</div>
-    <label class="switch"><input type="checkbox" id="compactToggle"> Compact View</label>
+
+<header class="app-header">
+  <div class="container">
+    <div class="brand-title">WinGo Predictor <b>Pro</b></div>
+    <small class="sub">Quick predict • Smart validation • Learning</small>
   </div>
 </header>
 
-<div class="container" id="appRoot">
-  <!-- CONTROL -->
-  <div class="card">
-    <div class="h1">Quick Predict</div>
-    <div class="grid">
-      <div>
-        <label for="period">🧾 Period Number</label>
-        <input id="period" placeholder="e.g. 20250813100052810" />
-        <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
-      </div>
-      <div>
-        <label for="mode">Strategy</label>
-        <select id="mode">
-          <option value="balanced" selected>Normal</option>
-          <option value="conservative">Confidence</option>
-          <option value="aggressive">Very Confident</option>
-        </select>
-        <div class="row" style="margin-top:8px">
-          <label class="switch"><input id="autoNext" type="checkbox"> Auto Next</label>
-          <span class="chip"><span>⏱</span><input id="autoEvery" type="number" min="5" value="30" style="width:70px;background:transparent;border:0;color:#fff">sec</span>
-          <label class="switch"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
-          <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON</label>
-          <button class="btn sec" id="notifyBtn">🔔 Notifications</button>
+<main class="main-wrap">
+  <div class="container">
+    <section class="card">
+      <h2 class="title">Quick Predict</h2>
+
+      <div class="grid cols-2">
+        <div>
+          <label>Period Number</label>
+          <input id="periodInput" type="text" inputmode="numeric" placeholder="e.g. 202508141000003076">
+        </div>
+
+        <div>
+          <label>Strategy</label>
+          <select id="strategy">
+            <option>Normal</option>
+            <option>Anti-sequence</option>
+            <option>High-variance</option>
+          </select>
         </div>
       </div>
-    </div>
 
-    <div class="row" style="margin-top:12px">
-      <button class="btn" id="btnPredict">🔮 Predict</button>
-      <button class="btn sec" id="btnClear">Clear</button>
-      <button class="btn sec" id="btnCopy">Copy Result</button>
-      <span class="helper" id="periodInfo">—</span>
-    </div>
-
-    <div class="hr"></div>
-
-    <div class="grid">
-      <div>
-        <label for="actual">✅ Actual result (0–9) — optional</label>
-        <input id="actual" placeholder="e.g. 7"/>
+      <div class="row" style="margin:12px 0">
+        <span class="chip"><input id="autoNext" type="checkbox" checked> Auto Next (30s)</span>
+        <span class="chip"><input id="antiSeq" type="checkbox"> Anti-sequence</span>
+        <span class="chip"><input id="learningOn" type="checkbox" checked> Learning ON</span>
+        <button id="btnNotify" class="btn ghost">🔔 Notifications</button>
       </div>
-      <div class="row" style="align-items:end">
-        <button class="btn sec" id="btnVerify">Verify & Learn</button>
-        <span class="helper" id="verifyMsg">—</span>
+
+      <div class="row">
+        <button id="btnPredict" class="btn primary">Predict</button>
+        <button id="btnClear" class="btn">Clear</button>
+        <button id="btnCopy" class="btn">Copy Result</button>
       </div>
+
+      <p id="periodMeta" class="muted" style="margin-top:10px">Period: len <span id="lenMeta">0</span></p>
+
+      <hr style="border-color:var(--border); border-width:0 0 1px; margin:16px 0">
+
+      <div class="grid cols-2">
+        <div>
+          <label>Actual result (optional preview)</label>
+          <input id="actualPreview" type="text" inputmode="numeric" placeholder="e.g. 5">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="btnVerifyLearn" class="btn accent">Verify &amp; Learn</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Verify & Learn Modal -->
+<div id="verifyModal" class="modal-backdrop" hidden>
+  <div class="modal-card">
+    <h3 class="modal-head">Verify Previous Period</h3>
+    <p class="muted" style="margin-top:-6px">Previous period अपने-आप सेट है; बस last result (0–9) दर्ज करें।</p>
+
+    <label>Previous Period (auto)</label>
+    <input id="prevPeriodInput" type="text" readonly>
+
+    <label style="margin-top:10px">Last Result (0–9)</label>
+    <input id="actualDigitInput" type="number" min="0" max="9" placeholder="e.g. 5"/>
+
+    <p id="verifyError" class="error" style="display:none"></p>
+
+    <div class="row" style="justify-content:flex-end; margin-top:12px">
+      <button id="verifyCancel" class="btn ghost">Cancel</button>
+      <button id="verifySubmit" class="btn primary">Verify</button>
     </div>
   </div>
-
-  <!-- RESULT -->
-  <div class="card" id="resultCard" style="margin-top:14px;display:none">
-    <div class="kv">
-      <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
-      <div class="box"><div class="key">🔢 Predicted Number</div><div class="val" id="vNum">—</div></div>
-      <div class="box"><div class="key">📏 Size</div><div class="val" id="vSize">—</div></div>
-    </div>
-    <div style="margin-top:10px">
-      <div class="key">🧠 Confidence <span id="hiAcc" class="chip" style="display:none">🔥 High Accuracy</span></div>
-      <div class="line"><div class="bar" id="confBar"></div></div>
-    </div>
-    <div style="margin-top:10px">
-      <span id="playSignal" class="pill">—</span>
-      <span id="top2" class="pill">Safe set: —</span>
-      <span id="top3" class="pill">Top-3: —</span>
-      <span id="reasons" class="pill">—</span>
-    </div>
-  </div>
-
-  <!-- CHARTS + HISTORY -->
-  <div class="grid2" style="margin-top:14px">
-    <div class="card">
-      <div class="h1">📊 Probability (0–9)</div>
-      <canvas id="probChart" height="220"></canvas>
-    </div>
-    <div class="card">
-      <div class="h1">🕘 Recent Predictions</div>
-      <div id="hist" class="history">—</div>
-    </div>
-  </div>
-
-  <footer>Tip: Auto-Next + Notifications ON रखें ताकि हर नए period पर popup मिल जाए।</footer>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
-/* ---------------- Service Worker / Notifications ---------------- */
-(async function setupSW(){
-  if('serviceWorker' in navigator){
-    try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; }catch{}
-  }
-})();
-async function ensureNotifyPerm(){
-  if(!('Notification' in window)) return false;
-  if(Notification.permission==='granted') return true;
-  if(Notification.permission==='denied') return false;
-  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
-}
-async function notifyViaSW({tail,digit,size}){
-  try{
-    const reg = await navigator.serviceWorker.ready;
-    if(!reg) return;
-    const ok = await ensureNotifyPerm(); if(!ok) return;
-    await reg.showNotification(`Next • ${tail}`,{
-      body:`#${digit} • ${size}`,
-      tag:`wingo-${tail}`, renotify:true, requireInteraction:true,
-      icon:'/icons/icon-192.png', badge:'/icons/icon-192.png', vibrate:[80,30,80]
-    });
-  }catch{}
-}
+  // Helpers
+  const $ = (s)=>document.querySelector(s);
 
-/* ---------------- Helpers ---------------- */
-const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||""); const clamp01=x=>Math.max(0,Math.min(1,x));
-const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
-const argmax=a=>a.indexOf(Math.max(...a)); const fmtPct=x=>(x*100).toFixed(1)+'%';
-const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
-function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
-
-/* ---------------- Learning Store ---------------- */
-const LS_ALPHA='WPP_ALPHA10', LS_SIZE='WPP_SIZE2', LS_RECENT='WPP_RECENT20';
-const loadAlpha=()=>{try{return JSON.parse(localStorage.getItem(LS_ALPHA))||Array(10).fill(1)}catch{return Array(10).fill(1)}};
-const saveAlpha=a=>localStorage.setItem(LS_ALPHA,JSON.stringify(a));
-const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
-const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
-function pushRecent(d){try{const r=JSON.parse(localStorage.getItem(LS_RECENT))||[];r.unshift(d);if(r.length>20)r.length=20;localStorage.setItem(LS_RECENT,JSON.stringify(r));}catch{}}
-function readRecent(){try{return JSON.parse(localStorage.getItem(LS_RECENT))||[]}catch{return[]}}
-/* RNG */
-function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
-function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-
-/* ---------------- Priors (5 signals) ---------------- */
-function priorPeriodDigits(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const d=[...period].map(Number);
-  const s=d.reduce((a,b)=>a+b,0), last=d[d.length-1], last2=+period.slice(-2), mod10=s%10, mod7=s%7;
-  const freq=Array(10).fill(0); d.forEach(x=>freq[x]++);
-  const v=Array(10).fill(0.1);
-  v[mod10]+=0.6; v[(last+10)%10]+=0.28; v[(last+1)%10]+=0.14; v[(last+9)%10]+=0.14;
-  v[(mod7*3)%10]+=0.20; v[(mod7*5)%10]+=0.18;
-  if(last2%2===0){for(let i=0;i<10;i+=2)v[i]+=0.08}else{for(let i=1;i<10;i+=2)v[i]+=0.08}
-  const mx=Math.max(...freq), mn=Math.min(...freq);
-  for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.05*r}
-  return normalize(v);
-}
-function priorParity(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const even=(+period.slice(-2))%2===0; const v=Array(10).fill(0.1);
-  if(even){for(let i=0;i<10;i+=2)v[i]+=0.22}else{for(let i=1;i<10;i+=2)v[i]+=0.22}
-  return normalize(v);
-}
-function priorBucket(period, antiSeq){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const tail=+period.slice(-3), m=tail%10, v=Array(10).fill(0.1);
-  const k=antiSeq?0.18:0.42; v[m]+=k; v[(m+3)%10]+=k*0.5; v[(m+7)%10]+=k*0.4;
-  return normalize(v);
-}
-function priorChecksum(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
-  const v=Array(10).fill(0.1); v[t]+=0.32; v[(t+1)%10]+=0.17; v[(t+9)%10]+=0.17; return normalize(v);
-}
-function priorDistance(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const last=+period.slice(-1); const v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){const d=Math.min((i-last+10)%10,(last-i+10)%10); v[i]+=0.30*Math.exp(-0.55*d);}
-  return normalize(v);
-}
-/* Regime tilt (recent verified 20) */
-function regimeWeights(baseW){
-  const r=readRecent(); if(!r.length) return baseW;
-  const odd = r.filter(x=>x%2===1).length/r.length;
-  const big = r.filter(x=>x>=5).length/r.length;
-  const w=baseW.slice();
-  if(odd>0.62||odd<0.38) w[1]+=0.02;
-  if(big>0.62||big<0.38) w[4]+=0.02;
-  const s=w.reduce((a,b)=>a+b,0); return w.map(x=>x/s);
-}
-
-/* ---------------- Predictor ---------------- */
-function predictLocal(period, mode, antiSeq, learnOn){
-  const hyper={
-    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.36,0.14,0.16,0.18,0.16]},
-    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.34,0.16,0.18,0.18,0.14]},
-    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.32,0.16,0.20,0.18,0.14]}
-  }[mode]||{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.34,0.16,0.18,0.18,0.14]};
-
-  const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistance(period);
-  const w=regimeWeights(hyper.w);
-  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
-  const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  base=normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
-
-  if(learnOn){
-    const alpha=loadAlpha(), size=loadSize();
-    base=normalize(base.map((p,i)=>p*(alpha[i]||1)));
-    const small= size[0]/(size[0]+size[1]); const big=size[1]/(size[0]+size[1]);
-    for(let i=0;i<5;i++)  base[i]*=(0.9+0.2*small);
-    for(let i=5;i<10;i++) base[i]*=(0.9+0.2*big);
-    base=normalize(base);
+  function toast(msg){
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(window.__t);
+    window.__t = setTimeout(()=>el.classList.remove("show"), 1800);
   }
 
-  const seed=hash32(period); const rnd=mulberry32(seed);
-  const B=72,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
-  for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
-  let probs=normalize(agg).map(p=>Math.pow(p,1/hyper.temp)); probs=normalize(probs);
-  const iM=argmax(probs), mx=probs[iM];
-  if(mx>hyper.cap){ const excess=mx-hyper.cap; probs[iM]-=excess; const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
-  const stability=Math.max(...votes)/B;
-  return {probs,stability};
-}
-
-/* ---------------- Charts ---------------- */
-let probChart=null;
-function renderCharts(probs){
-  const data=probs.map(p=>Math.round(p*1000)/10);
-  const labels=[...Array(10).keys()].map(String);
-  if(probChart) probChart.destroy();
-  probChart=new Chart(el('probChart').getContext('2d'),{
-    type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
-    options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}
+  // Meta update
+  $("#periodInput").addEventListener("input", ()=>{
+    $("#lenMeta").textContent = ($("#periodInput").value||"").length;
   });
-}
 
-/* ---------------- Render ---------------- */
-function renderResult(period, out, source='manual'){
-  const probs=out.probs.slice(); const pick=argmax(probs);
-  renderCharts(probs);
-  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
-  const stability=clamp01(out.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
-
-  el('resultCard').style.display='block';
-  el('vPeriod').textContent=period;
-  el('vNum').textContent=pick;
-  el('vSize').textContent=pick>=5?'Big':'Small';
-  el('confBar').style.width=(score*100).toFixed(1)+'%';
-  el('hiAcc').style.display=score>=0.85?'inline-flex':'none';
-
-  const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.28) issues.push('unstable');
-  let signal='Play',cls='ok'; if(issues.length===1){signal='Caution';cls='warn'} if(issues.length>=2){signal='Wait';cls='bad'}
-  el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
-
-  const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
-  el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
-  el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
-  el('reasons').textContent = `Score ${(score*100).toFixed(0)}%`;
-
-  const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
-  [...h.children].slice(14).forEach(n=>n.remove());
-
-  if(source==='auto' && el('autoNext').checked){
-    notifyViaSW({tail:String(period).slice(-3), digit:pick, size:(pick>=5?'Big':'Small')});
+  // Prev period calc that preserves leading zeros
+  function getPrevPeriod(periodId){
+    if(!periodId || !/^\d+$/.test(periodId)) return "";
+    const len = periodId.length;
+    const prev = (BigInt(periodId) - 1n).toString();
+    return prev.padStart(len, "0");
   }
-}
 
-/* ---------------- Actions ---------------- */
-let autoTimer=null, busy=false;
-async function runPredict(source='manual'){
-  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
-  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
-  el('periodInfo').textContent='Period: '+describePeriod(pr);
-  const out=predictLocal(pr, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
-  renderResult(pr,out,source);
-}
-function startAuto(){
-  const sec=Math.max(5, parseInt(el('autoEvery').value||'30',10));
-  clearInterval(autoTimer);
-  autoTimer=setInterval(()=>{
-    const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur);
-    runPredict('auto');
-  }, sec*1000);
-}
+  // Predict (placeholder)
+  $("#btnPredict").addEventListener("click", ()=>{
+    const p = $("#periodInput").value.trim();
+    if(!p) return toast("Enter period number.");
+    toast("Predicted ✔ (demo)");
+  });
 
-/* ---------------- Bindings ---------------- */
-document.addEventListener('DOMContentLoaded', ()=>{
-  el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
-  el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
-  el('btnClear').addEventListener('click', ()=>{
-    clearInterval(autoTimer); autoTimer=null; el('autoNext').checked=false;
-    el('period').value=''; el('periodInfo').textContent='—'; el('resultCard').style.display='none'; el('hist').textContent='—';
-    if(probChart){probChart.destroy();probChart=null}
+  // Clear
+  $("#btnClear").addEventListener("click", ()=>{
+    $("#periodInput").value = "";
+    $("#actualPreview").value = "";
+    $("#lenMeta").textContent = "0";
+    toast("Cleared.");
   });
-  el('btnCopy').addEventListener('click', async ()=>{
-    const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{}
-  });
-  el('autoNext').addEventListener('change', async e=>{
-    clearInterval(autoTimer); autoTimer=null;
-    if(e.target.checked){ await ensureNotifyPerm(); startAuto(); }
-  });
-  el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
 
-  // Verify & learn
-  el('btnVerify').addEventListener('click', ()=>{
-    const act=el('actual').value.trim();
-    if(!/^[0-9]$/.test(act)){ el('verifyMsg').textContent='एक अंक 0–9 भरें.'; return; }
-    const pick=el('vNum').textContent.trim();
-    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; return; }
-    const win=(+act===+pick);
-    el('verifyMsg').textContent=win?`WIN ✔ picked ${pick} • actual ${act}`:`LOSS ✘ picked ${pick} • actual ${act}`;
-    if(el('learnOn').checked){
-      const a=loadAlpha(); a[+act]=(a[+act]||1)+1; saveAlpha(a);
-      const s=loadSize(); (+act>=5)?s[1]++:s[0]++; saveSize(s);
-      pushRecent(+act);
+  // Copy (placeholder)
+  $("#btnCopy").addEventListener("click", async ()=>{
+    try{
+      const txt = `Period: ${$("#periodInput").value || "-"} | Strategy: ${$("#strategy").value}`;
+      await navigator.clipboard.writeText(txt);
+      toast("Copied.");
+    }catch(e){ toast("Copy failed."); }
+  });
+
+  // ---------- Verify & Learn ----------
+  function openVerifyModal(){
+    const cur = $("#periodInput").value.trim();
+    const expectedPrev = getPrevPeriod(cur);
+    $("#prevPeriodInput").value = expectedPrev;
+    $("#actualDigitInput").value = "";
+    $("#verifyError").style.display = "none";
+    $("#verifyModal").hidden = false;
+  }
+  function closeVerifyModal(){ $("#verifyModal").hidden = true; }
+
+  $("#btnVerifyLearn").addEventListener("click", openVerifyModal);
+  $("#verifyCancel").addEventListener("click", closeVerifyModal);
+
+  $("#verifySubmit").addEventListener("click", ()=>{
+    const cur = $("#periodInput").value.trim();
+    const expectedPrev = getPrevPeriod(cur);
+    const prevShown = $("#prevPeriodInput").value.trim();
+    const digit = $("#actualDigitInput").value.trim();
+
+    if(!expectedPrev){
+      return showVerifyError("Invalid current period.");
+    }
+    if(prevShown !== expectedPrev){
+      return showVerifyError(`Previous period mismatch. Expected ${expectedPrev}`);
+    }
+    if(!/^[0-9]$/.test(digit)){
+      return showVerifyError("Last result 0–9 में दें।");
+    }
+
+    try{
+      verifyAndLearn(prevShown, Number(digit));   // ← integrate your real learning here
+      closeVerifyModal();
+      toast("Verified & learned from previous period.");
+    }catch(e){
+      console.error(e);
+      showVerifyError("कुछ समस्या आई, बाद में पुनः प्रयास करें।");
     }
   });
-});
+
+  function showVerifyError(msg){
+    const el = $("#verifyError");
+    el.textContent = msg;
+    el.style.display = "block";
+  }
+
+  // ---- YOUR IMPLEMENTATION HOOK ----
+  // Replace this stub with your actual storage/model update.
+  function verifyAndLearn(prevPeriod, digit){
+    // Example: persist & update weights
+    // saveResult(prevPeriod, digit);
+    // model.updateFrom(prevPeriod, digit);
+    // For now just simulate:
+    console.log("Learning from", prevPeriod, "digit", digit);
+  }
+
 </script>
 </body>
 </html>
