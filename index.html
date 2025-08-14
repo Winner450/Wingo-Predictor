@@ -11,8 +11,6 @@
   --ok:#22c55e; --soft:#34d399; --warn:#f59e0b; --bad:#ef4444;
 }
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(1200px 700px at 20% -10%,#0d1627 0%,#080c14 38%,#070a12 100%);color:#fff;font:15.5px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
-
-/* Header */
 .topbar{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0a0f19,#070b12);border-bottom:1px solid #0f1421}
 .topbar .bar{max-width:1100px;margin:0 auto;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:inline-flex;gap:10px;align-items:center;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#111;font-weight:900;border-radius:999px;padding:10px 18px;box-shadow:0 6px 16px rgba(255,213,74,.25)}
@@ -21,7 +19,6 @@
 .card{background:linear-gradient(180deg,#0e1523,#0b1220);border:1px solid rgba(255,255,255,.06);border-radius:16px;box-shadow:0 16px 34px rgba(0,0,0,.35);padding:16px}
 .h1{font-size:19px;font-weight:800;margin:0 0 10px}
 .sub{color:var(--muted);font-size:13px;margin-top:6px}
-
 .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
 label{font-size:13px;color:#cbd7ee;font-weight:800;margin-bottom:6px;display:block}
@@ -31,8 +28,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .pill{display:inline-flex;align-items:center;gap:10px;background:#10182a;border:1px solid #1e2740;border-radius:18px;padding:10px 14px;color:#d6def2}
 .btn{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#161616;font-weight:900;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
 .btn.sec{background:#10182a;color:#e6ecfb;border:1px solid #24304a}
-.btn.mm{background:linear-gradient(180deg,#ffd86a,#ffc107); color:#111; display:none;} /* Money Magnet */
-
+.btn.mm{background:linear-gradient(180deg,#ffd86a,#ffc107); color:#111; display:none;}
 .kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media (max-width:900px){.kv{grid-template-columns:1fr}}
 .box{background:#0d1526;border:1px solid #1b2440;border-radius:14px;padding:14px}
@@ -47,8 +43,6 @@ input:focus,select:focus{border-color:var(--gold)}
 .hrow{padding:7px 0;border-bottom:1px dashed #213053}
 .helper{font-size:12px;color:#9fb1d8}
 .hr{height:1px;background:#16213a;margin:12px 0}
-
-/* Verify & Learn */
 .verify{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
 .verify .center{display:flex;justify-content:center}
 .win{color:var(--ok);font-weight:900}.lose{color:var(--bad);font-weight:900}
@@ -91,8 +85,9 @@ input:focus,select:focus{border-color:var(--gold)}
           </label>
           <label class="pill">Max Skip
             <select id="maxSkip" style="width:90px">
-              <option value="0">0</option><option value="1">1</option><option value="2">2</option>
-              <option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+              <option value="0">0</option><option value="1">1</option>
+              <option value="2">2</option><option value="3" selected>3</option>
+              <option value="4">4</option><option value="5">5</option>
             </select>
           </label>
         </div>
@@ -159,11 +154,9 @@ input:focus,select:focus{border-color:var(--gold)}
 </div>
 
 <script>
-/* Utils */
 const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||""); const clamp01=x=>Math.max(0,Math.min(1,x));
-const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
-const argmax=a=>a.indexOf(Math.max(...a));
+const isDigits=s=>/^\d+$/.test(s||""); const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);}; const argmax=a=>a.indexOf(Math.max(...a));
+const clamp01=x=>Math.max(0,Math.min(1,x));
 function bump(p){try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}}
 function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
@@ -189,31 +182,30 @@ function pat_gap(pro){ const m=pro.reduce((a,b)=>a+b,0)/10; return normalize(pro
 function pat_streak(pro){ const mx=Math.max(...pro); if(mx>0.28){ const i=argmax(pro); pro[i]-=0.03; } return normalize(pro);}
 /* Strategy */
 function strategy(m){ switch(m){
-  case'Risk': case 'risk':return{temp:1.02,cap:0.56,jitter:0.05,adapt:0.10,learn:0.28,w:[0.22,0.18,0.18,0.18,0.06,0.08,0.10],minConf:0.50};
-  case'high':return{temp:1.12,cap:0.70,jitter:0.14,adapt:0.28,learn:0.32,w:[0.16,0.14,0.12,0.22,0.08,0.10,0.18],minConf:0.40};
-  case'aggressive':return{temp:1.08,cap:0.66,jitter:0.10,adapt:0.20,learn:0.30,w:[0.20,0.16,0.16,0.20,0.08,0.06,0.14],minConf:0.44};
-  case'conservative':return{temp:1.04,cap:0.60,jitter:0.06,adapt:0.14,learn:0.26,w:[0.22,0.18,0.18,0.18,0.06,0.06,0.12],minConf:0.48};
+  case 'risk':return{temp:1.02,cap:0.56,jitter:0.05,adapt:0.10,learn:0.28,w:[0.22,0.18,0.18,0.18,0.06,0.08,0.10],minConf:0.50};
+  case 'high':return{temp:1.12,cap:0.70,jitter:0.14,adapt:0.28,learn:0.32,w:[0.16,0.14,0.12,0.22,0.08,0.10,0.18],minConf:0.40};
+  case 'aggressive':return{temp:1.08,cap:0.66,jitter:0.10,adapt:0.20,learn:0.30,w:[0.20,0.16,0.16,0.20,0.08,0.06,0.14],minConf:0.44};
+  case 'conservative':return{temp:1.04,cap:0.60,jitter:0.06,adapt:0.14,learn:0.26,w:[0.22,0.18,0.18,0.18,0.06,0.06,0.12],minConf:0.48};
   default:return{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,learn:0.30,w:[0.20,0.18,0.18,0.18,0.06,0.08,0.12],minConf:0.46}; } }
-/* Adaptive decision */
+
+/* ADAPTIVE DECISION — अधिक ढीला + Soft window बड़ी */
 let skipStreak=0;
 function decideSig(conf, baseMin, mode){
   const maxSkip=parseInt(el('maxSkip').value||'3',10);
-  let min=baseMin;
-  // तेज़ी से ढीला: high में 0.03/skip (cap 0.12), बाकी 0.02/skip (cap 0.08)
-  if(mode==='high'){ min -= Math.min(0.12, skipStreak*0.03); }
-  else { min -= Math.min(0.08, skipStreak*0.02); }
+  const relaxPer = (mode==='high') ? 0.05 : 0.035;        // हर Skip पर gate कम
+  let min = baseMin - Math.min(0.20, skipStreak * relaxPer);
+  const softBand = Math.max(0.06, 0.10 - skipStreak*0.01); // Skip बढ़े तो Soft की खिड़की बड़ी
 
-  // बेस सिग्नल
   let sig='Skip';
-  if(conf >= (min+0.06)) sig='Play';
-  else if(conf >= (min*0.92)) sig='Soft';
+  if(conf >= (min + 0.06)) sig='Play';
+  else if(conf >= (min - softBand)) sig='Soft';
 
-  // MaxSkip पर कमज़ोर को भी Soft
-  if(sig==='Skip' && skipStreak>=maxSkip && conf >= (min*0.85)) sig='Soft';
+  // MaxSkip guard: अब बस—कमज़ोर भी Soft दें
+  if(sig==='Skip' && (skipStreak+1) >= maxSkip && conf >= (min - 0.12)) sig='Soft';
 
-  // Money Magnet: बहुत हाई confidence
-  const moneyGate = Math.max(min+0.12, 0.58);
-  if(conf>=moneyGate) sig='Money';
+  // Money Magnet — हाई भरोसा
+  const moneyGate = Math.max(min + 0.12, 0.56);
+  if(conf >= moneyGate) sig='Money';
 
   return {sig, usedMin:min, moneyGate};
 }
@@ -254,8 +246,9 @@ function renderChart(probs){
   if(probChart) probChart.destroy();
   probChart=new Chart(el('probChart').getContext('2d'),{ type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]}, options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}} });
 }
-/* Render */
 function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
+
+/* Render */
 function render(period,out,source){
   el('resultCard').style.display='block';
   el('vPeriod').textContent=period; el('vNum').textContent=out.pick; el('vSize').textContent=(out.pick>=5)?'Big':'Small';
@@ -270,10 +263,7 @@ function render(period,out,source){
   el('signal').className='sig '+cls; el('signal').textContent=sigTxt;
   el('why').textContent=`Conf ${(out.conf*100).toFixed(0)}% • gate ${(dec.usedMin*100).toFixed(0)}%`;
 
-  // Money Magnet button show/hide
-  const mmBtn=el('btnMagnet');
-  if(dec.sig==='Money'){ mmBtn.style.display='inline-block'; }
-  else { mmBtn.style.display='none'; }
+  const mmBtn=el('btnMagnet'); mmBtn.style.display=(dec.sig==='Money')?'inline-block':'none';
 
   if(dec.sig==='Skip') skipStreak++; else skipStreak=0;
 
