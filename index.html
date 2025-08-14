@@ -3,190 +3,101 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎯 WinGo Predictor Pro</title>
+<title>🎯 WinGo Predictor Pro (Live)</title>
 <style>
-  :root{
-    --bg:#0b0f13;
-    --panel:#0f1620;
-    --panel-2:#0d131c;
-    --text:#e7eef8;
-    --muted:#95a5b3;
-    --gold-1:#FFD94A;
-    --gold-2:#FFC107;
-    --gold-3:#FFB300;
-    --accent:#3b82f6;
-    --green:#22c55e;
-    --green-soft:#b0f3c2;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-    background: radial-gradient(1200px 600px at 50% -100px, #111827 0%, #0b0f13 40%, #070a0f 100%);
-    color:var(--text);
-  }
-  .wrap{max-width:900px;margin:0 auto;padding:16px 14px 80px}
-  /* Golden Line */
-  .golden-line{
-    position:sticky; top:8px; z-index:5;
-    display:flex; align-items:center; justify-content:center; gap:.6rem;
-    padding:14px 18px; border-radius:999px; font-weight:800; letter-spacing:.4px;
-    color:#121212; text-transform:uppercase;
-    background: linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3));
-    box-shadow: 0 10px 26px rgba(255,193,7,.35), inset 0 2px 0 rgba(255,255,255,.6);
-    overflow:hidden;
-  }
-  .golden-line::before{
-    content:"";
-    position:absolute; inset:0; z-index:0;
-    background:
-      url("https://your-cdn.com/stars-theme.gif") center/cover no-repeat fixed,
-      radial-gradient(120% 180% at 20% -40%, rgba(255,255,255,.2), transparent 60%),
-      radial-gradient(100% 140% at 80% 140%, rgba(0,0,0,.2), transparent 70%);
-    opacity:.38;
-    pointer-events:none;
-  }
-  .golden-line .dot{position:relative; z-index:1; width:.55rem; height:.55rem; border-radius:50%; background:#121212; box-shadow:0 0 0 4px rgba(18,18,18,.18)}
-  .golden-line span{position:relative; z-index:1}
-
-  .card{
-    margin-top:16px; background:linear-gradient(180deg, var(--panel), var(--panel-2)); 
-    border:1px solid rgba(255,255,255,.06);
-    border-radius:18px; padding:14px 14px 12px; box-shadow: 0 10px 24px rgba(0,0,0,.35);
-  }
-  .card h3{margin:0 0 8px; font-size:1.05rem; letter-spacing:.3px}
-  .muted{color:var(--muted); font-size:.9rem}
-
-  /* Probability mini bars (0–9) */
-  .bars{display:grid; grid-template-columns: repeat(10,1fr); gap:8px; align-items:end; height:160px; padding:6px 4px 2px}
-  .bar{background:linear-gradient(180deg,#1e293b,#0f172a); border:1px solid rgba(255,255,255,.06); border-radius:10px; position:relative; overflow:hidden}
-  .bar > i{position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(180deg,#60a5fa,#3b82f6)}
-  .bar small{position:absolute; bottom:-18px; width:100%; text-align:center; color:var(--muted); font-size:.7rem}
-
-  /* Predictions list */
-  .list{display:flex; flex-direction:column; gap:10px}
-  .row{
-    display:grid; grid-template-columns: auto 1fr auto; gap:10px; align-items:center;
-    background: rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.06);
-    padding:10px 12px; border-radius:14px;
-  }
-  .tt{font-variant-numeric: tabular-nums}
-  .chip{
-    font-weight:700; border-radius:999px; padding:6px 10px; font-size:.84rem; letter-spacing:.2px;
-    display:inline-flex; align-items:center; gap:.4rem; white-space:nowrap;
-  }
-  .chip-soft{ background: rgba(34,197,94,.12); color: var(--green); border:1px solid rgba(34,197,94,.35)}
-  .chip-money{ background: rgba(255,215,0,.14); color:#ffd25a; border:1px solid rgba(255,209,36,.45)}
-  .chip .dot{width:.55rem;height:.55rem;border-radius:50%}
-  .chip-soft .dot{ background: var(--green) }
-  .chip-money .dot{ background: #ffd25a }
-
-  /* Helper */
-  .hint{margin-top:10px; font-size:.82rem; color:var(--muted)}
-  .footer-space{height:36px}
+body{background:#0b0f13;color:#e7eef8;font-family:Segoe UI,sans-serif;padding:10px}
+.golden-line{
+  display:flex;justify-content:center;align-items:center;padding:14px 18px;
+  background:linear-gradient(180deg,#FFD94A,#FFC107 55%,#FFB300);
+  border-radius:999px;font-weight:800;letter-spacing:.4px;color:#121212;
+  position:relative;overflow:hidden;margin-bottom:15px;
+}
+.golden-line::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;
+  opacity:.35;pointer-events:none;
+}
+.section{background:rgba(255,255,255,.05);padding:12px;border-radius:8px;margin-bottom:15px}
+.bars{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;height:150px;align-items:end}
+.bar{background:rgba(255,255,255,.08);border-radius:8px;position:relative}
+.bar-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,#60a5fa,#3b82f6)}
+.bar small{position:absolute;bottom:-18px;width:100%;text-align:center;font-size:.75rem;color:#95a5b3}
+.prediction-list{display:flex;flex-direction:column;gap:8px}
+.pred-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.05);padding:8px;border-radius:8px}
+.chip{border-radius:999px;padding:4px 8px;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:4px}
+.soft{background:rgba(34,197,94,.15);color:#22c55e}
+.money{background:rgba(255,193,7,.15);color:#FFC107}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="golden-line">
-      <span class="dot"></span>
-      <span>WINGO PREDICTOR PRO</span>
-    </div>
 
-    <!-- Probability -->
-    <section class="card">
-      <h3>📊 Probability (0–9) <span class="muted">(live)</span></h3>
-      <div class="bars" id="bars"></div>
-      <div class="hint">Tip: High confidence खुद-ब-खुद <b>Money Magnet 🧲</b> में जाएगा; बाकी <b>Soft 💚</b>.</div>
-    </section>
+<div class="golden-line"><span>WINGO PREDICTOR PRO</span></div>
 
-    <!-- Recent Predictions -->
-    <section class="card">
-      <h3>🕒 Recent Predictions</h3>
-      <div class="list" id="predictions"></div>
-    </section>
+<div class="section">
+  <h3>📊 Probability (0–9)</h3>
+  <div class="bars" id="prob-bars"></div>
+</div>
 
-    <div class="footer-space"></div>
-  </div>
+<div class="section">
+  <h3>🕒 Recent Predictions</h3>
+  <div class="prediction-list" id="pred-list"></div>
+</div>
+
+<div class="section">
+  <h3>🔥 Hot Numbers</h3>
+  <div id="hot-list"></div>
+</div>
+
+<div class="section">
+  <h3>❄️ Cold Numbers</h3>
+  <div id="cold-list"></div>
+</div>
 
 <script>
-/* === Demo Data / Wire-up ===
-   अपनी backend fetch से probabilities और predictions भर दें.
-   Skip पूरी तरह हटाया गया है: status = 'SOFT' या 'MONEY'
-*/
-const bars = document.getElementById('bars');
-const predsEl = document.getElementById('predictions');
+const API_URL = "https://raw.githubusercontent.com/YourUsername/YourRepo/main/wingo-data.json"; // अपना GitHub Raw JSON URL डालें
 
-// Dummy probabilities (0–9) in %:
-const probs = [15,11,7,8,8,8,7,9,11,15]; // replace with live
-renderBars(probs);
-
-// Dummy predictions feed:
-const demoFeed = [
-  { t: '5:25:14 PM', pid: 1431, digit: 9, conf: 0.86 },
-  { t: '5:24:44 PM', pid: 1430, digit: 8, conf: 0.62 },
-  { t: '5:24:14 PM', pid: 1429, digit: 0, conf: 0.41 },
-  { t: '5:23:47 PM', pid: 1428, digit: 8, conf: 0.58 }
-];
-renderPredictions(demoFeed);
-
-// === Mapping Logic (NO SKIP) ===
-// threshold को अपने मॉडल के हिसाब से ट्यून करें:
-function mapStatus(conf){
-  const HIGH = 0.75;      // >= HIGH ⇒ Money Magnet
-  const MID  = 0.50;      // >= MID  ⇒ Soft (strong)
-  // < MID भी Soft (light) रहेगा — UI एक जैसा दिखेगा
-  return conf >= HIGH ? 'MONEY' : 'SOFT';
+async function loadLiveData(){
+  try{
+    const res = await fetch(API_URL + "?t=" + Date.now()); // cache bust
+    const data = await res.json();
+    renderBars(data.probabilities);
+    renderPredictions(data.predictions);
+    renderList('hot-list', data.hot_numbers);
+    renderList('cold-list', data.cold_numbers);
+  }catch(e){
+    console.error("Error loading live data", e);
+  }
 }
 
 function renderBars(arr){
-  bars.innerHTML = '';
-  const max = Math.max(...arr, 1);
-  arr.forEach((v, i)=>{
-    const b = document.createElement('div');
-    b.className = 'bar';
-    const fill = document.createElement('i');
-    fill.style.height = Math.round((v/max)*100) + '%';
-    b.appendChild(fill);
-    const s = document.createElement('small'); s.textContent = i;
-    b.appendChild(s);
-    bars.appendChild(b);
-  });
+  let max=Math.max(...arr);
+  document.getElementById('prob-bars').innerHTML = arr.map((v,i)=>`
+    <div class="bar">
+      <div class="bar-fill" style="height:${(v/max)*100}%"></div>
+      <small>${i}</small>
+    </div>`).join('');
 }
 
-function chip(status){
-  if(status === 'MONEY'){
-    return `<span class="chip chip-money"><span class="dot"></span> Money Magnet 🧲</span>`;
-  }
-  return `<span class="chip chip-soft"><span class="dot"></span> Soft 💚</span>`;
+function chip(conf){
+  return conf>=0.75?`<div class="chip money">Money Magnet 🧲</div>`:`<div class="chip soft">Soft 💚</div>`;
 }
 
-function renderPredictions(items){
-  predsEl.innerHTML = '';
-  items.forEach(x=>{
-    const st = mapStatus(x.conf);
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML = `
-      <div class="muted tt">⏱ ${x.t}</div>
-      <div class="tt">tail ${x.pid} → #${x.digit} (${x.digit>=5?'Big':'Small'})</div>
-      <div>${chip(st)}</div>
-    `;
-    predsEl.prepend(row);
-  });
+function renderPredictions(list){
+  document.getElementById('pred-list').innerHTML = list.map(x=>`
+    <div class="pred-row">
+      <div>⏱ ${x.time}</div>
+      <div>tail ${x.period} → #${x.num} (${x.type})</div>
+      <div>${chip(x.conf)}</div>
+    </div>`).join('');
 }
 
-/* ⭐️ अगर GIF लोड न हो तो भी Golden Line ठीक दिखे—कुछ ब्राउज़र GIF fixed bg disable कर सकते हैं */
-const testImg = new Image();
-testImg.onload = ()=>{/* ok */};
-testImg.onerror = ()=>{
-  const gl = document.querySelector('.golden-line');
-  gl.style.setProperty('--stars-ok','0');
-  gl.style.setProperty('background','linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3))');
-};
-testImg.src = "https://your-cdn.com/stars-theme.gif";
+function renderList(id, arr){
+  document.getElementById(id).innerHTML = arr.join(", ");
+}
+
+loadLiveData();
+setInterval(loadLiveData, 5000); // हर 5 सेकंड में अपडेट
 </script>
+
 </body>
 </html>
