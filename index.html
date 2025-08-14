@@ -1,409 +1,690 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>WinGo Predictor Pro — Premium Dashboard</title>
-<meta name="theme-color" content="#071018"/>
-<meta name="description" content="WinGo Predictor Pro - Premium BDG-like dashboard. Soft / Money Magnet decisions, auto predict (30s/38s/60s), $ processing spinner."/>
-<!-- Single-file premium dashboard: HTML + CSS + JS -->
+<title>WinGo Predictor Pro — Ultra Premium (Weights + Tuner)</title>
+<meta name="theme-color" content="#061018"/>
+<meta name="description" content="WinGo Predictor Pro — ensemble + sliders + tuner (upload JSON/CSV) — production-style single-file."/>
 <style>
-/* ===================== Root / Reset ===================== */
+/* ---------- Theme & basic ---------- */
 :root{
-  --bg:#061018; --bg-2:#041016;
-  --panel:#0d1620; --panel-2:#071018; --panel-3:#041016;
-  --text:#e9f6ff; --muted:#93adc3;
-  --gold1:#ffeaa3; --gold2:#f6c44b; --gold3:#f0a800;
-  --accent-teal:#12dfb8; --accent-cyan:#11a8e6;
-  --green:#18c26e; --red:#e95555; --violet:#8b5cf6;
-  --outline: rgba(255,255,255,0.06);
-  --glass: rgba(255,255,255,0.02);
-  --shadow: 0 20px 50px rgba(0,0,0,0.55);
-  --r-xl:20px; --r-lg:14px; --r-md:10px;
+  --bg:#031018; --panel:#0d1722; --accent:#12dfb8; --muted:#8eaec6; --text:#e9f6ff;
+  --gold1:#ffeea3; --gold2:#f6c44b; --outline:rgba(255,255,255,0.06);
+  --shadow:0 26px 80px rgba(0,0,0,0.6); --mono:ui-monospace, SFMono-Regular, Menlo, Monaco;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;padding:0;font-family:Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  background:
-    radial-gradient(900px 500px at 80% -10%, rgba(20,40,60,0.12), transparent 8%),
-    linear-gradient(180deg,#051018,#03050a);
-  color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-}
-a{color:inherit;text-decoration:none}
-.container{max-width:1180px;margin:18px auto;padding:0 14px}
-
-/* ===================== Header (golden pill) ===================== */
-.header{
-  position:relative;padding:14px 18px;border-radius:999px;text-align:center;font-weight:900;color:#201a06;
-  background:linear-gradient(180deg,var(--gold1),var(--gold2) 55%,var(--gold3));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 14px 48px rgba(240,170,40,0.16);
-  margin-bottom:18px;
-}
-.header .shine{position:absolute;inset:0;opacity:.22;pointer-events:none;background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;mix-blend-mode:screen}
-
-/* ===================== Cards / UI ===================== */
-.card{
-  background: linear-gradient(180deg,var(--panel),var(--panel-2));
-  border-radius:var(--r-xl); padding:14px; margin-bottom:14px; border:1px solid var(--outline);
-  box-shadow:var(--shadow);
-}
-.card h3{margin:0 0 10px;font-size:1.02rem;color:#e6f6ff}
-.label{color:var(--muted);font-size:.9rem;margin-bottom:8px}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#031018,#020413);color:var(--text);font-family:Inter,Segoe UI,system-ui,-apple-system,sans-serif}
+.container{max-width:1240px;margin:18px auto;padding:0 16px}
+.header{position:relative;padding:14px 18px;border-radius:999px;text-align:center;font-weight:900;background:linear-gradient(90deg,var(--gold1),var(--gold2));margin-bottom:16px}
+.header .bgstar{position:absolute;inset:0;opacity:.16;background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;mix-blend-mode:screen}
+.card{background:linear-gradient(180deg,var(--panel),#071018);border-radius:14px;padding:12px;border:1px solid var(--outline);box-shadow:var(--shadow);margin-bottom:12px}
+h3{margin:0 0 8px}
+.label{color:var(--muted);font-size:.9rem;margin-bottom:6px}
 .note{color:#9fbcd8;font-size:.88rem}
-.mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace}
-
-/* Inputs & Buttons */
-.input, .select { width:100%; padding:10px 12px; border-radius:12px; background:#07131a; border:1px solid var(--outline); color:var(--text); outline:none; }
-.input::placeholder{color:#7893ad}
-.btn{padding:10px 12px;border-radius:12px;border:none;cursor:pointer;font-weight:900}
-.btn.primary{background:linear-gradient(180deg,var(--accent-teal),var(--accent-cyan)); color:#031616; box-shadow:0 8px 30px rgba(18,200,170,0.12)}
+.input,.select{width:100%;padding:10px 12px;border-radius:10px;background:#07131a;border:1px solid var(--outline);color:var(--text);outline:none}
+.btn{padding:10px 12px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+.btn.primary{background:linear-gradient(180deg,var(--accent),#11a8e6);color:#041616}
 .btn.ghost{background:transparent;border:1px solid var(--outline);color:var(--text)}
-.btn.gold{background:linear-gradient(180deg,var(--gold1),var(--gold2)); color:#241a04}
-.btn.warn{background:linear-gradient(180deg,#ffd86b,#f6c44b); color:#2a1700}
-
-/* Check button special */
-#btnCheck{min-width:146px;background:linear-gradient(180deg,var(--violet),#5a3fe0);color:#fff;transition:box-shadow .12s,transform .06s,background .12s}
-#btnCheck.toggled{ background: linear-gradient(180deg,var(--gold1),var(--gold2)); color:#221700; box-shadow:0 10px 30px rgba(240,170,40,0.18) }
-
-/* Layout helpers */
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.grid2{display:grid;grid-template-columns:1.4fr .9fr;gap:12px}
-@media (max-width:880px){ .grid2{grid-template-columns:1fr} }
-
-/* Tabs */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
-.tab-btn{padding:12px;border-radius:12px;background:#07161b;border:1px solid var(--outline);cursor:pointer;font-weight:800}
-.tab-btn.active{background:#0b2430;border-color:var(--accent-teal);box-shadow:inset 0 0 0 4px rgba(18,220,180,0.06)}
-.tab-pane{display:none}
-.tab-pane.active{display:block}
-
-/* Bars */
-.bars{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;height:170px;align-items:end;margin:8px 0}
+.grid3{display:grid;grid-template-columns:1.6fr .9fr .9fr;gap:12px}
+@media (max-width:1000px){ .grid3{grid-template-columns:1fr} }
+.grid2{display:grid;grid-template-columns:1fr .9fr;gap:12px}
+.tabbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.tab-btn{padding:10px;border-radius:10px;background:#07161b;border:1px solid var(--outline);cursor:pointer;font-weight:800}
+.tab-btn.active{background:#0b2430;border-color:var(--accent)}
+.bars{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;height:170px;align-items:end}
 .bar{position:relative;border-radius:10px;background:#071b22;border:1px solid #0f2a36;overflow:hidden}
-.bar-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#12dfb8,#11a8e6);box-shadow:inset 0 -8px 18px rgba(255,255,255,0.06)}
+.bar-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#12dfb8,#11a8e6)}
 .bar small{position:absolute;bottom:-18px;width:100%;text-align:center;color:var(--muted)}
-
-/* Prediction row */
-.pred-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:12px;background:linear-gradient(180deg,#07161b,#061018);border:1px solid var(--outline);margin-bottom:8px}
-.chip{padding:6px 10px;border-radius:999px;font-weight:900;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03)}
+.result-box{background:linear-gradient(180deg,#07131a,#041018);border-radius:10px;padding:10px;border:1px solid var(--outline)}
+.result-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+.result-row:last-child{border-bottom:0}
+.kv{color:var(--muted);font-weight:700}
+.val{font-weight:900}
+.chip{padding:6px 10px;border-radius:999px;font-weight:900;display:inline-flex;align-items:center;background:rgba(255,255,255,0.03)}
 .chip.soft{color:#10c48f;background:rgba(16,196,143,0.08);border:1px solid rgba(16,196,143,0.12)}
 .chip.money{color:#ffd76b;background:rgba(255,215,107,0.10);border:1px solid rgba(255,215,107,0.12)}
-
-/* Patterns */
-.pattern-line{display:flex;flex-wrap:wrap;gap:8px}
-.p-pill{padding:6px 10px;border-radius:999px;background:#07121a;border:1px solid var(--outline);font-weight:800}
-.p-bg{color:#ffe173} .p-sm{color:#84b8ff}
-.p-green{color:#99f1d0} .p-red{color:#ffb4b4}
-
-/* Stats */
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media (max-width:980px){ .stat-grid{grid-template-columns:repeat(2,1fr)} }
-.stat{padding:12px;border-radius:12px;background:#0b1620;border:1px solid var(--outline)}
-.stat h4{margin:0;color:#dbeffd}
-.stat .v{font-size:1.3rem;font-weight:900;margin-top:6px}
+.slider{width:100%}
 .progress{height:8px;border-radius:999px;background:#07121a;border:1px solid #0d2430;overflow:hidden}
-.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent-teal),var(--accent-cyan))}
-
-/* Canvas wrap */
-.canvas-wrap{background:#07131a;border-radius:10px;padding:8px;border:1px solid var(--outline)}
-
-/* Processing spinner */
-.processing{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:linear-gradient(180deg,#06121a,#041018);border:1px solid var(--outline)}
-.spin{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#0f1b23,#071018);position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
-.spin .ring{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,255,255,0.03);animation:spin 1.05s linear infinite}
-.spin .dollar{position:relative;font-weight:900;font-size:18px;color:#ffd86b}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-/* Result box */
-.result-box{background:linear-gradient(180deg,#07131a,#041018); border-radius:12px; padding:12px; border:1px solid var(--outline)}
-.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
-.result-row:last-child{border-bottom:0}
-.result-key{color:var(--muted);font-weight:700}
-.result-val{font-weight:900}
-
-/* Toast */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;padding:10px 14px;border-radius:12px;background:#06121a;border:1px solid var(--outline);box-shadow:var(--shadow);z-index:9999}
+.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#11a8e6)}
+.modal-back{position:fixed;inset:0;background:rgba(2,6,10,0.6);display:none;align-items:center;justify-content:center;z-index:9999}
+.modal{background:linear-gradient(180deg,#08131a,#041018);padding:16px;border-radius:12px;border:1px solid var(--outline);width:min(920px,96%);box-shadow:var(--shadow)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;padding:10px 14px;border-radius:12px;background:#06121a;border:1px solid var(--outline);z-index:9999}
 .hidden{display:none}
-
-/* small tweaks */
-.kbd{display:inline-block;border:1px solid var(--outline);border-bottom-width:2px;border-radius:6px;padding:2px 6px;background:#07121a;font-weight:800}
+.small{font-size:.86rem;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="container">
-  <!-- Header -->
   <div class="header">
-    <div class="shine"></div>
-    <span style="display:inline-block;margin-right:10px;width:12px;height:12px;border-radius:50%;background:#081216;border:2px solid rgba(0,0,0,0.12)"></span>
-    <span>WINGO PREDICTOR PRO</span>
+    <div class="bgstar" aria-hidden="true"></div>
+    <div style="position:relative;z-index:1">WINGO PREDICTOR PRO — ULTRA (Weights + Tuner)</div>
   </div>
 
   <!-- Controls -->
   <div class="card">
     <h3>⚙️ Controls</h3>
-    <div class="grid2">
+    <div class="grid3">
       <div>
-        <div class="label">LIVE_API_URL (optional — GitHub raw JSON)</div>
-        <input id="apiUrl" class="input mono" placeholder="https://raw.githubusercontent.com/you/repo/branch/history.json"/>
+        <div class="label">LIVE_API_URL (optional)</div>
+        <input id="apiUrl" class="input" placeholder="https://raw.githubusercontent.com/.../history.json"/>
       </div>
-      <div style="display:flex;align-items:flex-end;gap:8px">
-        <button id="btnConnect" class="btn primary">Connect API</button>
-        <button id="btnSample" class="btn ghost">Load Sample</button>
-      </div>
-    </div>
-
-    <div style="margin-top:12px" class="row">
-      <div style="flex:1 1 300px">
-        <div class="label">Strategy</div>
-        <select id="strategy" class="select">
-          <option value="balanced" selected>Balanced (High ≥ 0.75)</option>
-          <option value="conservative">Conservative (High ≥ 0.82)</option>
-          <option value="aggressive">Aggressive (High ≥ 0.68)</option>
-          <option value="custom">Custom…</option>
+      <div>
+        <div class="label">Ensemble Preset</div>
+        <select id="blendPreset" class="input">
+          <option value="default" selected>Balanced</option>
+          <option value="hash">Hash-heavy</option>
+          <option value="freq">Freq-heavy</option>
+          <option value="recency">Recency-heavy</option>
+          <option value="custom">Custom (use sliders)</option>
         </select>
       </div>
-      <div style="flex:1 1 180px">
-        <div class="label">High Threshold (0.50–0.95)</div>
-        <input id="thHigh" type="number" class="input" min="0.5" max="0.95" step="0.01" value="0.75"/>
-      </div>
-      <div style="flex:1 1 160px">
-        <div class="label">Auto Predict Interval</div>
-        <select id="autoInterval" class="select">
+      <div>
+        <div class="label">Auto Interval</div>
+        <select id="autoInterval" class="input">
           <option value="0" selected>Off</option>
           <option value="30">30s</option>
           <option value="38">38s</option>
           <option value="60">60s</option>
         </select>
       </div>
-      <div style="flex:0 0 120px;align-self:flex-end">
+    </div>
+
+    <div style="margin-top:10px" class="row">
+      <div style="flex:1">
+        <div class="label">Decision Threshold (High)</div>
+        <input id="threshold" type="number" min="0.5" max="0.95" step="0.01" class="input" value="0.75"/>
+      </div>
+      <div style="flex:0 0 120px">
         <button id="btnApply" class="btn primary" style="width:100%">Apply</button>
       </div>
-      <div class="pill" style="align-self:flex-end;padding:8px 12px;gap:8px">
-        Live: <strong id="liveState">Off</strong>
+      <div style="flex:0 0 220px;display:flex;gap:6px;justify-content:flex-end">
+        <button id="btnConnect" class="btn ghost">Connect API</button>
+        <button id="btnSample" class="btn ghost">Load Sample</button>
+        <button id="btnExport" class="btn ghost">Export CSV</button>
+        <button id="btnImport" class="btn ghost">Upload</button>
       </div>
     </div>
 
-    <div class="note" style="margin-top:8px">
-      Tip: यदि आप GitHub raw JSON देंगे तो history वहाँ से आएगा और predictions historical data-aware होंगे।
+    <div style="margin-top:8px" class="small">Use Upload → Tune Weights for automatic tuning on your historical dataset. Then Apply the best weights.</div>
+  </div>
+
+  <!-- Weights Sliders & Tuner -->
+  <div class="card">
+    <h3>🔧 Ensemble Weights</h3>
+    <div class="small">Adjust sliders and click Apply — or run automatic tuning on your uploaded history.</div>
+    <div style="display:grid;grid-template-columns:1fr 120px;gap:10px;margin-top:12px;align-items:center">
+      <div>
+        <div class="label">Hash Weight <span id="wHashVal" class="small" style="float:right">0.45</span></div>
+        <input id="wHash" type="range" min="0" max="1" step="0.01" value="0.45" class="slider"/>
+        <div class="label">Frequency Weight <span id="wFreqVal" class="small" style="float:right">0.25</span></div>
+        <input id="wFreq" type="range" min="0" max="1" step="0.01" value="0.25" class="slider"/>
+        <div class="label">Recency Weight <span id="wRecVal" class="small" style="float:right">0.20</span></div>
+        <input id="wRec" type="range" min="0" max="1" step="0.01" value="0.20" class="slider"/>
+        <div class="label">Entropy Weight <span id="wEntVal" class="small" style="float:right">0.10</span></div>
+        <input id="wEnt" type="range" min="0" max="1" step="0.01" value="0.10" class="slider"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="label">Weights normalize to sum=1 (auto)</div>
+        <button id="btnNormalize" class="btn ghost">Normalize</button>
+        <button id="btnTune" class="btn primary">Tune Weights</button>
+        <button id="btnApplyWeights" class="btn primary">Apply Weights</button>
+        <div id="tuneStatus" class="small" style="margin-top:8px">Tuner: idle</div>
+      </div>
     </div>
   </div>
 
-  <!-- Check by Period -->
+  <!-- Upload / Check area -->
   <div class="card">
-    <h3>🔎 Check by Period</h3>
+    <h3>🔍 Check by Period</h3>
     <div class="row">
-      <input id="periodInput" class="input mono" placeholder="Enter Period number (e.g. 20250814100051634 or 51653)"/>
+      <input id="periodInput" class="input" placeholder="Enter Period number..."/>
       <button id="btnCheck" class="btn">Check</button>
+      <div style="margin-left:auto" class="small" id="autoBadge">Auto: Off</div>
     </div>
-    <div id="periodError" class="note" style="color:var(--red);margin-top:8px;display:none"></div>
+    <div id="periodError" class="small" style="color:#ff7676;display:none;margin-top:8px"></div>
 
     <div style="margin-top:12px" class="grid2">
       <div class="card" style="margin:0">
         <h3>Result</h3>
         <div class="result-box">
-          <div class="result-row"><div class="result-key">Input</div><div class="result-val mono" id="res-input">—</div></div>
-          <div class="result-row"><div class="result-key">Using period</div><div class="result-val mono" id="res-period">—</div></div>
-          <div class="result-row"><div class="result-key">Digit</div><div class="result-val mono" id="res-digit">—</div></div>
-          <div class="result-row"><div class="result-key">Type</div><div class="result-val mono" id="res-type">—</div></div>
-          <div class="result-row"><div class="result-key">Color</div><div class="result-val mono" id="res-color">—</div></div>
-          <div class="result-row"><div class="result-key">Confidence</div><div class="result-val mono" id="res-conf">—</div></div>
-          <div class="result-row"><div class="result-key">Decision</div><div class="result-val" id="res-decision"><span class="chip">—</span></div></div>
+          <div class="result-row"><div class="kv">Input</div><div class="val mono" id="res-input">—</div></div>
+          <div class="result-row"><div class="kv">Period</div><div class="val mono" id="res-period">—</div></div>
+          <div class="result-row"><div class="kv">Digit</div><div class="val mono" id="res-digit">—</div></div>
+          <div class="result-row"><div class="kv">Type</div><div class="val mono" id="res-type">—</div></div>
+          <div class="result-row"><div class="kv">Color</div><div class="val mono" id="res-color">—</div></div>
+          <div class="result-row"><div class="kv">Confidence</div><div class="val mono" id="res-conf">—</div></div>
+          <div class="result-row"><div class="kv">Decision</div><div class="val" id="res-decision"><span class="chip">—</span></div></div>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btnSave" class="btn ghost">Save Local</button>
+          <button id="btnLoad" class="btn ghost">Load Local</button>
+          <button id="btnClear" class="btn ghost">Clear</button>
+          <button id="btnSim" class="btn ghost">Simulate +5</button>
         </div>
       </div>
 
       <div class="card" style="margin:0">
-        <h3>About</h3>
-        <div class="note">
-          • Period → deterministic hash → <b>digit (0–9)</b>.<br/>
-          • digit ≥5 ⇒ <b>Big</b>, else <b>Small</b>.<br/>
-          • Color parity uses hash bits so similar periods change output.<br/>
-          • Confidence uses history-aware math: frequency + recency + entropy + shrinkage.<br/>
-          • Decisions ONLY: <span class="chip soft">Soft 💚</span> or <span class="chip money">Money Magnet 🧲</span>.
+        <h3>Dataset Upload & Tuning</h3>
+        <div class="small">Upload a JSON array or CSV (header: period,num[,type,color,confidence,ts])</div>
+        <input id="fileInput" type="file" accept=".json,.csv" style="margin-top:8px"/>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="btnPreview" class="btn ghost">Preview</button>
+          <button id="btnRunTune" class="btn primary">Run Tune (Default 300 iters)</button>
         </div>
+        <div id="previewBox" style="margin-top:10px;max-height:180px;overflow:auto"></div>
       </div>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
+  <!-- Tabs: Prob / Preds / Patterns / Stats -->
+  <div class="tabbtns">
     <div class="tab-btn active" data-tab="tab-prob">Probability</div>
     <div class="tab-btn" data-tab="tab-preds">Predictions</div>
     <div class="tab-btn" data-tab="tab-patterns">Patterns</div>
     <div class="tab-btn" data-tab="tab-stats">Stats</div>
   </div>
 
-  <!-- Probability -->
-  <div id="tab-prob" class="tab-pane active">
-    <div class="card">
-      <h3>📊 Probability (0–9) <span class="note" id="probSource">(from history)</span></h3>
-      <div class="bars" id="probBars"></div>
-      <div class="row" style="justify-content:space-between;margin-top:8px">
-        <div class="note">Top: <span id="probTop" class="mono">—</span></div>
-        <div class="note">Bottom: <span id="probBottom" class="mono">—</span></div>
-      </div>
-      <div style="margin-top:12px" class="canvas-wrap"><canvas id="probCanvas" height="150" style="width:100%"></canvas></div>
-      <div class="note" style="margin-top:8px">Bar heights are smoothed using history and shrinkage to avoid overfitting.</div>
+  <div id="tab-prob" class="card tab-pane active">
+    <h3>📊 Probability</h3>
+    <div id="probBars" class="bars"></div>
+    <div style="margin-top:10px" class="small">Top: <span id="probTop">—</span> • Bottom: <span id="probBottom">—</span></div>
+    <div style="margin-top:10px" class="card"><canvas id="probCanvas" height="140" style="width:100%"></canvas></div>
+  </div>
+
+  <div id="tab-preds" class="card tab-pane">
+    <h3>🕒 Recent Predictions</h3>
+    <div id="predList"></div>
+  </div>
+
+  <div id="tab-patterns" class="card tab-pane">
+    <h3>Patterns</h3>
+    <div id="patBS" class="pattern-line"></div>
+    <div id="patCR" class="pattern-line" style="margin-top:10px"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <div style="flex:1"><h4>Hot</h4><div id="hotList" class="pattern-line"></div></div>
+      <div style="flex:1"><h4>Cold</h4><div id="coldList" class="pattern-line"></div></div>
     </div>
   </div>
 
-  <!-- Predictions -->
-  <div id="tab-preds" class="tab-pane">
-    <div class="card"><h3>🕒 Recent Predictions</h3><div id="predList"></div></div>
-  </div>
-
-  <!-- Patterns -->
-  <div id="tab-patterns" class="tab-pane">
-    <div class="card"><h3>🧩 Big/Small Pattern</h3><div id="patBS" class="pattern-line"></div></div>
-    <div class="card"><h3>🟢🔴 Color Pattern</h3><div id="patCR" class="pattern-line"></div></div>
-    <div class="row">
-      <div class="card" style="flex:1"><h3>🔥 Hot Numbers</h3><div id="hotList" class="pattern-line"></div></div>
-      <div class="card" style="flex:1"><h3>❄️ Cold Numbers</h3><div id="coldList" class="pattern-line"></div></div>
+  <div id="tab-stats" class="card tab-pane">
+    <h3>Stats</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div class="card"><div class="small">Total</div><div id="stTotal" class="val">—</div></div>
+      <div class="card"><div class="small">Money Magnet Rate</div><div id="stMM" class="val">—</div><div class="progress"><span id="stMMP" style="width:0%"></span></div></div>
+      <div class="card"><div class="small">Avg Confidence</div><div id="stAvg" class="val">—</div><div class="progress"><span id="stAvgP" style="width:0%"></span></div></div>
+      <div class="card"><div class="small">Top Digit</div><div id="stTop" class="val">—</div></div>
     </div>
-    <div class="card"><h3>📍 Gap Heatmap (Last 40)</h3><div id="gapMap" class="pattern-line"></div></div>
+    <div style="margin-top:12px" class="card"><canvas id="distCanvas" height="160" style="width:100%"></canvas></div>
   </div>
 
-  <!-- Stats -->
-  <div id="tab-stats" class="tab-pane">
-    <div class="card">
-      <h3>📈 Stats Overview</h3>
-      <div class="stat-grid">
-        <div class="stat"><h4>Total Records</h4><div class="v mono" id="st-total">—</div></div>
-        <div class="stat"><h4>Money Magnet Rate</h4><div class="v mono" id="st-mm">—</div><div class="progress"><span id="st-mm-p" style="width:0%"></span></div></div>
-        <div class="stat"><h4>Avg Confidence</h4><div class="v mono" id="st-avg">—</div><div class="progress"><span id="st-avg-p" style="width:0%"></span></div></div>
-        <div class="stat"><h4>Top Digit (Hit%)</h4><div class="v mono" id="st-top">—</div></div>
-      </div>
-    </div>
-    <div class="card"><h3>📊 Distribution</h3><div class="canvas-wrap"><canvas id="distCanvas" height="160" style="width:100%"></canvas></div></div>
-  </div>
-
-  <div style="height:36px"></div>
 </div>
 
-<!-- Toast -->
-<div id="toast" class="toast hidden"><div id="toastText">Loaded</div></div>
+<!-- modal -->
+<div id="modalBack" class="modal-back"><div class="modal"><h4 id="modalTitle">Modal</h4><div id="modalBody"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button id="modalClose" class="btn ghost">Close</button><button id="modalOk" class="btn primary">OK</button></div></div></div>
+
+<div id="toast" class="toast hidden"><div id="toastText"></div></div>
 
 <script>
-/* ======================= Utilities ======================= */
+/* ========= Utilities ========= */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-const clamp = (v,min,max) => Math.max(min, Math.min(max, v));
-const toast = (m,ms=1400)=>{ const t=$("#toast"); $("#toastText").textContent=m; t.classList.remove("hidden"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.add("hidden"),ms); };
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const toast = (m,ms=1400)=>{ const t=$('#toast'); $('#toastText').textContent=m; t.classList.remove('hidden'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.add('hidden'),ms); };
 
-/* ======================= Stable Hash (FNV-1a like) ======================= */
+/* ========= Deterministic Hash (fnv1a-like) ========= */
 function fnv1a(str){
   let h = 0x811c9dc5 >>> 0;
-  for(let i=0;i<str.length;i++){
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h ^ (h >>> 16), 0x45d9f3b) >>> 0;
-    h = (h + ((h<<3)>>>0) + ((h<<7)>>>0)) >>> 0;
-  }
+  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h ^ (h >>> 16), 0x45d9f3b) >>> 0; h = (h + ((h<<3)>>>0) + ((h<<7)>>>0)) >>> 0; }
   return h >>> 0;
 }
-function periodDigit(period){ return fnv1a(String(period)) % 10; }
-function digitColor(d,period){ const h = fnv1a(String(period)); const parity = ((h>>>3) ^ (h>>>7) ^ (h>>>11)) & 1; return ((d%2)^parity) ? "Red" : "Green"; }
+const periodDigit = p => fnv1a(String(p)) % 10;
+const digitColor = (d,p) => { const h=fnv1a(String(p)); const parity = ((h>>>3) ^ (h>>>7) ^ (h>>>11)) & 1; return ((d%2)^parity) ? 'Red' : 'Green'; };
 
-/* ======================= Confidence calculation (improved) ======================= */
-function baseConf(d,period){
-  const h = fnv1a(String(period)+'#'+d);
-  return 0.62 + ((h & 1023)/1023)*0.28; // 0.62..0.90
+/* ========= Predictor Components ========= */
+function hashPredict(period){ const d = periodDigit(period); const h = fnv1a(String(period)); const base = 0.62 + ((h & 1023)/1023)*0.28; return {digit:d, score:base, src:'hash'}; }
+function freqPredict(history, window=40){ const slice = history.slice(0,window); const counts = Array(10).fill(0); slice.forEach(h=>counts[h.num]++); const top = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c - a.c || a.i - b.i)[0]; const score = 0.5 + (top.c / Math.max(1,slice.length)) * 0.45; return {digit:top.i, score:clamp(score,0.5,0.95), src:'freq'}; }
+function recencyPredict(history){ const last = Array(10).fill(null); for(let i=0;i<history.length;i++){ const d=history[i].num; if(last[d]===null) last[d]=i; } const gaps = last.map((g,i)=>({i,g: g===null?1000:g})); gaps.sort((a,b)=>b.g - a.g || a.i - b.i); const chosen = gaps[0]; const score = clamp(0.55 + Math.min(chosen.g,60)/60 * 0.4, 0.5, 0.95); return {digit:chosen.i, score, src:'recency'}; }
+function entropyPredict(period){ const h = fnv1a(String(period)+'ent'); const digit = (h>>>2) % 10; const score = 0.55 + ((h & 255)/255) * 0.35; return {digit, score:clamp(score,0.5,0.95), src:'entropy'}; }
+
+/* ========= Ensemble & Final confidence ========= */
+function ensemblePredict(period, history, weights){
+  const comps = [ hashPredict(period), freqPredict(history,40), recencyPredict(history), entropyPredict(period) ];
+  const weightMap = { hash:weights.hash, freq:weights.freq, recency:weights.recency, entropy:weights.entropy };
+  const scoreMap = Array(10).fill(0);
+  comps.forEach(c => { const w = weightMap[c.src]||0; scoreMap[c.digit] += w * c.score; });
+  let best = 0, bestVal=-Infinity; scoreMap.forEach((v,i)=>{ if(v>bestVal){bestVal=v;best=i;} });
+  const maxPossible = (weights.hash+weights.freq+weights.recency+weights.entropy) * 0.95;
+  const minPossible = (weights.hash+weights.freq+weights.recency+weights.entropy) * 0.5;
+  const norm = (maxPossible === minPossible) ? 0.5 : ((bestVal - minPossible) / (maxPossible - minPossible));
+  const finalScore = clamp(0.5 + norm * 0.45, 0.5, 0.95);
+  return { digit:best, score:finalScore, comps };
 }
-function computeConfidence(d,period,history){
-  const base = baseConf(d,period);
-  let freq = 0; for(let i=0;i<history.length;i++) if(history[i].num===d) freq++;
-  const total = Math.max(1, history.length); const rate = freq/total;
-  let freqAdj=0;
-  if(rate < 0.06) freqAdj = 0.06;
-  else if(rate < 0.12) freqAdj = 0.03;
-  else if(rate > 0.25) freqAdj = -0.04;
-  const lastIdx = history.findIndex(h=>h.num===d);
-  let recPenalty = 0;
-  if(lastIdx !== -1){
-    if(lastIdx <= 2) recPenalty = 0.06;
-    else if(lastIdx <= 6) recPenalty = 0.03;
-  }
-  const hv = (fnv1a(String(period)+'v') & 255)/255;
-  const entropyAdj = (hv - 0.5) * 0.06;
-  let raw = base + freqAdj - recPenalty + entropyAdj;
-  const prior = 0.72; const N = Math.min(60, total); const k=7; const alpha = N/(N+k);
-  const final = alpha*raw + (1-alpha)*prior;
-  return clamp(final, 0.50, 0.95);
+function computeConfidenceFinal(digit, rawScore, history){
+  const total = Math.max(1, history.length);
+  let freq=0; for(let i=0;i<history.length;i++) if(history[i].num===digit) freq++;
+  const rate = freq/total;
+  let recPenalty=0; const lastIdx = history.findIndex(h=>h.num===digit);
+  if(lastIdx!==-1){ if(lastIdx<=2) recPenalty=0.07; else if(lastIdx<=6) recPenalty=0.03; }
+  const prior = 0.72; const N = Math.min(100, history.length); const k=10; const alpha = N/(N+k);
+  const adjusted = clamp(rawScore - recPenalty + (rate<0.05?0.03:0), 0.5, 0.95);
+  return clamp(alpha*adjusted + (1-alpha)*prior, 0.5, 0.95);
 }
 
-/* ======================= strategies ======================= */
-const strategies = { balanced:{high:0.75}, conservative:{high:0.82}, aggressive:{high:0.68}, custom:{high:0.75} };
-
-/* ======================= App State ======================= */
-const state = {
-  apiUrl: "",
-  history: [],
-  probs: new Array(10).fill(0),
-  high: strategies.balanced.high,
-  autoTimer: null,
-  autoSec: 0
+/* ========= App State ========= */
+const State = {
+  history: [], // newest-first
+  weights: { hash:0.45, freq:0.25, recency:0.20, entropy:0.10 },
+  threshold: 0.75,
+  autoTimer: null, autoSec:0
 };
 
-/* ======================= normalize history ======================= */
-function normalizeHistory(arr){
-  const out = [];
-  (arr || []).forEach((r,i)=>{
-    const period = r.period ?? (1000 + i);
-    const num = Number.isInteger(r.num) ? clamp(r.num,0,9) : periodDigit(period);
-    const type = r.type ?? (num>=5?"Big":"Small");
-    const color = r.color ?? digitColor(num,period);
-    const conf = (typeof r.confidence === "number") ? clamp(r.confidence,0.5,0.95) : computeConfidence(num,period,out);
-    const ts = r.ts ?? (Date.now() - i*60000);
-    out.push({period, num, type, color, confidence: conf, ts});
+/* ========= Helpers: normalize incoming history ========= */
+function normalizeIncoming(arr){
+  const out=[];
+  (arr||[]).forEach((r,i)=>{
+    const period = r.period ?? (1000+i);
+    const num = Number.isInteger(r.num)? clamp(r.num,0,9) : periodDigit(period);
+    const type = r.type ?? (num>=5? 'Big':'Small');
+    const color = r.color ?? digitColor(num, period);
+    const conf = (typeof r.confidence==='number') ? clamp(r.confidence,0.5,0.95) : computeConfidenceFinal(num, 0.72, out);
+    const ts = r.ts ?? (Date.now()-i*60000);
+    out.push({ period, num, type, color, confidence: conf, ts });
   });
   return out;
 }
 
-/* ======================= API fetch helper ======================= */
-async function fetchApi(url){
-  const res = await fetch(url, { cache: "no-store" });
-  if(!res.ok) throw new Error(res.status + " " + res.statusText);
-  return await res.json();
+/* ========= UI Wiring ========= */
+function bindUI(){
+  // tab buttons
+  $$('.tab-btn').forEach(b=> b.addEventListener('click', ()=> switchTab(b.dataset.tab)));
+  // sliders
+  ['wHash','wFreq','wRec','wEnt'].forEach(id=>{
+    $(idSelector(id)).addEventListener('input', onSliderChange);
+  });
+  $('#btnNormalize').addEventListener('click', normalizeSliders);
+  $('#btnApplyWeights').addEventListener('click', applySlidersToWeights);
+  $('#blendPreset').addEventListener('change', onPresetChange);
+  $('#btnTune').addEventListener('click', ()=>{ $('#btnRunTune').click(); });
+
+  // periodic control
+  $('#btnApply').addEventListener('click', ()=>{
+    State.threshold = parseFloat($('#threshold').value) || 0.75;
+    toast('Settings applied');
+  });
+
+  // check
+  $('#btnCheck').addEventListener('click', async ()=>{
+    $('#btnCheck').classList.add('toggled'); setTimeout(()=>$('#btnCheck').classList.remove('toggled'),200);
+    const p = $('#periodInput').value.trim();
+    if(!p){ $('#periodError').style.display='block'; $('#periodError').textContent='Enter period'; return; }
+    $('#periodError').style.display='none';
+    await showProcessing(3000);
+    const out = runPrediction(p);
+    State.history.unshift({ period: out.period, num: out.digit, type: out.type, color: out.color, confidence: out.conf, ts: Date.now() });
+    if(State.history.length>2000) State.history=State.history.slice(0,2000);
+    rebuild();
+    showResult(out);
+  });
+
+  $('#btnSave').addEventListener('click', ()=>{ localStorage.setItem('wingo_hist_v3', JSON.stringify(State.history)); toast('Saved locally'); });
+  $('#btnLoad').addEventListener('click', ()=>{ try{ const s=JSON.parse(localStorage.getItem('wingo_hist_v3')||'null'); if(Array.isArray(s)){ State.history = normalizeIncoming(s); rebuild(); toast('Loaded'); } else toast('No local data'); }catch(e){ toast('Load fail'); }});
+  $('#btnClear').addEventListener('click', ()=>{ State.history=[]; rebuild(); toast('Cleared'); });
+  $('#btnSim').addEventListener('click', ()=> simulate(5));
+  $('#btnExport').addEventListener('click', exportCSV);
+
+  // file upload & preview & tuner
+  $('#btnImport').addEventListener('click', ()=> $('#fileInput').click());
+  $('#fileInput').addEventListener('change', handleFile);
+  $('#btnPreview').addEventListener('click', previewUploaded);
+  $('#btnRunTune').addEventListener('click', ()=> runTune(300));
+
+  // connect API
+  $('#btnConnect').addEventListener('click', async ()=>{
+    const url = $('#apiUrl').value.trim(); if(!url){ toast('Paste LIVE_API_URL'); return; }
+    try{ toast('Fetching API...'); const res = await fetch(url,{cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status); const json = await res.json(); State.history = normalizeIncoming(json.history || json.data || json); rebuild(); $('#probSource').textContent='(from API)'; toast('API loaded'); }catch(e){ console.error(e); toast('API failed'); }
+  });
+
+  // modal controls
+  $('#modalClose').addEventListener('click', hideModal);
+  $('#modalOk').addEventListener('click', ()=> { if(modalOk) modalOk(); });
+
+  // weight tuner: runTune triggered via button
 }
 
-/* ======================= Bind Controls ======================= */
-function bindControls(){
-  $("#btnSample").addEventListener("click", loadSample);
-  $("#btnConnect").addEventListener("click", async ()=>{
-    const url = $("#apiUrl").value.trim(); if(!url){ toast("Paste LIVE_API_URL"); return; }
+/* helper id selector for sliders */
+function idSelector(id){ return '#'+id; }
+
+/* slider handler */
+function onSliderChange(){
+  const h = parseFloat($('#wHash').value);
+  const f = parseFloat($('#wFreq').value);
+  const r = parseFloat($('#wRec').value);
+  const e = parseFloat($('#wEnt').value);
+  $('#wHashVal').textContent = h.toFixed(2);
+  $('#wFreqVal').textContent = f.toFixed(2);
+  $('#wRecVal').textContent = r.toFixed(2);
+  $('#wEntVal').textContent = e.toFixed(2);
+  // don't auto-apply until user presses Apply Weights
+}
+
+/* normalize sliders so sum=1 */
+function normalizeSliders(){
+  let h = parseFloat($('#wHash').value), f=parseFloat($('#wFreq').value), r=parseFloat($('#wRec').value), e=parseFloat($('#wEnt').value);
+  const s = h+f+r+e || 1;
+  h/=s; f/=s; r/=s; e/=s;
+  $('#wHash').value=h.toFixed(2); $('#wFreq').value=f.toFixed(2); $('#wRec').value=r.toFixed(2); $('#wEnt').value=e.toFixed(2);
+  onSliderChange();
+  toast('Normalized');
+}
+
+/* apply sliders to app weights */
+function applySlidersToWeights(){
+  const h=parseFloat($('#wHash').value), f=parseFloat($('#wFreq').value), r=parseFloat($('#wRec').value), e=parseFloat($('#wEnt').value);
+  const s=h+f+r+e || 1;
+  State.weights = { hash: h/s, freq: f/s, recency: r/s, entropy: e/s };
+  toast('Weights applied');
+  rebuild();
+}
+
+/* preset change */
+function onPresetChange(){
+  const v = $('#blendPreset').value;
+  if(v==='default'){ State.weights={hash:0.45,freq:0.25,recency:0.2,entropy:0.1}; }
+  else if(v==='hash'){ State.weights={hash:0.6,freq:0.2,recency:0.12,entropy:0.08}; }
+  else if(v==='freq'){ State.weights={hash:0.25,freq:0.45,recency:0.2,entropy:0.1}; }
+  else if(v==='recency'){ State.weights={hash:0.25,freq:0.2,recency:0.45,entropy:0.1}; }
+  else if(v==='custom'){ /* keep as is */ }
+  // sync sliders
+  const w = State.weights;
+  $('#wHash').value=w.hash.toFixed(2); $('#wFreq').value=w.freq.toFixed(2); $('#wRec').value=w.recency.toFixed(2); $('#wEnt').value=w.entropy.toFixed(2);
+  onSliderChange();
+  toast('Preset loaded');
+}
+
+/* ========= Prediction flow ========= */
+function runPrediction(periodInput){
+  const s = String(periodInput).replace(/\D/g,'');
+  const period = s.length>=4 ? s : ('000000'+s).slice(-6);
+  const ens = ensemblePredict(period, State.history, State.weights);
+  const conf = computeConfidenceFinal(ens.digit, ens.score, State.history);
+  const type = ens.digit >= 5 ? 'Big' : 'Small';
+  const color = digitColor(ens.digit, period);
+  return { input: periodInput, period: Number(period), digit: ens.digit, type, color, conf, breakdown: ens.comps };
+}
+function showResult(out){
+  $('#res-input').textContent = out.input;
+  $('#res-period').textContent = out.period;
+  $('#res-digit').textContent = '#' + out.digit;
+  $('#res-type').textContent = out.type;
+  $('#res-color').textContent = out.color;
+  $('#res-conf').textContent = (out.conf * 100).toFixed(1) + '%';
+  const container = document.getElementById('res-decision');
+  const el = document.createElement('div'); el.innerHTML = out.conf >= State.threshold ? '<div class="chip money">Money Magnet 🧲</div>' : '<div class="chip soft">Soft 💚</div>';
+  container.parentNode.replaceChild(el.firstElementChild, container);
+}
+
+/* ========= UI Rendering from State.history ========= */
+function updateProbs(){
+  const counts = Array(10).fill(0);
+  State.history.forEach(h=>counts[h.num] = (counts[h.num]||0)+1);
+  const total = Math.max(1, State.history.length);
+  State.probs = counts.map(c=>c/total);
+}
+function renderBars(){
+  updateProbs();
+  const box = $('#probBars'); box.innerHTML='';
+  const max = Math.max(...State.probs, 0.01);
+  State.probs.forEach((p,i)=>{
+    const el = document.createElement('div'); el.className='bar'; el.innerHTML = `<div class="bar-fill" style="height:${(p/max)*100}%"></div><small>${i}</small>`;
+    box.appendChild(el);
+  });
+  const sorted = State.probs.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
+  $('#probTop').textContent = `${sorted[0].i} (${(sorted[0].v*100).toFixed(1)}%)`;
+  $('#probBottom').textContent = `${sorted[sorted.length-1].i} (${(sorted[sorted.length-1].v*100).toFixed(1)}%)`;
+
+  // canvas mini spark
+  const c = $('#probCanvas'), ctx=c.getContext('2d'); const w=c.width=c.clientWidth, h=c.height=140; ctx.clearRect(0,0,w,h);
+  const pad=12, bw=(w-pad*2)/10 - 6, base = h-22; ctx.font='12px '+(getComputedStyle(document.body).fontFamily||'monospace');
+  State.probs.forEach((p,i)=>{ const x=pad+i*(bw+6), bh=Math.max(4,p*h*0.86), y=base-bh; const g=ctx.createLinearGradient(0,y,0,y+bh); g.addColorStop(0,'#12dfb8'); g.addColorStop(1,'#11a8e6'); ctx.fillStyle=g; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle='#082a32'; ctx.strokeRect(x,y,bw,bh); ctx.fillStyle='#9fbdd4'; ctx.fillText(String(i), x + bw/2 - 4, h - 6); });
+}
+function renderPredList(){
+  const wrap = $('#predList'); wrap.innerHTML='';
+  const show = State.history.slice(0,80);
+  show.forEach(h=>{ const row=document.createElement('div'); row.className='pred-row'; const time=new Date(h.ts).toLocaleTimeString(); row.innerHTML = `<div class="mono">🕒 ${time}</div><div class="mono">tail ${h.period} → <b>#${h.num}</b> (${h.type}) • <span class="small">${h.color}</span></div><div>${ h.confidence >= State.threshold ? '<span class="chip money">Money Magnet 🧲</span>' : '<span class="chip soft">Soft 💚</span>' }</div>`; wrap.appendChild(row); });
+}
+function renderPatterns(){
+  const hist = State.history.slice(0,40);
+  $('#patBS').innerHTML=''; $('#patCR').innerHTML='';
+  hist.forEach(h=>{ const a=document.createElement('div'); a.className='p-pill '+(h.type==='Big'?'p-bg':'p-sm'); a.textContent=h.type; $('#patBS').appendChild(a); const b=document.createElement('div'); b.className='p-pill '+(h.color==='Green'?'p-green':'p-red'); b.textContent=h.color; $('#patCR').appendChild(b); });
+  const counts = Array(10).fill(0); hist.forEach(h=>counts[h.num]++);
+  const arr = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c - a.c);
+  $('#hotList').innerHTML = arr.slice(0,3).map(x=>`<div class="p-pill">${x.i} <span class="small">(${x.c})</span></div>`).join('');
+  $('#coldList').innerHTML = arr.slice(-3).reverse().map(x=>`<div class="p-pill">${x.i} <span class="small">(${x.c})</span></div>`).join('');
+  const lastSeen = new Map(); const gaps=[];
+  hist.forEach((h,idx)=>{ const prev = lastSeen.get(h.num); const gap = prev==null ? '—' : (idx-prev); lastSeen.set(h.num, idx); gaps.push({num:h.num,gap}); });
+  $('#gapMap').innerHTML = gaps.map(g=>`<div class="p-pill">#${g.num} <span class="small">gap:${g.gap}</span></div>`).join('');
+}
+function renderStats(){
+  const hist=State.history, total=hist.length; $('#stTotal').textContent=String(total);
+  const mm = hist.filter(h=>h.confidence >= State.threshold).length; const mmRate = total? mm/total:0; $('#stMM').textContent=(mmRate*100).toFixed(1)+'%'; $('#stMMP').style.width=(mmRate*100)+'%';
+  const avg = total? (hist.reduce((a,b)=>a+b.confidence,0)/total):0; $('#stAvg').textContent=(avg*100).toFixed(1)+'%'; $('#stAvgP').style.width = ((avg-0.5)/0.45*100)+'%';
+  const counts = Array(10).fill(0); hist.forEach(h=>counts[h.num]++); const top = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c - a.c)[0]||{i:'—',c:0}; $('#stTop').textContent = `${top.i} (${ total? (top.c/total*100).toFixed(1) : '0.0'}%)`;
+  // dist canvas
+  const c=$('#distCanvas'), ctx=c.getContext('2d'); const w=c.width=c.clientWidth, h=c.height=160; ctx.clearRect(0,0,w,h);
+  const pad=12, bw=(w-pad*2)/10 - 6, base=h-20, mx=Math.max(...counts,1); ctx.font='12px '+(getComputedStyle(document.body).fontFamily||'monospace');
+  counts.forEach((cv,i)=>{ const x=pad+i*(bw+6), bh=Math.max(4, cv/mx*(h*0.82)), y=base-bh; ctx.fillStyle='#071a22'; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle='#102b38'; ctx.strokeRect(x,y,bw,bh); ctx.fillStyle='#9fbdd4'; ctx.fillText(String(i), x+bw/2 - 4, h - 6); });
+}
+
+/* ========= Rebuild UI ========= */
+function rebuild(){ renderBars(); renderPredList(); renderPatterns(); renderStats(); $('#threshold').value = State.threshold.toFixed(2); $('#wHash').value = State.weights.hash.toFixed(2); $('#wFreq').value=State.weights.freq.toFixed(2); $('#wRec').value=State.weights.recency.toFixed(2); $('#wEnt').value=State.weights.entropy.toFixed(2); onSliderChange(); }
+
+/* ========= Processing Spinner ========= */
+function showProcessing(ms=2000){ return new Promise(res=>{ const wrapper=document.createElement('div'); wrapper.className='processing'; wrapper.id='procTemp'; wrapper.innerHTML=`<div class="spin"><div class="ring"></div><div class="dollar">$</div></div><div class="note" style="font-weight:800">Processing…</div>`; const anchor = $('#btnCheck').parentNode; anchor.appendChild(wrapper); setTimeout(()=>{ wrapper.remove(); res(); }, ms); }); }
+
+/* ========= File handling (upload preview) ========= */
+let uploadedData = null;
+function handleFile(e){
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    const txt = ev.target.result;
+    // try JSON then CSV
     try{
-      toast("Fetching API...");
-      const json = await fetchApi(url);
-      state.history = normalizeHistory(json.history || json || []);
-      renderAll();
-      $("#probSource").textContent = "(from API)";
-      toast("API connected ✓");
-    }catch(e){ console.error(e); toast("API load failed"); }
-  });
+      const json = JSON.parse(txt);
+      if(Array.isArray(json)){ uploadedData = normalizeIncoming(json); $('#previewBox').innerHTML = `<div class="small">Loaded JSON array — ${uploadedData.length} records</div>`; toast('JSON loaded'); return; }
+      else { toast('JSON must be array'); uploadedData = null; return; }
+    }catch(err){
+      // try CSV parse
+      const lines = txt.split(/\r?\n/).map(r=>r.trim()).filter(Boolean);
+      if(lines.length<1){ toast('Empty file'); uploadedData=null; return; }
+      const hdr = lines[0].split(',').map(s=>s.trim().toLowerCase());
+      const rows = lines.slice(1).map(l => l.split(',').map(s=>s.trim()));
+      const arr = rows.map(r=>{
+        const obj={};
+        hdr.forEach((h,i)=> obj[h]=r[i]);
+        return obj;
+      });
+      // map CSV fields to expected
+      const mapped = arr.map((o,i)=>{
+        const period = o.period ?? o.Period ?? (Date.now()+i);
+        const num = (o.num!==undefined && o.num!=='' ) ? parseInt(o.num,10) : undefined;
+        return { period, num };
+      });
+      uploadedData = normalizeIncoming(mapped);
+      $('#previewBox').innerHTML = `<div class="small">Parsed CSV — ${uploadedData.length} records</div>`;
+      toast('CSV parsed');
+    }
+  };
+  reader.readAsText(f);
+}
+function previewUploaded(){
+  if(!uploadedData){ toast('No file uploaded'); return; }
+  const preview = uploadedData.slice(0,50).map(x=>`period:${x.period} -> #${x.num} (${x.type})`).join('<br>');
+  showModal('Preview (first 50)', `<div style="max-height:300px;overflow:auto">${preview}</div>`);
+}<!-- Part 2: continue the script and closing tags -->
+<script>
+/* ========= Tuner (random search) ========= */
+async function runTune(iterations=300){
+  if(!uploadedData){ toast('Upload a dataset first'); return; }
+  $('#tuneStatus').textContent = 'Tuning…'; $('#tuneStatus').style.color = '#ffd86b';
+  await new Promise(r=>setTimeout(r,30));
+  const data = uploadedData.slice(); // newest-first
+  const warmup = 8;
+  const totalEval = Math.min(120, Math.max(0, data.length - warmup));
+  if(totalEval <= 0){ $('#tuneStatus').textContent='Tuning failed — dataset too small'; return; }
+  const evalIdxs = [];
+  for(let k=warmup;k<warmup+totalEval;k++) evalIdxs.push(k);
+  let best = { score:-1, weights:State.weights };
+  const startTime = performance.now();
+  for(let it=0; it<iterations; it++){
+    const a = Math.random()+0.01, b=Math.random()+0.01, c=Math.random()+0.01, d=Math.random()+0.01;
+    const sum = a+b+c+d;
+    const cand = { hash: a/sum, freq: b/sum, recency: c/sum, entropy: d/sum };
+    let hits = 0, tot = 0;
+    for(const idx of evalIdxs){
+      const prefix = data.slice(idx+1); // newest-first prefix
+      const target = data[idx];
+      const ens = ensemblePredict(String(target.period), prefix, cand);
+      if(ens.digit === target.num) hits++;
+      tot++;
+    }
+    const acc = tot? (hits/tot) : 0;
+    if(acc > best.score){
+      best = { score: acc, weights: cand };
+    }
+    if(it%20===0) { $('#tuneStatus').textContent = `Tuning… ${it}/${iterations} (best ${(best.score*100).toFixed(2)}%)`; await new Promise(r=>setTimeout(r,1)); }
+  }
+  const elapsed = ((performance.now() - startTime)/1000).toFixed(1);
+  $('#tuneStatus').textContent = `Done — best ${(best.score*100).toFixed(2)}% (time ${elapsed}s)`;
+  $('#tuneStatus').style.color = '#9feacb';
+  showModal('Tuning results', `<div class="small">Best accuracy: <b>${(best.score*100).toFixed(2)}%</b></div>
+    <div style="margin-top:8px">Weights: <pre>${JSON.stringify(best.weights,null,2)}</pre></div>
+    <div style="margin-top:8px" class="small">Apply best weights?</div>`, false, ()=>{ State.weights = best.weights; rebuild(); hideModal(); toast('Best weights applied'); });
+}
 
-  $("#btnApply").addEventListener("click", ()=>{
-    const strat = $("#strategy").value; state.high = parseFloat($("#thHigh").value) || strategies[strat].high;
-    const sec = parseInt($("#autoInterval").value,10) || 0;
-    setAuto(sec);
-    renderLiveBadge();
-    toast("Settings applied ✓");
-  });
+/* ========= Run prediction (as before) ========= */
+function runPredictionDirect(period){
+  const s = String(period).replace(/\D/g,'');
+  const periodStr = s.length>=4 ? s : ('000000'+s).slice(-6);
+  const ens = ensemblePredict(periodStr, State.history, State.weights);
+  const conf = computeConfidenceFinal(ens.digit, ens.score, State.history);
+  const type = ens.digit>=5 ? 'Big':'Small';
+  const color = digitColor(ens.digit, periodStr);
+  return { input: period, period: Number(periodStr), digit: ens.digit, type, color, conf };
+}
 
-  // Check button toggle & run check
-  $("#btnCheck").addEventListener("click", async ()=>{
-    const btn = $("#btnCheck");
-    btn.classList.add("toggled");
-    setTimeout(()=>btn.classList.remove("toggled"), 250);
-    const p = $("#periodInput").value.trim();
-    if(!p){ $("#periodError").style.display="block"; $("#periodError").textContent="Please enter a period number."; return; }
-    $("#periodError").style.display="none";
-    // show 3s processing
-    await showProcessing(3000);
-    const out = checkByPeriod(p);
-    // push to history (newest-first)
-    state.history.unshift({period: out.period, num: out.digit, type: out.type, color: out.color, confidence: out.conf, ts: Date.now()});
-    if(state.history.length > 800) state.history = state.history.slice(0,800);
-    renderAll(); renderCheck(out);
-  });
+/* ========= runPrediction wrapper ========= */
+function runPrediction(period){
+  return runPredictionDirect(period);
+}
 
-  // Tabs
-  $$(".tab-btn").fo
+/* ========= Simulate ========= */
+function simulate(n=5){
+  let cur = $('#periodInput').value.trim() || String(Date.now());
+  cur = cur.replace(/\D/g,'') || String(Date.now());
+  const results=[];
+  for(let i=0;i<n;i++){
+    let num = parseInt(cur,10) || Date.now(); num++; cur = String(num);
+    const out = runPrediction(cur);
+    State.history.unshift({ period: out.period, num: out.digit, type: out.type, color: out.color, confidence: out.conf, ts: Date.now()-i*1000 });
+    results.push(out);
+  }
+  if(State.history.length>2000) State.history = State.history.slice(0,2000);
+  rebuild();
+  showModal('Simulated', `<pre>${results.map(r=>`period:${r.period} -> #${r.digit} (${r.type}) ${r.color} ${ (r.conf*100).toFixed(1) }%`).join('\n')}</pre>`);
+}
+
+/* ========= Export CSV ========= */
+function exportCSV(){
+  if(!State.history.length){ toast('No history'); return; }
+  const hdr = ['period','num','type','color','confidence','ts'];
+  const rows = State.history.map(h=> [h.period,h.num,h.type,h.color,h.confidence.toFixed(3), new Date(h.ts).toISOString()].join(','));
+  const csv = [hdr.join(','), ...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='wingo_history.csv'; a.click(); URL.revokeObjectURL(url);
+  toast('Exported CSV');
+}
+
+/* ========= Modal ========= */
+let modalOk = null;
+function showModal(title, bodyHTML, showTextarea=false, okHandler=null){
+  $('#modalBack').style.display='flex'; $('#modalTitle').textContent = title;
+  if(showTextarea){ $('#modalBody').innerHTML = `<textarea id="modalTextarea" style="width:100%;height:220px;background:#04101a;color:var(--text);border:1px solid var(--outline);padding:8px;border-radius:8px"></textarea>`; }
+  else $('#modalBody').innerHTML = bodyHTML;
+  modalOk = okHandler;
+}
+function hideModal(){ $('#modalBack').style.display='none'; $('#modalBody').innerHTML=''; modalOk=null; }
+$('#modalOk').addEventListener('click', ()=>{ if(typeof modalOk === 'function') modalOk(); else hideModal(); });
+
+/* ========= File preview & import helpers ========= */
+function previewUploaded(){ if(!uploadedData){ toast('No uploaded dataset'); return; } const list = uploadedData.slice(0,50).map(x=>`period:${x.period} -> #${x.num}`).join('<br>'); showModal('Preview (first 50)', `<div style="max-height:360px;overflow:auto">${list}</div>`); }
+function importFromModal(){ try{ const txt = $('#modalTextarea').value.trim(); if(!txt){ toast('Empty'); return; } const parsed = JSON.parse(txt); if(!Array.isArray(parsed)){ toast('JSON array required'); return; } const norm = normalizeIncoming(parsed); State.history = norm; rebuild(); hideModal(); toast('Imported'); }catch(e){ console.error(e); toast('Import failed'); } }
+
+/* ========= init ========= */
+function init(){
+  // wire up UI listeners
+  bindUI();
+  // defaults
+  State.weights = { hash:0.45, freq:0.25, recency:0.2, entropy:0.1 };
+  $('#wHash').value = State.weights.hash.toFixed(2); $('#wFreq').value=State.weights.freq.toFixed(2); $('#wRec').value=State.weights.recency.toFixed(2); $('#wEnt').value=State.weights.entropy.toFixed(2);
+  onSliderChange();
+  // load local history or sample
+  try{
+    const s = JSON.parse(localStorage.getItem('wingo_hist_v3')||'null');
+    if(Array.isArray(s) && s.length){ State.history = normalizeIncoming(s); $('#probSource') && ($('#probSource').textContent='(from local)'); } else loadSample();
+  }catch(e){ loadSample(); }
+  rebuild();
+  (async ()=>{ await showProcessing(1200); rebuild(); })();
+  // wire preview/tune buttons
+  $('#btnRunTune').addEventListener('click', ()=> runTune(300));
+  $('#btnPreview').addEventListener('click', previewUploaded);
+}
+
+/* ========= Sample load ========= */
+function loadSample(){
+  const sample = [
+    {period:20250814100051634,num:6,confidence:.76},
+    {period:20250814100051633,num:8,confidence:.72},
+    {period:20250814100051632,num:0,confidence:.68},
+    {period:20250814100051631,num:8,confidence:.70},
+    {period:20250814100051630,num:2,confidence:.73},
+    {period:20250814100051629,num:5,confidence:.79},
+    {period:20250814100051628,num:4,confidence:.64},
+    {period:20250814100051627,num:6,confidence:.72},
+    {period:20250814100051626,num:7,confidence:.86},
+    {period:20250814100051625,num:3,confidence:.68},
+    {period:20250814100051624,num:1,confidence:.65},
+    {period:20250814100051623,num:9,confidence:.83},
+    {period:20250814100051622,num:8,confidence:.77},
+    {period:20250814100051621,num:0,confidence:.61},
+    {period:20250814100051620,num:8,confidence:.68},
+    {period:20250814100051619,num:2,confidence:.71},
+    {period:20250814100051618,num:5,confidence:.80},
+    {period:20250814100051617,num:4,confidence:.58},
+    {period:20250814100051616,num:6,confidence:.73},
+    {period:20250814100051615,num:7,confidence:.88}
+  ];
+  State.history = normalizeIncoming(sample);
+  $('#probSource') && ($('#probSource').textContent='(from sample)');
+  toast('Sample loaded');
+}
+
+/* ========= switchTab ========= */
+function switchTab(id){ $$('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id)); $$('.tab-pane').forEach(p=>p.classList.toggle('active', p.id===id)); }
+
+/* ========= attach file input handlers ========= */
+$('#fileInput').addEventListener('change', handleFile);
+$('#btnImport').addEventListener('click', ()=> $('#fileInput').click());
+
+/* ========= start ========= */
+init();
+
+/* ========= expose API for debugging ========= */
+window.Wingo = { State, runPrediction, runPredictionDirect, importUploaded:()=>{ if(uploadedData){ State.history = uploadedData; rebuild(); toast('Imported uploaded dataset'); } } };
+</script>
+</body>
+</html>
