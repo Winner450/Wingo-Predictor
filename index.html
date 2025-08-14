@@ -10,52 +10,47 @@
 <style>
 :root{
   --gold:#ffd700; --gold-2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
-  --bg:#0a0a0a; --card:#14161b; --stroke:#222533;
-  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+  --card:#14161b; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
   --radius:16px; --shadow:0 12px 26px rgba(0,0,0,.35);
 }
-*{box-sizing:border-box}
-body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
 
-/* --- Header fix --- */
-header{position:sticky; top:0; z-index:100; background:#000; border-bottom:1px solid #0f1117}
-.bar{max-width:1180px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 16px}
-.logo{font-weight:800; font-size:clamp(18px,4.4vw,22px); color:var(--gold); letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-header .right{display:flex; align-items:center; gap:10px; color:#cbd5e1; font-size:13px}
+/* Header (always visible, golden, no wrap) */
+header{position:sticky;top:0;z-index:100;background:#000;border-bottom:1px solid #0f1117}
+.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+.logo{font-weight:800;font-size:clamp(18px,4.4vw,22px);color:var(--gold);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.right{display:flex;align-items:center;gap:10px;color:#cbd5e1;font-size:13px}
 
-.container{max-width:1180px; margin:0 auto; padding:18px 16px 38px}
-.card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
-.h1{font-size:18px; font-weight:800; margin:0 0 10px}
-.sub{color:var(--muted); font-size:13px; margin-top:6px}
-
-.grid{display:grid; grid-template-columns:1.3fr .9fr; gap:14px}
+.container{max-width:1180px;margin:0 auto;padding:18px 16px 38px}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.h1{font-size:18px;font-weight:800;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
-label{font-size:13px; color:#d8dbe2; font-weight:700; margin-bottom:6px; display:block}
-input,select{width:100%; padding:14px 14px; background:#0c0f14; border:2px solid #202636; border-radius:12px; color:#fff; font-size:16px; outline:none}
+label{font-size:13px;color:#d8dbe2;font-weight:700;margin-bottom:6px;display:block}
+input,select{width:100%;padding:14px;background:#0c0f14;border:2px solid #202636;border-radius:12px;color:#fff;font-size:16px;outline:none}
 input:focus,select:focus{border-color:var(--gold)}
 
-.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2)); color:#000; font-weight:800; border:0; border-radius:12px; padding:12px 18px; cursor:pointer}
-.btn.sec{background:#1e2636; color:#e5e7eb; border:1px solid #2a3448}
-.switch{display:inline-flex; gap:8px; align-items:center; color:#e0e3ea; font-size:13px}
-.chip{display:inline-flex; align-items:center; gap:8px; background:#0e121a; border:1px solid #1f2636; border-radius:999px; padding:8px 12px; color:#cfd4e1; font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
+.btn.sec{background:#1e2636;color:#e5e7eb;border:1px solid #2a3448}
+.switch{display:inline-flex;gap:8px;align-items:center;color:#e0e3ea;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#0e121a;border:1px solid #1f2636;border-radius:999px;padding:8px 12px;color:#cfd4e1;font-weight:700}
 
-.kv{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media (max-width:900px){.kv{grid-template-columns:1fr}}
-.box{background:#0b0f15; border:1px solid #1a2130; border-radius:14px; padding:14px}
-.key{color:#a1a8b8; font-size:12px}
-.val{color:var(--gold); font-weight:900; font-size:30px}
-.line{height:10px; background:#1c2534; border-radius:999px; overflow:hidden; margin:10px 0 2px}
-.bar{height:10px; width:0%; background:linear-gradient(90deg,var(--gold-2),var(--gold))}
-.pill{display:inline-block; border:1px solid #2a3448; border-radius:999px; padding:6px 10px; font-weight:800; margin-right:6px}
+.box{background:#0b0f15;border:1px solid #1a2130;border-radius:14px;padding:14px}
+.key{color:#a1a8b8;font-size:12px}.val{color:var(--gold);font-weight:900;font-size:30px}
+.line{height:10px;background:#1c2534;border-radius:999px;overflow:hidden;margin:10px 0 2px}
+.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
+.pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:6px}
 .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-
-.grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:900px){.grid2{grid-template-columns:1fr}}
-.history{font-size:12px; color:#cfd4e1; max-height:220px; overflow:auto}
-.hrow{padding:6px 0; border-bottom:1px dashed #21293a}
-.helper{font-size:12px; color:#9ca3af}
-.hr{height:1px; background:#1a2130; margin:12px 0}
+.history{font-size:12px;color:#cfd4e1;max-height:220px;overflow:auto}
+.hrow{padding:6px 0;border-bottom:1px dashed #21293a}
+.helper{font-size:12px;color:#9ca3af}
+.hr{height:1px;background:#1a2130;margin:12px 0}
 </style>
 </head>
 <body>
@@ -69,7 +64,6 @@ input:focus,select:focus{border-color:var(--gold)}
 </header>
 
 <div class="container" id="appRoot">
-  <!-- CONTROL -->
   <div class="card">
     <div class="h1">Quick Predict</div>
     <div class="grid">
@@ -104,13 +98,13 @@ input:focus,select:focus{border-color:var(--gold)}
 
     <div class="hr"></div>
 
-    <!-- ✅ BIG/SMALL Verify & Learn -->
+    <!-- Verify & Learn (Big/Small) -->
     <div class="grid">
       <div>
         <label>✅ Actual size — optional (Learning)</label>
         <div class="row">
           <label class="switch"><input type="radio" name="actSize" id="actSmall" value="small"> Small (0–4)</label>
-          <label class="switch"><input type="radio" name="actSize" id="actBig"   value="big"> Big (5–9)</label>
+          <label class="switch"><input type="radio" name="actSize" id="actBig" value="big"> Big (5–9)</label>
         </div>
       </div>
       <div class="row" style="align-items:end">
@@ -120,7 +114,6 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
-  <!-- RESULT -->
   <div class="card" id="resultCard" style="margin-top:14px;display:none">
     <div class="kv">
       <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
@@ -139,7 +132,6 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
-  <!-- CHARTS + HISTORY -->
   <div class="grid2" style="margin-top:14px">
     <div class="card">
       <div class="h1">📊 Probability (0–9)</div>
@@ -170,8 +162,7 @@ async function notifyViaSW({tail,digit,size}){
     const reg = await navigator.serviceWorker.ready; if(!reg) return;
     const ok = await ensureNotifyPerm(); if(!ok) return;
     await reg.showNotification(`Next • ${tail}`,{
-      body:`#${digit} • ${size}`,
-      tag:`wingo-${tail}`, renotify:true, requireInteraction:true,
+      body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true,
       icon:'/icons/icon-192.png', badge:'/icons/icon-192.png', vibrate:[80,30,80]
     });
   }catch{}
@@ -184,28 +175,20 @@ const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
 const argmax=a=>a.indexOf(Math.max(...a));
 const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
 function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
-
-/* ---------- Learning store (size-only) ---------- */
-const LS_SIZE='WPP_SIZE2';
-const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
-const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
-
-/* RNG */
 function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-/* ---------- Priors (signals) ---------- */
+/* ---------- Priors (no last-digit bias) ---------- */
 function priorPeriodDigits(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const d=[...period].map(Number);
-  const s=d.reduce((a,b)=>a+b,0), last=d[d.length-1], last2=+period.slice(-2), mod10=s%10, mod7=s%7;
+  const s=d.reduce((a,b)=>a+b,0), mod10=s%10, mod7=s%7;
   const freq=Array(10).fill(0); d.forEach(x=>freq[x]++);
   const v=Array(10).fill(0.1);
-  v[mod10]+=0.6; v[(last+10)%10]+=0.28; v[(last+1)%10]+=0.14; v[(last+9)%10]+=0.14;
-  v[(mod7*3)%10]+=0.20; v[(mod7*5)%10]+=0.18;
-  if(last2%2===0){for(let i=0;i<10;i+=2)v[i]+=0.08}else{for(let i=1;i<10;i+=2)v[i]+=0.08}
+  v[mod10]+=0.44;                // checksum-like
+  v[(mod7*3)%10]+=0.22; v[(mod7*5)%10]+=0.20; // cyclic clues
   const mx=Math.max(...freq), mn=Math.min(...freq);
-  for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.05*r}
+  for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.06*r}
   return normalize(v);
 }
 function priorParity(period){
@@ -217,56 +200,55 @@ function priorParity(period){
 function priorBucket(period, antiSeq){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const tail=+period.slice(-3), m=tail%10, v=Array(10).fill(0.1);
-  const k=antiSeq?0.18:0.42; v[m]+=k; v[(m+3)%10]+=k*0.5; v[(m+7)%10]+=k*0.4;
+  const k=antiSeq?0.16:0.36; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45;
   return normalize(v);
 }
 function priorChecksum(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
-  const v=Array(10).fill(0.1); v[t]+=0.32; v[(t+1)%10]+=0.17; v[(t+9)%10]+=0.17; return normalize(v);
+  const v=Array(10).fill(0.1); v[t]+=0.30; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);
 }
-function priorDistance(period){
+function priorDistanceHashed(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const last=+period.slice(-1); const v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){const d=Math.min((i-last+10)%10,(last-i+10)%10); v[i]+=0.30*Math.exp(-0.55*d);}
+  const seedDigit = hash32(period+'d')%10;         // << NOT the last digit
+  const v=Array(10).fill(0.1);
+  for(let i=0;i<10;i++){const d=Math.min((i-seedDigit+10)%10,(seedDigit-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);}
   return normalize(v);
 }
 
-/* Regime tilt (size bias only) */
-function regimeWeights(baseW){
-  const s=loadSize(); const big=s[1]/(s[0]+s[1]);
-  const w=baseW.slice();
-  if(big>0.62||big<0.38) w[4]+=0.02;  // distance signal a bit stronger if bias seen
-  const sum=w.reduce((a,b)=>a+b,0); return w.map(x=>x/sum);
+/* size-only learning */
+const LS_SIZE='WPP_SIZE2';
+const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
+const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+function regimeWeights(w){
+  const s=loadSize(); const big=s[1]/(s[0]+s[1]); const out=w.slice();
+  if(big>0.62||big<0.38) out[4]+=0.02;
+  const sum=out.reduce((a,b)=>a+b,0); return out.map(x=>x/sum);
 }
 
 /* ---------- Predictor ---------- */
 function predictLocal(period, mode, antiSeq, learnOn){
   const hyper={
-    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.36,0.14,0.16,0.18,0.16], learnBoost:0.25},
-    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.34,0.16,0.18,0.18,0.14], learnBoost:0.30},
-    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.32,0.16,0.20,0.18,0.14], learnBoost:0.35}
+    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.34,0.16,0.18,0.18,0.14],learnBoost:0.25},
+    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.32,0.18,0.20,0.18,0.12],learnBoost:0.30},
+    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.35}
   }[mode];
 
-  const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistance(period);
+  const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistanceHashed(period);
   const w=regimeWeights(hyper.w);
   let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
 
-  // adaptive
   const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
   base=normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
 
-  // size-learning (Beta -> prior tilt)
   if(learnOn){
     const sz=loadSize(); const total=(sz[0]+sz[1])||1;
-    const smallBias=sz[0]/total, bigBias=sz[1]/total; // 0..1
-    const k=hyper.learnBoost; // stronger than पहले
-    for(let i=0;i<5;i++)  base[i]*=(1 - k + k*smallBias);   // push towards learned small
-    for(let i=5;i<10;i++) base[i]*=(1 - k + k*bigBias);     // push towards learned big
+    const smallBias=sz[0]/total, bigBias=sz[1]/total, k=hyper.learnBoost;
+    for(let i=0;i<5;i++)  base[i]*=(1 - k + k*smallBias);
+    for(let i=5;i<10;i++) base[i]*=(1 - k + k*bigBias);
     base=normalize(base);
   }
 
-  // bootstrap + cap
   const seed=hash32(period); const rnd=mulberry32(seed);
   const B=72,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
   for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
@@ -277,15 +259,14 @@ function predictLocal(period, mode, antiSeq, learnOn){
   return {probs,stability};
 }
 
-/* ---------- Charts ---------- */
+/* ---------- Chart ---------- */
 let probChart=null;
 function renderCharts(probs){
   const data=probs.map(p=>Math.round(p*1000)/10);
   const labels=[...Array(10).keys()].map(String);
   if(probChart) probChart.destroy();
   probChart=new Chart(el('probChart').getContext('2d'),{
-    type:'bar',
-    data:{labels,datasets:[{label:'Probability (%)',data}]},
+    type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
     options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}
   });
 }
@@ -314,12 +295,10 @@ function renderResult(period, out, source='manual'){
   el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
   el('reasons').textContent=`Score ${(score*100).toFixed(0)}%`;
 
-  // history
   const h=el('hist'); if(h.textContent==='—') h.textContent='';
   h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
   [...h.children].slice(14).forEach(n=>n.remove());
 
-  // background popup on auto
   if(source==='auto' && el('autoNext').checked){
     notifyViaSW({tail:String(period).slice(-3), digit:pick, size:(pick>=5?'Big':'Small')});
   }
@@ -343,7 +322,7 @@ function startAuto(){
   }, sec*1000);
 }
 
-/* ---------- Bindings ---------- */
+/* Bindings */
 document.addEventListener('DOMContentLoaded', ()=>{
   el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
   el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
@@ -362,20 +341,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
 
-  // Verify & Learn (size-only)
+  // Verify & Learn — colored WIN/LOSS
   el('btnVerify').addEventListener('click', ()=>{
     const pick = el('vNum').textContent.trim();
-    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; return; }
+    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9ca3af'; return; }
     const chosen = document.querySelector('input[name="actSize"]:checked');
-    if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; return; }
+    if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9ca3af'; return; }
 
-    const actualSize = chosen.value;             // 'small' | 'big'
+    const actualSize = chosen.value;              // 'small' | 'big'
     const predictedSize = (+pick>=5)?'big':'small';
     const win = (actualSize===predictedSize);
 
-    el('verifyMsg').textContent = win
-      ? `WIN ✔ size ${predictedSize.toUpperCase()}`
-      : `LOSS ✘ picked ${predictedSize.toUpperCase()} • actual ${actualSize.toUpperCase()}`;
+    if(win){
+      el('verifyMsg').textContent = `WIN ✔ size ${predictedSize.toUpperCase()}`;
+      el('verifyMsg').style.color = 'var(--ok)';
+    }else{
+      el('verifyMsg').textContent = `LOSS ✘ picked ${predictedSize.toUpperCase()} • actual ${actualSize.toUpperCase()}`;
+      el('verifyMsg').style.color = 'var(--bad)';
+    }
 
     if(el('learnOn').checked){
       const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
