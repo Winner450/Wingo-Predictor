@@ -6,91 +6,52 @@
 <title>🎯 WinGo Predictor Pro</title>
 <style>
   :root{
-    --bg:#0b0b0b;
-    --panel:#121212;
-    --muted:#9aa0a6;
-    --text:#e8eaed;
-    --brand:#ffe04d;
-    --border:rgba(255,255,255,.08);
-    --border-2:rgba(255,255,255,.14);
+    --bg:#0b0b0b; --panel:#121212; --muted:#9aa0a6; --text:#e8eaed;
+    --brand:#ffe04d; --border:rgba(255,255,255,.08); --border-2:rgba(255,255,255,.14);
     --error:#ff6961;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
-    background: linear-gradient(180deg,#0a0a0a 0%, #000 100%);
-    color:var(--text);
-  }
-
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+       background:linear-gradient(180deg,#0a0a0a 0%,#000 100%);color:var(--text)}
   /* Header */
-  .app-header{
-    position: sticky; top:0; z-index:50;
-    background:var(--bg);
-    border-bottom:1px solid var(--border);
-    padding:12px 16px;
-  }
-  .brand-title{font-weight:800; color:var(--brand); letter-spacing:.3px; font-size:clamp(16px,3.6vw,22px)}
-  .sub{display:block; font-weight:500; color:var(--muted); font-size:12px; margin-top:2px}
+  .app-header{position:sticky;top:0;z-index:50;background:var(--bg);
+              border-bottom:1px solid var(--border);padding:12px 16px}
+  .brand-title{font-weight:800;color:var(--brand);letter-spacing:.3px;
+               font-size:clamp(16px,3.6vw,22px)}
+  .sub{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
 
   /* Layout */
-  .main-wrap{padding:16px; padding-top:clamp(68px, 8vh, 92px)}
-  .container{max-width:980px; margin:0 auto}
-  .card{
-    background:var(--panel); border:1px solid var(--border);
-    border-radius:18px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.35);
-  }
-  .title{font-size:18px; font-weight:700; margin:0 0 12px}
-
-  /* Form */
-  .grid{display:grid; gap:12px}
-  @media (min-width:720px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
-  label{display:block; color:var(--muted); font-size:13px; margin:6px 0}
-  input, select{
-    width:100%; padding:12px 12px; border-radius:12px; outline:none;
-    background:#0a0a0a; color:var(--text); border:1px solid var(--border-2);
-  }
-  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  .chip{display:inline-flex; align-items:center; gap:8px; background:#0a0a0a; border:1px solid var(--border-2); padding:8px 10px; border-radius:10px; font-size:13px; color:var(--muted)}
-
-  /* Buttons */
-  .btn{
-    appearance:none; border:none; cursor:pointer; font-weight:700;
-    padding:12px 16px; border-radius:12px; background:#1f2937; color:#fff;
-  }
-  .btn.primary{background:var(--brand); color:#1a1a1a}
-  .btn.ghost{background:transparent; border:1px solid var(--border-2)}
-  .btn:disabled{opacity:.6; cursor:not-allowed}
-
-  /* Footer info */
-  .muted{color:var(--muted); font-size:12px}
+  .main-wrap{padding:16px;padding-top:clamp(68px,8vh,92px)}
+  .container{max-width:980px;margin:0 auto}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:18px;
+        padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .title{font-size:18px;font-weight:700;margin:0 0 12px}
+  .grid{display:grid;gap:12px} @media(min-width:720px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+  label{display:block;color:var(--muted);font-size:13px;margin:6px 0}
+  input,select{width:100%;padding:12px;border-radius:12px;outline:none;
+               background:#0a0a0a;color:var(--text);border:1px solid var(--border-2)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:none;cursor:pointer;font-weight:700;padding:12px 16px;border-radius:12px;background:#1f2937;color:#fff}
+  .btn.primary{background:var(--brand);color:#1a1a1a}
+  .btn.ghost{background:transparent;border:1px solid var(--border-2)}
+  .muted{color:var(--muted);font-size:12px}
 
   /* Modal */
-  .modal-backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,.55);
-    display:flex; align-items:center; justify-content:center; z-index:60;
-  }
-  .modal-card{
-    width:min(520px, 92vw);
-    background:var(--panel); color:var(--text);
-    border:1px solid var(--border); border-radius:16px; padding:16px;
-    box-shadow:0 10px 30px rgba(0,0,0,.45);
-  }
-  .modal-head{font-size:18px; font-weight:800; margin:0 0 10px}
-  .error{color:var(--error); margin-top:6px; font-size:13px}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);
+                  display:flex;align-items:center;justify-content:center;z-index:60}
+  .modal-card{width:min(520px,92vw);background:var(--panel);color:var(--text);
+              border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .modal-head{font-size:18px;font-weight:800;margin:0 0 10px}
+  .error{color:var(--error);margin-top:6px;font-size:13px}
 
   /* Toast */
-  .toast{
-    position:fixed; left:50%; transform:translateX(-50%);
-    bottom:18px; background:#111; color:#fff; border:1px solid var(--border);
-    border-radius:12px; padding:10px 14px; z-index:70; opacity:0; pointer-events:none;
-    transition:opacity .2s ease, transform .2s ease;
-  }
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#111;color:#fff;
+         border:1px solid var(--border);border-radius:12px;padding:10px 14px;z-index:70;
+         opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
 </style>
 </head>
 <body>
-
 <header class="app-header">
   <div class="container">
     <div class="brand-title">WinGo Predictor <b>Pro</b></div>
@@ -105,11 +66,10 @@
 
       <div class="grid cols-2">
         <div>
-          <label>Period Number</label>
-          <!-- अगर आपकी ऐप में कोई और ID है, JS resolver अपने-आप पकड़ लेगा -->
+          <label>Period Number (optional)</label>
+          <!-- अब Verify & Learn के लिए जरूरी नहीं; बस आपकी सुविधा के लिए -->
           <input id="periodInput" type="text" inputmode="numeric" placeholder="e.g. 202508141000003076">
         </div>
-
         <div>
           <label>Strategy</label>
           <select id="strategy">
@@ -120,45 +80,22 @@
         </div>
       </div>
 
-      <div class="row" style="margin:12px 0">
-        <span class="chip"><input id="autoNext" type="checkbox" checked> Auto Next (30s)</span>
-        <span class="chip"><input id="antiSeq" type="checkbox"> Anti-sequence</span>
-        <span class="chip"><input id="learningOn" type="checkbox" checked> Learning ON</span>
-        <button id="btnNotify" class="btn ghost">🔔 Notifications</button>
-      </div>
-
-      <div class="row">
-        <button id="btnPredict" class="btn primary">Predict</button>
-        <button id="btnClear" class="btn">Clear</button>
-        <button id="btnCopy" class="btn">Copy Result</button>
-      </div>
-
-      <p id="periodMeta" class="muted" style="margin-top:10px">Period: len <span id="lenMeta">0</span></p>
-
-      <hr style="border-color:var(--border); border-width:0 0 1px; margin:16px 0">
-
-      <div class="grid cols-2">
-        <div>
-          <label>Actual result (optional preview)</label>
-          <input id="actualPreview" type="text" inputmode="numeric" placeholder="e.g. 5">
-        </div>
-      </div>
-
       <div class="row" style="margin-top:12px">
+        <button id="btnPredict" class="btn primary">Predict</button>
         <button id="btnVerifyLearn" class="btn">Verify &amp; Learn</button>
       </div>
     </section>
   </div>
 </main>
 
-<!-- Verify & Learn Modal -->
+<!-- Verify & Learn Modal (NO current-period dependency) -->
 <div id="verifyModal" class="modal-backdrop" hidden>
   <div class="modal-card">
     <h3 class="modal-head">Verify Previous Period</h3>
-    <p class="muted" style="margin-top:-6px">Previous period अपने-आप सेट है; बस last result (0–9) दर्ज करें।</p>
+    <p class="muted" style="margin-top:-6px">Previous period और last result (0–9) दर्ज करें।</p>
 
-    <label>Previous Period (auto)</label>
-    <input id="prevPeriodInput" type="text" readonly>
+    <label>Previous Period</label>
+    <input id="prevPeriodInput" type="text" inputmode="numeric" placeholder="e.g. 202508141000003075">
 
     <label style="margin-top:10px">Last Result (0–9)</label>
     <input id="actualDigitInput" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" placeholder="e.g. 5"/>
@@ -175,8 +112,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  // ---------- Helpers ----------
-  const $ = (s)=>document.querySelector(s);
+  const $ = s => document.querySelector(s);
 
   function toast(msg){
     const el = $("#toast");
@@ -186,115 +122,42 @@
     window.__t = setTimeout(()=>el.classList.remove("show"), 1800);
   }
 
-  $("#periodInput").addEventListener("input", ()=>{
-    $("#lenMeta").textContent = ($("#periodInput").value||"").length;
-  });
-
-  // Robust period resolver: अलग IDs/नाम होने पर भी period इनपुट ढूँढेगा
-  function getPeriodInputEl(){
-    const candidates = [
-      "#periodInput", "#period-number", "#periodNumber", "#period_id",
-      "input[name='period']", "input[data-role='period']"
-    ];
-    for(const sel of candidates){
-      const el = document.querySelector(sel);
-      if(el) return el;
-    }
-    // Fallback: कोई भी बड़ा numeric इनपुट (लंबाई >= 12)
-    const inputs = Array.from(document.querySelectorAll("input"));
-    const guess = inputs.find(i => /^\d{12,}$/.test(i.value || ""));
-    return guess || null;
-  }
-  function getCurrentPeriod(){
-    const el = getPeriodInputEl();
-    return el ? (el.value || "").trim() : "";
-  }
-  function focusPeriod(){
-    const el = getPeriodInputEl();
-    if(el){ el.focus(); el.scrollIntoView({behavior:"smooth", block:"center"}); }
-  }
-
-  // Previous period calc (leading zeros preserved)
-  function getPrevPeriod(periodId){
-    if(!periodId || !/^\d+$/.test(periodId)) return "";
-    const len = periodId.length;
-    const prev = (BigInt(periodId) - 1n).toString();
-    return prev.padStart(len, "0");
-  }
-
   // Predict (placeholder)
   $("#btnPredict").addEventListener("click", ()=>{
-    const p = getCurrentPeriod();
-    if(!p) return toast("Enter period number.");
     toast("Predicted ✔ (demo)");
   });
 
-  // Clear
-  $("#btnClear").addEventListener("click", ()=>{
-    const el = getPeriodInputEl();
-    if(el) el.value = "";
-    $("#actualPreview").value = "";
-    $("#lenMeta").textContent = "0";
-    toast("Cleared.");
-  });
-
-  // Copy (placeholder)
-  $("#btnCopy").addEventListener("click", async ()=>{
-    try{
-      const txt = `Period: ${getCurrentPeriod() || "-"} | Strategy: ${$("#strategy").value}`;
-      await navigator.clipboard.writeText(txt);
-      toast("Copied.");
-    }catch(e){ toast("Copy failed."); }
-  });
-
-  // ---------- Verify & Learn ----------
-  function openVerifyModal(){
-    const cur = getCurrentPeriod();
-    const expectedPrev = getPrevPeriod(cur);
-    $("#prevPeriodInput").value = expectedPrev;
+  // -------- Verify & Learn (no current-period requirement) --------
+  $("#btnVerifyLearn").addEventListener("click", ()=>{
+    $("#prevPeriodInput").value = "";
     $("#actualDigitInput").value = "";
     $("#verifyError").style.display = "none";
     $("#verifyModal").hidden = false;
+  });
+  $("#verifyCancel").addEventListener("click", ()=> $("#verifyModal").hidden = true);
 
-    if(!expectedPrev){
-      showVerifyError("Current period खाली/गलत है। पहले Period Number भरें।");
-    }
-  }
-  function closeVerifyModal(){ $("#verifyModal").hidden = true; }
-
-  $("#btnVerifyLearn").addEventListener("click", openVerifyModal);
-  $("#verifyCancel").addEventListener("click", closeVerifyModal);
-
-  // Last Result में सिर्फ 1 digit रहने दें (यूज़र 12165 टाइप करे तो भी पहले वाला ही बचे)
-  $("#actualDigitInput").addEventListener("input", (e)=>{
+  // Keep only 1 digit in last-result
+  $("#actualDigitInput").addEventListener("input",(e)=>{
     e.target.value = (e.target.value.match(/\d/) || [""])[0];
   });
 
   $("#verifySubmit").addEventListener("click", ()=>{
-    const cur = getCurrentPeriod();
-    const expectedPrev = getPrevPeriod(cur);
-    const prevShown = $("#prevPeriodInput").value.trim();
+    const prev = $("#prevPeriodInput").value.trim();
     const digit = $("#actualDigitInput").value.trim();
 
-    if(!expectedPrev){
-      showVerifyError("Invalid current period. पहले Period Number डालें।");
-      focusPeriod();
-      return;
-    }
-    if(prevShown !== expectedPrev){
-      $("#prevPeriodInput").value = expectedPrev;
-      return showVerifyError(`Previous period mismatch. होना चाहिए: ${expectedPrev}`);
+    if(!/^\d+$/.test(prev)){
+      return showVerifyError("Previous period केवल digits में दें।");
     }
     if(!/^[0-9]$/.test(digit)){
       return showVerifyError("Last result केवल 0–9 का एक अंक दें।");
     }
 
     try{
-      verifyAndLearn(prevShown, Number(digit));   // ← अपनी असली learning logic कॉल करें
-      closeVerifyModal();
+      verifyAndLearn(prev, Number(digit));  // ← अपनी असली learning logic कॉल करें
+      $("#verifyModal").hidden = true;
       toast("Verified & learned from previous period.");
-    }catch(e){
-      console.error(e);
+    }catch(err){
+      console.error(err);
       showVerifyError("कुछ समस्या आई, बाद में पुनः प्रयास करें।");
     }
   });
@@ -305,11 +168,9 @@
     el.style.display = "block";
   }
 
-  // ---- YOUR IMPLEMENTATION HOOK ----
-  // इसे अपनी वास्तविक storage/model अपडेट से बदलें
+  // ---- Hook: replace with your real implementation ----
   function verifyAndLearn(prevPeriod, digit){
-    // saveResult(prevPeriod, digit);
-    // model.updateFrom(prevPeriod, digit);
+    // saveResult(prevPeriod, digit); model.updateFrom(prevPeriod, digit);
     console.log("Learning from", prevPeriod, "digit", digit);
   }
 </script>
