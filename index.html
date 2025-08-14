@@ -3,156 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔥 Big Daddy Predictor Pro 🔥</title>
+<title>Big Daddy Predictor</title>
 <style>
     body {
+        margin: 0;
         font-family: 'Segoe UI', sans-serif;
-        background: radial-gradient(circle at top, #0a0a0a, #000);
-        color: #fff;
-        text-align: center;
+        background: radial-gradient(circle at top, #0f0f0f, #000);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
         padding: 20px;
     }
     h1 {
-        font-size: 2em;
-        color: #ff0080;
-        text-shadow: 0 0 15px #ff0080, 0 0 30px #ff0080;
+        text-align: center;
+        background: linear-gradient(90deg, #ff00ff, #00ffff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
     }
-    .input-box {
-        margin: 20px auto;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
+    .card {
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 20px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
     }
-    input, select, button {
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    input {
+        width: 100%;
         padding: 10px;
-        font-size: 1em;
-        border-radius: 8px;
+        border-radius: 10px;
         border: none;
+        outline: none;
+        margin-bottom: 15px;
+        font-size: 1rem;
     }
     button {
-        background: #ff0080;
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #ff00ff, #00ffff);
+        border: none;
         color: white;
+        font-size: 1.2rem;
         cursor: pointer;
-        box-shadow: 0 0 10px #ff0080;
+        transition: transform 0.2s;
     }
     button:hover {
-        background: #ff4da6;
+        transform: scale(1.05);
     }
-    .prediction-box {
+    .output {
         margin-top: 20px;
-        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.4);
         border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 0 20px #00f0ff;
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
+        text-align: center;
     }
-    .confidence-meter {
-        height: 20px;
-        background: #333;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-top: 10px;
-    }
-    .confidence-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #ff0080, #00f0ff);
-        width: 0%;
-        transition: width 1s ease-in-out;
-    }
-    table {
-        width: 100%;
-        margin-top: 30px;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.2);
+    .confidence-bar {
+        height: 10px;
+        background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+        border-radius: 5px;
+        transition: width 0.5s ease-in-out;
     }
 </style>
 </head>
 <body>
 
-<h1>🔥 Big Daddy Predictor Pro 🔥</h1>
+<h1>🎯 Big Daddy Predictor</h1>
 
-<div class="input-box">
-    <input type="text" id="periodNumber" placeholder="Enter Period Number">
-    <select id="patternSelect">
-        <option value="pattern1">Pattern 1</option>
-        <option value="pattern2">Pattern 2</option>
-        <option value="pattern3">Pattern 3</option>
-    </select>
-    <button onclick="getPrediction()">Predict</button>
-</div>
+<div class="card">
+    <label>Enter Period Number:</label>
+    <input type="number" id="periodInput" placeholder="e.g. 2025081401">
 
-<div class="prediction-box" id="predictionResult">
-    <h2>Prediction:</h2>
-    <p id="predNumber">Number: --</p>
-    <p id="predSize">Size: --</p>
-    <p id="predColor">Color: --</p>
-    <div class="confidence-meter">
-        <div class="confidence-fill" id="confidenceFill"></div>
+    <button onclick="generatePrediction()">Predict</button>
+
+    <div class="output" id="outputBox" style="display:none;">
+        <h2>Prediction Result</h2>
+        <p id="predNumber"></p>
+        <p id="predSize"></p>
+        <p id="predPattern"></p>
+        <div style="margin-top:10px;">
+            <div class="confidence-bar" id="confidenceBar"></div>
+        </div>
+        <p id="predConfidence"></p>
     </div>
-    <p id="confidenceText">Confidence: --%</p>
 </div>
-
-<table>
-    <thead>
-        <tr>
-            <th>Period</th>
-            <th>Pattern</th>
-            <th>Number</th>
-            <th>Size</th>
-            <th>Color</th>
-            <th>Confidence</th>
-        </tr>
-    </thead>
-    <tbody id="historyTable"></tbody>
-</table>
 
 <script>
-async function getPrediction() {
-    let period = document.getElementById('periodNumber').value.trim();
-    let pattern = document.getElementById('patternSelect').value;
+function generatePrediction() {
+    let period = document.getElementById("periodInput").value;
     if (!period) {
-        alert("Please enter period number!");
+        alert("Please enter a Period Number!");
         return;
     }
 
-    // Fetch last results from your API
-    try {
-        let res = await fetch(`YOUR_API_ENDPOINT_HERE?period=${period}`);
-        let data = await res.json();
+    // Dummy logic for now - replace with API later
+    let number = Math.floor(Math.random() * 10);
+    let size = number >= 5 ? "BIG" : "SMALL";
+    let patterns = ["Mirror", "Repeat", "Alternate", "High Jump"];
+    let pattern = patterns[Math.floor(Math.random() * patterns.length)];
+    let confidence = Math.floor(Math.random() * 50) + 50;
 
-        // Dummy calculation for prediction (replace with your real logic)
-        let number = (data.lastResult + Math.floor(Math.random()*10)) % 10;
-        let size = number >= 5 ? "Big" : "Small";
-        let color = number % 2 === 0 ? "Red" : "Green";
-        let confidence = Math.floor(Math.random() * (95 - 70) + 70);
+    document.getElementById("predNumber").innerHTML = "Number: <b>" + number + "</b>";
+    document.getElementById("predSize").innerHTML = "Size: <b>" + size + "</b>";
+    document.getElementById("predPattern").innerHTML = "Pattern: <b>" + pattern + "</b>";
+    document.getElementById("confidenceBar").style.width = confidence + "%";
+    document.getElementById("predConfidence").innerHTML = "Confidence: " + confidence + "%";
 
-        // Display in UI
-        document.getElementById('predNumber').innerText = `Number: ${number}`;
-        document.getElementById('predSize').innerText = `Size: ${size}`;
-        document.getElementById('predColor').innerText = `Color: ${color}`;
-        document.getElementById('confidenceFill').style.width = confidence + "%";
-        document.getElementById('confidenceText').innerText = `Confidence: ${confidence}%`;
-
-        // Add to history
-        let row = `<tr>
-            <td>${period}</td>
-            <td>${pattern}</td>
-            <td>${number}</td>
-            <td>${size}</td>
-            <td>${color}</td>
-            <td>${confidence}%</td>
-        </tr>`;
-        document.getElementById('historyTable').innerHTML += row;
-
-    } catch (err) {
-        alert("Error fetching data. Please check API endpoint.");
-        console.error(err);
-    }
+    document.getElementById("outputBox").style.display = "block";
 }
 </script>
 
