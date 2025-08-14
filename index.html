@@ -1,233 +1,475 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>🎯 Wingo Predictor Pro</title>
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#000000">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--gold:#ffd900;--gold2:#f3c14a;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;
- --muted:#a8b1c3;--card:rgba(16,20,28,.72);--stroke:rgba(255,255,255,.08);--r:16px;}
-html,body{height:100%}body{margin:0;color:#fff;background:#000;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
-.stars,.stars2,.stars3{position:fixed;inset:-50px;z-index:-1;pointer-events:none;opacity:.7;background-repeat:repeat;
- background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),
- radial-gradient(2px 2px at 120px 80px,#fff,transparent),
- radial-gradient(1.5px 1.5px at 200px 10px,#fff,transparent),
- radial-gradient(1.5px 1.5px at 300px 120px,#fff,transparent),
- radial-gradient(1.2px 1.2px at 500px 180px,#fff,transparent);animation:drift 120s linear infinite}
-.stars2{opacity:.5;transform:scale(1.4);animation-duration:160s}.stars3{opacity:.35;transform:scale(2.1);animation-duration:220s}
-@keyframes drift{to{transform:translateY(1200px)}}
-header{position:sticky;top:0;z-index:10;background:#0b0b0b;border-bottom:1px solid #1a1a1a}
-.brand{max-width:980px;margin:0 auto;padding:10px 14px;display:flex;gap:10px;justify-content:center;align-items:center;
- color:var(--gold);font-weight:900;letter-spacing:.3px;text-transform:uppercase;font-size:clamp(16px,3.8vw,20px)}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
-.container{max-width:980px;margin:18px auto;padding:0 14px}
-.card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r);backdrop-filter:blur(8px);padding:16px}
-label{display:block;color:#e8efff;font-size:13px;font-weight:800;margin:0 0 6px}
-input,select{width:100%;padding:14px;border-radius:12px;background:rgba(8,10,14,.9);color:#fff;border:2px solid #202636;outline:none;font-size:16px}
-input:focus,select:focus{border-color:var(--gold)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{border:0;border-radius:12px;cursor:pointer;font-weight:900;padding:12px 16px;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#000}
-.btn.sec{background:#1d2636;color:#e7edf8;border:1px solid #2b3448}
-.btn.tiny{padding:10px 12px;font-size:.92rem}
-.status{margin-left:8px;font-size:12px;border-radius:999px;padding:4px 8px;border:1px solid #2b3448}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:820px){.grid{grid-template-columns:1fr}}
-.tile{background:rgba(255,255,255,.06);border:1px solid var(--stroke);border-radius:12px;padding:14px}
-.key{color:#9fb0c7;font-size:12px}.value{font-size:28px;font-weight:900;color:var(--gold)}
-.line{height:10px;background:#223047;border-radius:999px;overflow:hidden;margin:8px 0 4px}
-.bar{height:10px;width:0%;background:linear-gradient(90deg,#ffe27a,var(--gold))}
-.pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #2a3448;font-weight:800;margin-right:6px}
-.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.history{max-height:220px;overflow:auto;color:#cfd7e6;font-size:12px}.hrow{padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.09)}
-.sub{color:#a8b1c3;font-size:12px;margin-top:6px}
+:root{
+  --gold:#ffd700;--gold2:#f6d564;--ink:#e8edf7;--muted:#a9b3c9;
+  --card:#12151c;--stroke:#222a39;
+  --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;
+  --shadow:0 20px 50px rgba(0,0,0,.45);--radius:16px;
+}
+/* Starfield */
+body{margin:0;color:#fff;font:16px/1.45 ui-sans-serif,system-ui,"Segoe UI",Roboto;background:#000;overflow-x:hidden}
+.star-layer,.star-layer:after{
+  position:fixed;inset:0;content:"";
+  background:
+    radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.7) 40%,transparent 42%) repeat,
+    radial-gradient(2px 2px at 80% 60%,rgba(255,255,255,.5) 40%,transparent 42%) repeat,
+    radial-gradient(1px 1px at 50% 80%,rgba(255,255,255,.35) 40%,transparent 42%) repeat;
+  background-size:220px 220px,300px 300px,180px 180px;
+  animation:drift 90s linear infinite; opacity:.25; pointer-events:none
+}
+.star-layer:after{animation-duration:140s;opacity:.18;filter:blur(.3px)}
+@keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:800px 400px,-600px 300px,500px -400px}}
+
+header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#090b10,#04060a);border-bottom:1px solid #0f1420}
+.brand{max-width:1100px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:10px;justify-content:center}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:#ffd400;box-shadow:0 0 10px #ffd400}
+.brand .title{font-weight:900;letter-spacing:.4px;color:#ffd700;font-size:clamp(18px,4.5vw,22px);text-transform:uppercase}
+
+.container{max-width:1100px;margin:18px auto 42px;padding:0 14px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(6px);padding:16px}
+.section-title{font-weight:900;font-size:18px;margin:0 0 12px}
+
+label{font-size:13px;color:#cfdaff}
+.input,select{width:100%;padding:14px 14px;border-radius:12px;color:#fff;background:#0c111a;border:2px solid #1e2634;outline:none;font-size:16px}
+.input:focus,select:focus{border-color:#ffd700}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn{padding:12px 18px;border:0;border-radius:12px;cursor:pointer;font-weight:800;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn.primary{background:linear-gradient(180deg,#ffd700,#f6d564);color:#111}
+.btn.ghost{background:#162032;color:#dbe2ff;border:1px solid #2a3650}
+.btn.danger{background:#2a1c1c;color:#ffc4c4;border:1px solid #4a2b2b}
+
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#cfdaff}
+.switch input{transform:scale(1.1)}
+
+.metric{background:#0c1119;border:1px solid #20283a;border-radius:14px;padding:14px}
+.key{font-size:13px;color:#9fb0d0;margin-bottom:6px}
+.val{font-size:36px;font-weight:900;color:#ffd700}
+.progress{height:10px;background:#1b2434;border-radius:999px;overflow:hidden}
+.progress>span{height:10px;display:block;background:linear-gradient(90deg,#ffd700,#ffe28a);width:0%}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #2a3750;font-weight:800}
+.pill.ok{color:#22c55e}.pill.warn{color:#f59e0b}.pill.bad{color:#ef4444}
+.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #2a3750;padding:8px 12px;border-radius:999px;background:#0c121c;font-weight:800;color:#cfe2ff}
+
+.helper{color:#a8b3c9;font-size:12px}
+.tip{color:#a8b1c3;font-size:12px;text-align:center;white-space:normal;line-height:1.4}
+.hr{height:1px;background:#1a2332;margin:12px 0;border-radius:10px}
+
+/* Verify message colors */
+#verifyMsg.ok{color:var(--ok)} #verifyMsg.bad{color:var(--bad)} #verifyMsg.neu{color:#a8b3c9}
 </style>
 </head>
-<body onload="init()">
-<div class="stars"></div><div class="stars2"></div><div class="stars3"></div>
+<body>
+<div class="star-layer"></div>
 
 <header>
-  <div class="brand"><span class="dot"></span> WINGO PREDICTOR PRO
-    <span id="jsStatus" class="status" style="border-color:#5b1f20;color:#ffb4b8;background:#2b0f12">JS: OFF</span>
+  <div class="brand">
+    <span class="dot"></span>
+    <div class="title">WINGO PREDICTOR PRO</div>
   </div>
 </header>
 
 <div class="container">
+  <!-- CONTROL -->
   <div class="card">
-    <label for="period">🧾 Period Number</label>
-    <input id="period" placeholder="e.g. 20250813100052810" inputmode="numeric" autocomplete="off"/>
-    <div class="sub" id="periodInfo">केवल digits (0–9) • tail खुद दिखेगा</div>
+    <div class="section-title">Quick Predict</div>
+    <div class="grid">
+      <div>
+        <label for="period">🧾 Period Number</label>
+        <input id="period" class="input" placeholder="e.g. 20250813100052810">
+        <div class="helper" style="margin-top:6px">केवल digits (0–9) • tail खुद-ब-खुद दिखेगा</div>
 
-    <div style="height:10px"></div>
+        <div class="hr"></div>
 
-    <label for="interval">⏱ Auto mode</label>
-    <div class="row">
-      <select id="interval"><option value="30">30 seconds</option><option value="60">1 minute</option></select>
-      <button class="btn tiny" id="btnAuto">▶ Start Auto</button>
-      <button class="btn sec tiny" id="notifyBtn">🔔 Notifications</button>
-    </div>
-
-    <div style="height:10px"></div>
-
-    <div class="row">
-      <button class="btn" id="btnPredict">🔮 Predict</button>
-      <button class="btn sec" id="btnClear">Clear</button>
-      <button class="btn sec" id="btnCopy">Copy</button>
-    </div>
-
-    <div style="height:10px"></div>
-
-    <div class="grid" id="resultWrap" style="display:none">
-      <div class="tile">
-        <div class="key">Predicted Number</div><div class="value" id="vNum">—</div>
-        <div class="key" style="margin-top:6px">Size</div><div class="value" id="vSize">—</div>
+        <!-- Pattern Boosts -->
+        <div class="section-title" style="font-size:16px">🎛️ Pattern Boosts</div>
+        <div class="row">
+          <label class="switch"><input type="checkbox" id="pMirror" checked> Mirror</label>
+          <label class="switch"><input type="checkbox" id="pReverse"> Reverse</label>
+          <label class="switch"><input type="checkbox" id="pRepeat" checked> Repeat</label>
+          <label class="switch"><input type="checkbox" id="pAlt" checked> Alternating</label>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label>Strength</label>
+          <select id="patStrength" class="input" style="max-width:220px">
+            <option value="light" selected>Light</option>
+            <option value="medium">Medium</option>
+            <option value="heavy">Heavy</option>
+          </select>
+          <span class="helper">Pattern learning पिछले रिज़ल्ट से auto-tune होगा।</span>
+        </div>
       </div>
-      <div class="tile">
-        <div class="key">Confidence</div><div class="line"><div class="bar" id="confBar"></div></div>
-        <div class="key" style="margin-top:8px">Signal</div><span id="playSignal" class="pill">—</span>
+
+      <div>
+        <label>⏱ Auto mode</label>
+        <select id="interval" class="input">
+          <option value="30">30 seconds</option>
+          <option value="60">60 seconds</option>
+        </select>
+        <div class="row" style="margin-top:10px">
+          <button id="btnAuto" class="btn primary">▶ Start Auto</button>
+          <button id="btnNotify" class="btn ghost">🔔 Notifications</button>
+        </div>
       </div>
     </div>
 
-    <div class="tile" style="margin-top:14px">
-      <div class="key" style="font-weight:800">🕘 Recent Predictions</div>
-      <div id="hist" class="history">—</div>
+    <div class="row" style="margin-top:12px">
+      <button id="btnPredict" class="btn primary">🪄 Predict</button>
+      <button id="btnClear" class="btn ghost">Clear</button>
+      <button id="btnCopy" class="btn ghost">Copy</button>
+      <span id="periodInfo" class="helper">—</span>
     </div>
+  </div>
 
-    <div class="sub" style="text-align:center;margin-top:8px">
-      Tip: Auto ON + Notifications रखें। नया period आने पर popup + sound बजेगा।
+  <!-- RESULT -->
+  <div class="card" style="margin-top:14px">
+    <div class="grid">
+      <div class="metric">
+        <div class="key">Predicted Number</div>
+        <div id="vNum" class="val">—</div>
+        <div class="key" style="margin-top:8px">Size</div>
+        <div id="vSize" class="val" style="font-size:32px">—</div>
+      </div>
+      <div class="metric">
+        <div class="key">Confidence</div>
+        <div class="progress"><span id="confBar"></span></div>
+        <div class="key" style="margin-top:10px">Signal</div>
+        <span id="playSignal" class="pill">—</span>
+        <div class="key" style="margin-top:10px">Extras</div>
+        <div class="row">
+          <span id="top2" class="badge">Safe set: —</span>
+          <span id="scoreTag" class="badge">Score —</span>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- VERIFY & LEARN -->
+  <div class="card" style="margin-top:14px">
+    <div class="section-title">Verify & Learn</div>
+    <div class="row">
+      <label class="switch"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
+      <label class="switch"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
+      <button id="btnVerify" class="btn ghost">Verify & Learn</button>
+      <span id="verifyMsg" class="helper neu">—</span>
+    </div>
+  </div>
+
+  <!-- CHART + HISTORY -->
+  <div class="grid" style="margin-top:14px">
+    <div class="card">
+      <div class="section-title">📊 Probability (0–9)</div>
+      <canvas id="probChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="section-title">🕘 Recent Predictions</div>
+      <div id="hist" class="helper">—</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="tip">Tip: Auto ON + Notifications रखें। नया period आने पर popup + sound बजेगा। Verify करें ताकि size-learning और pattern-learning smart होता रहे।</div>
   </div>
 </div>
 
-<audio id="coinSound" preload="auto"
-src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0a9b0f58b1.mp3?filename=coin-199621.mp3"></audio>
-
 <script>
-/*** ========== SAFE INIT (runs via body onload) ========== ***/
-function init(){
-  // show JS alive
-  (function(){const s=document.getElementById('jsStatus'); if(s){s.textContent='JS: ON'; s.style.background='#0c2013'; s.style.color='#9af0b4'; s.style.borderColor='#164d2a';}})();
+/* ---------- Utils ---------- */
+const el=id=>document.getElementById(id);
+const isDigits=s=>/^\d+$/.test(s||"");
+const clamp01=x=>Math.max(0,Math.min(1,x));
+const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);}
+const argmax=a=>a.indexOf(Math.max(...a));
+const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}}
+const describe=p=>isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';
+function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function rng(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-  /* ===== Utilities ===== */
-  const el=id=>document.getElementById(id);
-  const isDigits=s=>/^\d+$/.test(s||"");
-  const clamp01=x=>Math.max(0,Math.min(1,x));
-  const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
-  const argmax=a=>a.indexOf(Math.max(...a));
-  const tail4=p=>String(p).slice(-4);
-  const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
-  function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
-  function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-
-  /* ===== Memory ===== */
-  const SIZE_KEY='WPP_SIZE2';
-  const loadSize=()=>{try{return JSON.parse(localStorage.getItem(SIZE_KEY))||[1,1]}catch{return [1,1]}};
-  const saveSize=s=>localStorage.setItem(SIZE_KEY,JSON.stringify(s));
-
-  /* ===== Priors ===== */
-  function priorChecksum(period){
-    if(!isDigits(period)) return Array(10).fill(0.1);
-    const sum=[...period].reduce((a,b)=>a+(+b),0)%10; const v=Array(10).fill(0.08);
-    v[sum]+=0.34; v[(sum+1)%10]+=0.16; v[(sum+9)%10]+=0.16; return normalize(v);
-  }
-  function priorCyclic(period){
-    if(!isDigits(period)) return Array(10).fill(0.1);
-    const s=[...period].reduce((a,b)=>a+(+b),0), a=s%7, b=s%9; const v=Array(10).fill(0.08);
-    v[(a*3)%10]+=0.18; v[(a*5)%10]+=0.16; v[(b*4)%10]+=0.14; return normalize(v);
-  }
-  function priorMirrorReverse(period){
-    if(!isDigits(period)) return Array(10).fill(0.1);
-    const rev=(+([...period].reverse().join('')))%10, mir=(+([...period].map(x=>9-x).join('')))%10;
-    const v=Array(10).fill(0.08); v[rev]+=0.14; v[mir]+=0.12; return normalize(v);
-  }
-  function priorHashedDistance(period){
-    if(!isDigits(period)) return Array(10).fill(0.1);
-    const seed=hash32(period+'seed')%10; const v=Array(10).fill(0.06);
-    for(let i=0;i<10;i++){const d=Math.min((i-seed+10)%10,(seed-i+10)%10); v[i]+=0.24*Math.exp(-0.52*d)} return normalize(v);
-  }
-  function priorAntiSequence(period){
-    if(!isDigits(period)) return Array(10).fill(0.1);
-    const last=+period.slice(-1); const v=Array(10).fill(0.1);
-    v[(last+1)%10]-=0.06; v[(last+9)%10]-=0.06; return normalize(v.map(x=>Math.max(0.01,x)));
-  }
-  function sizeTilt(){
-    const s=loadSize(); const tot=s[0]+s[1]; const small=s[0]/tot, big=s[1]/tot; const t=Array(10).fill(1);
-    for(let i=0;i<5;i++)  t[i]*=(0.9+0.2*small);
-    for(let i=5;i<10;i++) t[i]*=(0.9+0.2*big);
-    return t;
-  }
-
-  /* ===== Predictor ===== */
-  function predict(period){
-    const P1=priorChecksum(period), P2=priorCyclic(period), P3=priorMirrorReverse(period),
-          P4=priorHashedDistance(period), P5=priorAntiSequence(period);
-    let base=normalize(P1.map((_,i)=>0.30*P1[i]+0.22*P2[i]+0.16*P3[i]+0.24*P4[i]+0.08*P5[i]));
-    const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-    base=normalize(base.map(p=>p*(1+0.18*((p-t)/(t+1e-9)))));
-    const tilt=sizeTilt(); base=normalize(base.map((p,i)=>p*tilt[i]));
-    const rnd=mulberry32(hash32(period)); const B=74, j=0.09;
-    const agg=Array(10).fill(0), votes=Array(10).fill(0);
-    for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
-    let probs=normalize(agg).map(p=>Math.pow(p,1/1.06)); probs=normalize(probs);
-    const iM=argmax(probs), CAP=0.64;
-    if(probs[iM]>CAP){ const excess=probs[iM]-CAP; probs[iM]-=excess;
-      const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest;
-      for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
-    const stability=Math.max(...votes)/B;
-    return {probs,stability};
-  }
-
-  /* ===== Notify & Sound ===== */
-  async function ensureNotify(){
-    if(!('Notification' in window)) return false;
-    if(Notification.permission==='granted') return true;
-    if(Notification.permission==='denied') return false;
-    try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
-  }
-  async function pushNotify(tail, digit, size){
-    try{ if(await ensureNotify()){ new Notification(`Next • ${tail}`, { body:`#${digit} • ${size}`, requireInteraction:true }); } }catch{}
-  }
-  function beep(){ try{ const a=el('coinSound'); a.currentTime=0; a.play().catch(()=>{});}catch{} }
-
-  /* ===== Render ===== */
-  function setInfo(p){ el('periodInfo').textContent=isDigits(p)?(`len ${p.length} • tail ${tail4(p)}`):'केवल digits (0–9) • tail खुद दिखेगा'; }
-  function render(period, out, cause='manual'){
-    const probs=out.probs, pick=argmax(probs), size=(pick>=5?'Big':'Small');
-    let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
-    const stability=clamp01(out.stability), score=clamp01(0.55*entropy+0.45*stability);
-    el('resultWrap').style.display='grid';
-    el('vNum').textContent=pick; el('vSize').textContent=size; el('confBar').style.width=(score*100).toFixed(0)+'%';
-    const issues=[]; if(entropy<0.20) issues.push('low'); if(stability<0.28) issues.push('unstable');
-    let sig='Play',cls='ok'; if(issues.length===1){sig='Caution';cls='warn'} if(issues.length>=2){sig='Wait';cls='bad'}
-    const ps=el('playSignal'); ps.textContent=sig; ps.className='pill '+cls;
-    const h=el('hist'); if(h.textContent==='—') h.textContent='';
-    h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${tail4(period)} → <b>#${pick}</b> (${size})</div>`);
-    [...h.children].slice(14).forEach(n=>n.remove());
-    beep(); if(cause==='auto') pushNotify(tail4(period), pick, size);
-  }
-
-  /* ===== Actions ===== */
-  let timer=null, BUSY=false;
-  async function run(cause='manual'){
-    if(BUSY) return; BUSY=true; setTimeout(()=>BUSY=false,120);
-    const p=el('period').value.trim(); if(!isDigits(p)){ alert('Valid period number भरें'); return; }
-    setInfo(p); const out=predict(p); render(p,out,cause);
-  }
-  function toggleAuto(){
-    if(timer){ clearInterval(timer); timer=null; el('btnAuto').textContent='▶ Start Auto'; return; }
-    const sec=parseInt(el('interval').value,10); el('btnAuto').textContent='⏸ Stop Auto';
-    timer=setInterval(()=>{ const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur); run('auto'); }, sec*1000);
-  }
-
-  /* ===== Bind Buttons (with guards) ===== */
-  try{ el('btnPredict').addEventListener('click', ()=>run('manual')); }catch(e){}
-  try{ el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') run('manual'); }); }catch(e){}
-  try{ el('btnAuto').addEventListener('click', toggleAuto); }catch(e){}
-  try{ el('notifyBtn').addEventListener('click', ensureNotify); }catch(e){}
-  try{ el('btnClear').addEventListener('click', ()=>{ if(timer){clearInterval(timer);timer=null;el('btnAuto').textContent='▶ Start Auto';}
-      el('period').value=''; setInfo(''); el('resultWrap').style.display='none'; el('hist').textContent='—'; }); }catch(e){}
-  try{ el('btnCopy').addEventListener('click', async ()=>{ const txt=`tail ${tail4(el('period').value||'—')} • #${el('vNum').textContent} (${el('vSize').textContent})`;
-      try{ await navigator.clipboard.writeText(txt); alert('Copied'); }catch{} }); }catch(e){}
+function playCoin(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type="triangle"; o.frequency.value=880;
+    o.connect(g); g.connect(ctx.destination);
+    const now=ctx.currentTime;
+    g.gain.setValueAtTime(0.001,now);
+    g.gain.exponentialRampToValueAtTime(0.6,now+0.02);
+    o.frequency.exponentialRampToValueAtTime(440,now+0.25);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+0.35);
+    o.start(now); o.stop(now+0.36);
+  }catch{}
 }
+
+/* ---------- SW + Notifications ---------- */
+let swReady=false;
+(async function(){
+  if('serviceWorker' in navigator){
+    try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; swReady=true; }catch{}
+  }
+})();
+async function ensureNotify(){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission==='granted') return true;
+  if(Notification.permission==='denied') return false;
+  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
+}
+async function pushNotify({title,body,tag}){
+  try{
+    if(!swReady) return;
+    const ok=await ensureNotify(); if(!ok) return;
+    const reg=await navigator.serviceWorker.ready;
+    await reg.showNotification(title,{body,tag,renotify:true,requireInteraction:true,icon:'/icons/icon-192.png',badge:'/icons/icon-192.png',vibrate:[60,20,60]});
+  }catch{}
+}
+
+/* ---------- Persistence ---------- */
+const LS_SIZE='WPP_SIZE2';
+const loadSize=()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
+const saveSize=s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+
+const LS_PAT='WPP_PATSTAT';
+const defaultPat=()=>({mirror:{w:1,l:1},reverse:{w:1,l:1},repeat:{w:1,l:1},alt:{w:1,l:1}});
+const loadPat=()=>{try{return Object.assign(defaultPat(),JSON.parse(localStorage.getItem(LS_PAT))||{})}catch{return defaultPat()}};
+const savePat=stat=>localStorage.setItem(LS_PAT,JSON.stringify(stat));
+
+/* ---------- Base features ---------- */
+function f_checksum(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
+  const v=Array(10).fill(0.1); v[t]+=0.34; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);
+}
+function f_parity(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const even=(+period.slice(-2))%2===0; const v=Array(10).fill(0.1);
+  for(let i=even?0:1;i<10;i+=2) v[i]+=0.22; return normalize(v);
+}
+function f_bucket(period,anti){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const tail=+period.slice(-3), m=tail%10, v=Array(10).fill(0.1);
+  const k=anti?0.18:0.38; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45; return normalize(v);
+}
+function f_mods(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const d=[...period].map(Number), s=d.reduce((a,b)=>a+b,0);
+  const a=(s%7*3)%10, b=(s%11*7)%10; const v=Array(10).fill(0.1);
+  v[a]+=0.22; v[b]+=0.20; return normalize(v);
+}
+function f_hashedDistance(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const center=hash32(period+'seed')%10; const v=Array(10).fill(0.1);
+  for(let i=0;i<10;i++){const d=Math.min((i-center+10)%10,(center-i+10)%10); v[i]+=0.30*Math.exp(-0.55*d)}
+  return normalize(v);
+}
+
+/* ---------- Pattern boosts ---------- */
+function pb_mirror(period){const v=Array(10).fill(0); const s=hash32(period+'mir')%10; v[s]+=1; v[(9-s+10)%10]+=1; return normalize(v.map(x=>x||0.1));}
+function pb_reverse(period){if(!isDigits(period)) return Array(10).fill(0.1); const m=(+period.slice(-3))%10; const r=(9-m+10)%10; const v=Array(10).fill(0.1); v[r]+=0.9; v[(r+1)%10]+=0.5; v[(r+9)%10]+=0.5; return normalize(v);}
+function pb_repeat(period){const h=hash32(period+'rep')%10; const v=Array(10).fill(0.1); v[h]+=0.9; v[(h+1)%10]+=0.4; v[(h+9)%10]+=0.4; return normalize(v);}
+function pb_alt(period){const odd=(hash32(period+'alt')%2)===1; const v=Array(10).fill(0.1); for(let i=odd?0:1;i<10;i+=2) v[i]+=0.8; return normalize(v);}
+
+/* ---------- Ensemble predictor with pattern injection + learning ---------- */
+function patternStrengthValue(sel){return sel==='heavy'?0.25: sel==='medium'?0.18: 0.12}
+function regimeWeights(baseW){
+  const sz=loadSize(); const big=sz[1]/(sz[0]+sz[1]); const w=baseW.slice();
+  if(big>0.62||big<0.38) w[4]+=0.02; const s=w.reduce((a,b)=>a+b,0); return w.map(x=>x/s);
+}
+function patPerfWeight(name){
+  const st=loadPat()[name]; const q=(st.w+1)/(st.w+st.l+2); // 0..1
+  // Map to [0.85, 1.15]
+  return 0.85 + 0.30*q;
+}
+function predict(period,{mode='balanced',antiSeq=true,learn=true,patterns={},patStrength='light'}={}){
+  const hyper={
+    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.22,0.18,0.22,0.18,0.20],learnBoost:0.25},
+    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.20,0.18,0.24,0.18,0.20],learnBoost:0.30},
+    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.18,0.18,0.26,0.18,0.20],learnBoost:0.35}
+  }[mode];
+
+  const P1=f_checksum(period), P2=f_parity(period), P3=f_bucket(period,antiSeq), P4=f_mods(period), P5=f_hashedDistance(period);
+  const w=regimeWeights(hyper.w);
+  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
+
+  // pattern injection
+  const kBase = patternStrengthValue(patStrength);
+  let pat=null, k=0;
+  if(patterns.mirror){ pat = pat? normalize(pat.map((x,i)=>x*pb_mirror(period)[i])) : pb_mirror(period); k+=kBase*patPerfWeight('mirror'); }
+  if(patterns.reverse){ pat = pat? normalize(pat.map((x,i)=>x*pb_reverse(period)[i])): pb_reverse(period); k+=kBase*patPerfWeight('reverse'); }
+  if(patterns.repeat){ pat = pat? normalize(pat.map((x,i)=>x*pb_repeat(period)[i])) : pb_repeat(period); k+=kBase*patPerfWeight('repeat'); }
+  if(patterns.alt){ pat = pat? normalize(pat.map((x,i)=>x*pb_alt(period)[i])) : pb_alt(period); k+=kBase*patPerfWeight('alt'); }
+  if(pat){
+    const maxp=Math.max(...pat);
+    base=normalize(base.map((p,i)=>p*(1 - Math.min(.45,k) + Math.min(.45,k)*(pat[i]/maxp))));
+  }
+
+  // adaptive sharpener
+  const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
+  base=normalize(base.map(p=>p*(1+0.18*((p-t)/(t+1e-9)))));
+
+  // size-learning
+  if(learn){
+    const sz=loadSize(); const total=(sz[0]+sz[1])||1; const small=sz[0]/total, big=sz[1]/total, L=hyper.learnBoost;
+    for(let i=0;i<5;i++)  base[i]*=(1 - L + L*small);
+    for(let i=5;i<10;i++) base[i]*=(1 - L + L*big);
+    base=normalize(base);
+  }
+
+  // bootstrap + temp + cap
+  const rnd=rng(hash32(period)), B=72, j=0.08;
+  const agg=Array(10).fill(0), votes=Array(10).fill(0);
+  for(let b=0;b<B;b++){
+    const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j))));
+    p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++;
+  }
+  let probs=normalize(agg).map(p=>Math.pow(p,1/1.06)); probs=normalize(probs);
+  const iM=argmax(probs), mx=probs[iM];
+  if(mx>0.62){
+    const extra=mx-0.62; probs[iM]-=extra;
+    const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1;
+    const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs);
+  }
+  const stability=Math.max(...votes)/B;
+  return {probs,stability};
+}
+
+/* ---------- Charts + Render ---------- */
+let probChart=null,lastPred=null;
+function drawChart(probs){
+  const data=probs.map(p=>Math.round(p*1000)/10), labels=[...Array(10).keys()].map(String);
+  if(probChart) probChart.destroy();
+  probChart=new Chart(document.getElementById('probChart').getContext('2d'),{
+    type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
+    options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}
+  });
+}
+function render(period,out,source='manual',enabledPatterns={}){
+  const probs=out.probs.slice(), pick=argmax(probs);
+  drawChart(probs);
+
+  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
+  const stability=clamp01(out.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
+
+  el('vNum').textContent=pick;
+  el('vSize').textContent=pick>=5?'Big':'Small';
+  el('confBar').style.width=(score*100).toFixed(1)+'%';
+  el('scoreTag').textContent='Score '+(score*100|0)+'%';
+
+  const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.28) issues.push('unstable');
+  let sig='Play',cls='ok'; if(issues.length===1){sig='Caution';cls='warn'} if(issues.length>=2){sig='Wait';cls='bad'}
+  const ps=el('playSignal'); ps.textContent=sig; ps.className='pill '+cls;
+
+  const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
+  el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
+
+  const h=el('hist'); if(h.textContent==='—') h.textContent='';
+  h.insertAdjacentHTML('afterbegin',`<div>🕒 ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
+  while(h.childElementCount>14) h.removeChild(h.lastElementChild);
+
+  // save last prediction for Verify
+  lastPred={
+    period, pick, size:(pick>=5?'big':'small'),
+    patterns:enabledPatterns
+  };
+
+  playCoin();
+  if(source==='auto'){
+    pushNotify({title:`Next • ${String(period).slice(-3)}`, body:`#${pick} • ${pick>=5?'Big':'Small'}`, tag:'wingo-auto'});
+  }
+}
+
+/* ---------- Actions ---------- */
+let autoOn=false, autoTimer=null, busy=false;
+function currentPatterns(){ return {
+  mirror: el('pMirror').checked,
+  reverse: el('pReverse').checked,
+  repeat: el('pRepeat').checked,
+  alt: el('pAlt').checked
+};}
+function runPredict(source='manual'){
+  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
+  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें'); return;}
+  el('periodInfo').textContent='Period: '+describe(pr);
+  const out=predict(pr,{
+    mode:'balanced',antiSeq:true,learn:true,
+    patterns:currentPatterns(),
+    patStrength:el('patStrength').value
+  });
+  render(pr,out,source,currentPatterns());
+}
+function startAuto(){
+  if(autoOn) return;
+  autoOn=true; el('btnAuto').textContent='⏸ Stop Auto'; el('btnAuto').classList.remove('primary'); el('btnAuto').classList.add('danger');
+  const sec=parseInt(el('interval').value,10);
+  clearInterval(autoTimer);
+  autoTimer=setInterval(()=>{
+    const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur);
+    runPredict('auto');
+  }, Math.max(5,sec)*1000);
+}
+function stopAuto(){
+  autoOn=false; el('btnAuto').textContent='▶ Start Auto'; el('btnAuto').classList.add('primary'); el('btnAuto').classList.remove('danger');
+  clearInterval(autoTimer); autoTimer=null;
+}
+
+/* ---------- Verify & Learn (size + pattern stats) ---------- */
+function verifyAndLearn(){
+  const pick = el('vNum').textContent.trim();
+  if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').className='helper neu'; return; }
+  const chosen = document.querySelector('input[name="actSize"]:checked');
+  if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').className='helper neu'; return; }
+
+  const actual = chosen.value; // 'small' | 'big'
+  const win = (actual === ( (+pick>=5)?'big':'small' ));
+
+  // size learning
+  if(win!==null){
+    const s=loadSize(); (actual==='small') ? s[0]++ : s[1]++; saveSize(s);
+  }
+  // pattern learning (credit/debit enabled patterns of lastPred)
+  if(lastPred && lastPred.patterns){
+    const stat=loadPat();
+    for(const k of Object.keys(lastPred.patterns)){
+      if(lastPred.patterns[k]){
+        if(win) stat[k].w++; else stat[k].l++;
+      }
+    }
+    savePat(stat);
+  }
+
+  if(win){ el('verifyMsg').textContent='WIN ✔'; el('verifyMsg').className='helper ok'; }
+  else    { el('verifyMsg').textContent='LOSS ✘'; el('verifyMsg').className='helper bad'; }
+}
+
+/* ---------- Bindings ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
+  el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
+  el('btnAuto').addEventListener('click', ()=>{ autoOn?stopAuto():startAuto(); });
+  el('interval').addEventListener('change', ()=>{ if(autoOn){ stopAuto(); startAuto(); } });
+  el('btnNotify').addEventListener('click', async ()=> alert((await ensureNotify())?'Notifications enabled':'Notifications blocked / unsupported'));
+  el('btnClear').addEventListener('click', ()=>{
+    stopAuto(); el('period').value=''; el('periodInfo').textContent='—';
+    el('vNum').textContent='—'; el('vSize').textContent='—'; el('confBar').style.width='0%';
+    el('playSignal').textContent='—'; el('playSignal').className='pill'; el('top2').textContent='Safe set: —'; el('scoreTag').textContent='Score —';
+    el('hist').textContent='—'; if(probChart){probChart.destroy(); probChart=null;} lastPred=null;
+    el('verifyMsg').textContent='—'; el('verifyMsg').className='helper neu';
+    document.querySelectorAll('input[name="actSize"]').forEach(r=>r.checked=false);
+  });
+  el('btnCopy').addEventListener('click', async ()=>{
+    const on=Object.entries(currentPatterns()).filter(([k,v])=>v).map(([k])=>k).join(',')||'none';
+    const txt=`${new Date().toLocaleTimeString()} | Period ${el('period').value} | #${el('vNum').textContent} (${el('vSize').textContent}) | Patterns:${on} | Strength:${el('patStrength').value}`;
+    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{ alert(txt); }
+  });
+  el('btnVerify').addEventListener('click', verifyAndLearn);
+});
 </script>
 </body>
 </html>
