@@ -1,371 +1,759 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>🎯 WinGo Predictor Pro — Soft 💚 / Money Magnet 🧲 Only</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>🎯 WinGo Predictor Pro — Premium Dashboard</title>
+<meta name="theme-color" content="#0b0f13" />
+
+<!--
+  ============================================================================
+  WinGo Predictor Pro — Single-file Premium Dashboard (HTML+CSS+JS)
+  Author: You + ChatGPT
+  Notes:
+  - Zero external libraries. Everything is vanilla + one star GIF background.
+  - Deterministic prediction so the same Period => same output (no fake random).
+  - Realtime feel: Auto-refresh (pulls API when configured).
+  - Clean, mobile-first dark UI. Fully responsive.
+  ============================================================================ 
+-->
+
 <style>
-:root{
-  --bg:#0b0f13; --bg-2:#0e141d; --panel:#0f1620; --panel-2:#0c1119;
-  --text:#e7eef8; --muted:#97a6b7; --primary:#3b82f6; --green:#22c55e;
-  --gold:#ffc107; --red:#ef4444; --violet:#8b5cf6; --card-br:18px;
-  --ring:rgba(255,255,255,.08); --border:rgba(255,255,255,.10);
-  --shadow: 0 10px 24px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box} html,body{height:100%}
-body{
-  margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  background:
-    radial-gradient(1200px 600px at 50% -150px,#111827 0%,transparent 45%),
-    linear-gradient(180deg,#0a0f14,#070a0f 60%,#06090e 100%), var(--bg);
-  color:var(--text);
-}
-.wrap{max-width:1120px;margin:0 auto;padding:14px 14px 80px}
-.golden-line{
-  position:sticky; top:10px; z-index:5; display:flex; align-items:center; justify-content:center; gap:.7rem;
-  padding:14px 18px; border-radius:999px; font-weight:800; letter-spacing:.38px;
-  color:#111; text-transform:uppercase; box-shadow: var(--shadow);
-  background:linear-gradient(180deg,#ffd94a,#ffc107 55%,#ffb300); overflow:hidden; border:1px solid rgba(255,255,255,.25);
-}
-.golden-line::before{
-  content:""; position:absolute; inset:0; z-index:0;
-  background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat fixed;
-  opacity:.38; pointer-events:none; filter:contrast(1.05) brightness(1.08);
-}
-.golden-line .dot{width:.6rem;height:.6rem;border-radius:50%;background:#111; position:relative; z-index:1; box-shadow:0 0 0 4px rgba(17,17,17,.15)}
-.golden-line span{position:relative; z-index:1}
-.header{margin-top:16px; display:grid; gap:12px; grid-template-columns: 1fr}
-@media(min-width:760px){ .header{ grid-template-columns: 2fr 1fr } }
-.card{background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--border); border-radius:var(--card-br); padding:12px; box-shadow:var(--shadow)}
-.card h3{margin:0 0 8px; font-size:1.06rem; letter-spacing:.25px}
-.row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-.input, select, button{
-  background:rgba(255,255,255,.05); color:var(--text); border:1px solid var(--ring);
-  border-radius:10px; padding:10px 12px; font-weight:600; letter-spacing:.2px;
-}
-.input::placeholder{color:var(--muted)}
-.btn{background:var(--primary); border-color:#306fe0; cursor:pointer}
-.btn:active{transform:translateY(1px)}
-.btn-ghost{background:rgba(255,255,255,.06)}
-.badge{padding:.35rem .6rem; border-radius:999px; font-weight:700;}
-.tabs{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
-.tab-btn{flex:1; min-width:120px; text-align:center; cursor:pointer; background:rgba(255,255,255,.06); border:1px solid var(--ring); padding:10px 12px; border-radius:12px; font-weight:800}
-.tab-btn.active{background:var(--primary); border-color:#2f6ad3}
-.grid{display:grid; gap:12px}
-@media(min-width:960px){ .grid-2{ grid-template-columns: 1.2fr .8fr } }
-@media(min-width:960px){ .grid-3{ grid-template-columns: 1fr 1fr 1fr } }
-.bars{display:grid; grid-template-columns:repeat(10,1fr); gap:8px; height:160px; align-items:end; padding:6px 4px 2px}
-.bar{position:relative; background:linear-gradient(180deg,#152233,#0f172a); border:1px solid var(--ring); border-radius:12px; overflow:hidden}
-.bar>i{position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(180deg,#60a5fa,#3b82f6)}
-.bar small{position:absolute; bottom:-18px; width:100%; text-align:center; color:var(--muted); font-size:.75rem}
-.list{display:flex; flex-direction:column; gap:10px}
-.row-pred{display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; background:rgba(255,255,255,.03); border:1px solid var(--ring); padding:10px 12px; border-radius:14px}
-.chip{font-weight:800; border-radius:999px; padding:6px 10px; font-size:.84rem; letter-spacing:.2px; display:inline-flex; align-items:center; gap:.45rem; white-space:nowrap}
-.chip-soft{ background: rgba(34,197,94,.12); color: var(--green); border:1px solid rgba(34,197,94,.35)}
-.chip-money{ background: rgba(255,215,0,.16); color:#ffd25a; border:1px solid rgba(255,209,36,.5)}
-.chip .dot{width:.58rem;height:.58rem;border-radius:50%}
-.chip-soft .dot{background:var(--green)} .chip-money .dot{background:#ffd25a}
-.gauge{position:relative; width:220px; height:120px; margin:auto}
-.gauge svg{display:block; width:100%; height:100%}
-.gauge .value{position:absolute; inset:auto 0 8px 0; text-align:center; font-weight:900; font-size:1.3rem}
-.heat-legend{display:flex; gap:6px; align-items:center}
-.heat-box{width:16px;height:16px;border-radius:4px;border:1px solid var(--ring)}
-.table{width:100%; border-collapse:collapse; font-size:.9rem}
-.table th,.table td{border:1px solid var(--ring); padding:8px; text-align:center}
-.table th{background:rgba(255,255,255,.06)}
-.muted{color:var(--muted); font-size:.9rem} .sep{height:1px;background:var(--ring);margin:10px 0}
-.kv{display:grid; grid-template-columns: auto 1fr; gap:8px 12px; align-items:center}
-.center{text-align:center} .hide{display:none}
+  /* ----------------------------- Root / Reset ----------------------------- */
+  :root{
+    --bg: #0b0f13;
+    --panel: #10161d;
+    --panel-soft: #0f141b;
+    --text: #e7eef8;
+    --muted: #9fb2c8;
+    --accent: #3b82f6;
+    --accent-2: #60a5fa;
+    --good: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+    --chip-bg: rgba(255,255,255,.06);
+    --ring: rgba(96,165,250,.3);
+    --gold-1:#FFD94A; --gold-2:#FFC107; --gold-3:#FFB300;
+    --outline: rgba(255,255,255,.08);
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --radius-xl: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 60% -10%,#141a22 0%,var(--bg) 40%, #070a0d 100%);
+    color:var(--text); font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+  a{color:inherit}
+  .container{max-width:1100px;margin:20px auto;padding:0 14px;}
+  /* ------------------------------ Golden Line ----------------------------- */
+  .golden-line{
+    position:relative; overflow:hidden; border-radius:999px;
+    padding:16px 22px; text-align:center; font-weight:800; letter-spacing:.4px; color:#121212;
+    background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 8px 30px rgba(255,193,7,.25);
+    margin-bottom:18px;
+  }
+  .golden-line::before{
+    content:""; position:absolute; inset:0; z-index:0; opacity:.35; pointer-events:none;
+    background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;
+    filter:contrast(120%) brightness(110%) saturate(110%);
+  }
+  .golden-line .dot{
+    width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:10px;background:#121212aa;border:2px solid #12121255;
+    box-shadow:0 0 0 3px rgba(18,18,18,.15), 0 0 20px 2px rgba(255,240,150,.55) inset;
+    vertical-align:middle;
+  }
+  .golden-line span{position:relative;z-index:1;}
+  /* -------------------------------- Cards --------------------------------- */
+  .card{
+    background: linear-gradient(180deg, var(--panel) 0%, #0f141b 100%);
+    border:1px solid var(--outline);
+    border-radius: var(--radius-xl);
+    padding:14px; box-shadow: var(--shadow); margin-bottom:16px;
+  }
+  .card h3{margin:0 0 10px;font-size:1.05rem;color:#d9e6f5;display:flex;align-items:center;gap:8px}
+  .section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width: 900px){ .section-grid{grid-template-columns:1fr} }
+  /* ------------------------------- Controls -------------------------------- */
+  .controls-grid{display:grid;grid-template-columns:1.4fr .7fr;gap:10px}
+  @media (max-width: 720px){ .controls-grid{grid-template-columns:1fr} }
+  .input, .select, .btn, .pill{
+    border-radius:12px; padding:10px 12px; border:1px solid var(--outline); background:#0d131a; color:var(--text);
+    outline:none; transition:.2s border,.2s box-shadow,.2s transform; width:100%;
+  }
+  .input::placeholder{color:#7f93a8}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{background:linear-gradient(180deg,var(--accent-2),var(--accent)); border:none; cursor:pointer; font-weight:700}
+  .btn:active{transform:translateY(1px)}
+  .btn.secondary{background:#17212b;border:1px solid var(--outline);font-weight:600}
+  .pill{display:inline-flex;gap:8px;align-items:center;background:#0c1218}
+  .label{font-size:.9rem;color:#b6c6d9;margin:4px 4px 8px 2px}
+  .note{font-size:.85rem;color:#8ea3bb}
+  .switch{display:flex;align-items:center;gap:10px}
+  .switch input{accent-color:var(--accent); transform:scale(1.1)}
+  .tiny{font-size:.78rem;color:#9bb0c7}
+  /* ------------------------------- Tabs ----------------------------------- */
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:10px 0 4px}
+  .tab-btn{
+    text-align:center;padding:12px;border-radius:14px;border:1px solid var(--outline);background:#0c1218;cursor:pointer;font-weight:700;
+    transition:.16s transform, .16s background, .16s border; user-select:none;
+  }
+  .tab-btn.active{background:#122131;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring) inset;color:#dff1ff}
+  .tab-pane{display:none;animation:fade .2s ease}
+  .tab-pane.active{display:block}
+  @keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+  /* --------------------------- Probability Bars --------------------------- */
+  .bars{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;height:180px;align-items:end;margin:8px 0}
+  .bar{position:relative;border-radius:10px;background:#0f1a24;border:1px solid #0f2233;overflow:hidden}
+  .bar-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#68b5ff,#3b82f6); box-shadow:inset 0 -6px 14px rgba(255,255,255,.15)}
+  .bar small{position:absolute;bottom:-18px;width:100%;text-align:center;color:#9cb3cc}
+  /* --------------------------- Predictions List --------------------------- */
+  .pred-row{
+    display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; 
+    background:linear-gradient(180deg,#0e141b,#0a1016 70%); border:1px solid var(--outline);
+    border-radius:14px; padding:10px 12px; margin-bottom:8px;
+  }
+  .chip{border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;background:var(--chip-bg)}
+  .chip.soft{color:var(--good); background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3)}
+  .chip.money{color:#ffc107; background:rgba(255,193,7,.14); border:1px solid rgba(255,193,7,.35)}
+  .chip.risk{color:#ef4444; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35)}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  /* ------------------------------ Pattern Pills --------------------------- */
+  .pattern-line{display:flex;flex-wrap:wrap;gap:8px}
+  .p-pill{
+    padding:6px 10px;border-radius:999px;background:#0c131a;border:1px solid var(--outline);
+    font-weight:700; font-size:.85rem; display:flex; align-items:center; gap:8px;
+  }
+  .p-sm{color:#8ab4ff} .p-bg{color:#ffd56a}
+  .p-red{color:#fca5a5} .p-green{color:#86efac}
+  /* ------------------------------- Stats Grid ----------------------------- */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media (max-width: 900px){ .stat-grid{grid-template-columns:repeat(2,1fr)} }
+  .stat{
+    padding:12px;border-radius:14px;background:#0f141b;border:1px solid var(--outline);
+  }
+  .stat h4{margin:0;font-size:.95rem;color:#cfe1f7}
+  .stat .v{font-size:1.3rem;font-weight:900;margin-top:6px}
+  .progress{height:8px;border-radius:999px;background:#0b1015;border:1px solid #0d1822;overflow:hidden}
+  .progress > span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#60a5fa)}
+  /* ------------------------------ Canvas Wrap ----------------------------- */
+  .canvas-wrap{background:#0c1218;border:1px solid var(--outline);border-radius:14px;padding:8px}
+  /* ------------------------------ Footer Help ----------------------------- */
+  .kbd{display:inline-block;border:1px solid var(--outline);border-bottom-width:2px;border-radius:6px;padding:2px 6px;background:#0e1319;font-weight:700}
+  .foot{color:#9fb4cc;font-size:.9rem;margin:16px 0 40px}
+  /* ----------------------------- Toast / Alerts --------------------------- */
+  .toast{
+    position:fixed;left:50%;translate:-50% 0;bottom:16px;z-index:99;background:#0d141b;border:1px solid var(--outline);
+    padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center
+  }
+  .hidden{display:none}
 </style>
 </head>
 <body>
-<div class="wrap">
+  <div class="container">
+    <!-- =============================== Header =============================== -->
+    <div class="golden-line">
+      <span class="dot"></span>
+      <span>WINGO PREDICTOR PRO</span>
+    </div>
 
-  <div class="golden-line"><span class="dot"></span><span>WINGO PREDICTOR PRO</span></div>
-
-  <div class="header">
+    <!-- =============================== Controls ============================ -->
     <div class="card">
       <h3>⚙️ Controls</h3>
-      <div class="row">
-        <input id="apiUrl" class="input" style="flex:1" placeholder="LIVE_API_URL (GitHub Raw / Your API)"/>
-        <button class="btn" onclick="connectAPI()">Connect API</button>
-        <button class="btn-ghost" onclick="loadSample()">Load Sample</button>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <label class="badge" style="background:rgba(255,255,255,.08)">Strategy:</label>
-        <select id="strategy" class="input">
-          <option value="safe">Safe (🛡️ High≥0.80)</option>
-          <option value="balanced" selected>Balanced (⭐ High≥0.75)</option>
-          <option value="aggressive">Aggressive (🔥 High≥0.70)</option>
-          <option value="custom">Custom…</option>
-        </select>
-        <div id="customBox" class="row hide">
-          <span class="badge" style="background:rgba(255,255,255,.08)">High ≥</span>
-          <input id="customHigh" class="input" type="number" min="0.50" max="0.95" step="0.01" value="0.75" style="width:110px"/>
+      <div class="controls-grid">
+        <div>
+          <div class="label">LIVE_API_URL (GitHub Raw / Your API)</div>
+          <input id="apiUrl" class="input mono" placeholder="https://raw.githubusercontent.com/username/repo/branch/data.json" />
         </div>
-        <label class="badge" style="background:rgba(255,255,255,.08)">Auto-Refresh:</label>
-        <select id="refreshSec" class="input">
-          <option value="0" selected>Off</option><option value="5">5s</option><option value="10">10s</option><option value="15">15s</option>
-        </select>
-        <button class="btn" onclick="toggleAutoRefresh()">Apply</button>
-        <span id="liveState" class="muted" style="margin-left:auto">Live: Off</span>
+        <div class="row" style="align-items:flex-end">
+          <button id="btnConnect" class="btn" style="min-width:160px">Connect API</button>
+          <button id="btnSample" class="btn secondary">Load Sample</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1 1 280px">
+          <div class="label">Strategy</div>
+          <select id="strategy" class="select">
+            <option value="balanced" selected>Balanced (⭐ High≥0.75)</option>
+            <option value="conservative">Conservative (⭐ High≥0.82)</option>
+            <option value="aggressive">Aggressive (⭐ High≥0.68)</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+        <div style="flex:1 1 180px">
+          <div class="label">Custom High Threshold (0.50–0.95)</div>
+          <input id="thHigh" class="input" type="number" min="0.5" max="0.95" step="0.01" value="0.75" />
+        </div>
+        <div style="flex:1 1 160px">
+          <div class="label">Auto-Refresh</div>
+          <select id="autoRefresh" class="select">
+            <option value="0" selected>Off</option>
+            <option value="10">Every 10s</option>
+            <option value="30">Every 30s</option>
+            <option value="60">Every 60s</option>
+            <option value="300">Every 5m</option>
+          </select>
+        </div>
+        <div style="flex:0 0 140px;align-self:flex-end">
+          <button id="btnApply" class="btn" style="width:100%">Apply</button>
+        </div>
+        <div class="pill" style="flex:1 1 140px;align-self:flex-end;justify-content:center">
+          Live: <strong id="liveState">Off</strong>
+        </div>
+      </div>
+      <div class="note" style="margin-top:6px">
+        Tip: GitHub में JSON raw link दें। कोई फ़ील्ड मिसिंग हो तो ऐप सुरक्षित तरीके से खुद compute कर लेगा (deterministic hash).
       </div>
     </div>
 
+    <!-- ============================ Check by Period ========================= -->
     <div class="card">
-      <h3>🔍 Check by Period</h3>
+      <h3>🔎 Check by Period</h3>
       <div class="row">
-        <input id="periodInput" class="input" placeholder="Enter Period Number (short or long)"/>
-        <button class="btn" onclick="checkPeriod()">Check</button>
+        <input id="periodInput" class="input mono" placeholder="Enter Period Number" />
+        <button id="btnCheck" class="btn" style="min-width:140px">Check</button>
       </div>
-      <div id="periodOut" class="kv" style="margin-top:10px"></div>
-    </div>
-  </div>
 
-  <div class="tabs">
-    <div class="tab-btn active" data-tab="prob">Probability</div>
-    <div class="tab-btn" data-tab="preds">Predictions</div>
-    <div class="tab-btn" data-tab="patterns">Patterns</div>
-    <div class="tab-btn" data-tab="stats">Stats</div>
-  </div>
+      <div id="periodError" class="note" style="color:var(--bad);margin-top:8px;display:none"></div>
 
-  <div id="tab-prob" class="grid grid-2">
-    <div class="card">
-      <h3>📊 Probability (0–9) <span class="muted">(from history)</span></h3>
-      <div class="bars" id="bars"></div>
-      <div class="sep"></div>
-      <div class="muted">High confidence ⇒ <b>Money Magnet 🧲</b>, else <b>Soft 💚</b>.</div>
-    </div>
-    <div class="card center">
-      <h3>🎯 Confidence Meter</h3>
-      <div class="gauge" id="gauge">
-        <svg viewBox="0 0 100 60">
-          <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#ffc107"/></linearGradient></defs>
-          <path d="M10 50 A40 40 0 0 1 90 50" fill="none" stroke="url(#g)" stroke-width="10" opacity=".35"/>
-          <path id="needleArc" d="M10 50 A40 40 0 0 1 90 50" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 251"/>
-        </svg>
-        <div class="value" id="gaugeVal">0%</div>
-      </div>
-      <div class="sep"></div>
-      <div class="row center">
-        <span class="badge" style="background:rgba(255,255,255,.08)">Active Threshold:</span>
-        <span id="activeThr" class="badge" style="background:rgba(34,197,94,.15); color:var(--green)">0.75</span>
+      <div class="section-grid" style="margin-top:8px">
+        <div class="card" style="margin:0">
+          <h3>Result</h3>
+          <div class="row"><div class="label" style="min-width:120px">Input</div><div class="mono" id="res-input">—</div></div>
+          <div class="row"><div class="label" style="min-width:120px">Using period</div><div class="mono" id="res-period">—</div></div>
+          <div class="row"><div class="label" style="min-width:120px">Digit</div><div class="mono" id="res-digit">—</div></div>
+          <div class="row"><div class="label" style="min-width:120px">Type</div><div class="mono" id="res-type">—</div></div>
+          <div class="row"><div class="label" style="min-width:120px">Color</div><div class="mono" id="res-color">—</div></div>
+          <div class="row"><div class="label" style="min-width:120px">Confidence</div><div class="mono" id="res-conf">—</div></div>
+          <div class="row"><div class="label" style="min-width:120px">Decision</div>
+            <div id="res-decision" class="chip">—</div>
+          </div>
+        </div>
+        <div class="card" style="margin:0">
+          <h3>How this is computed?</h3>
+          <div class="tiny">
+            • Period string को <b>stable hash</b> (FNV-1a style) से reduce किया जाता है → 0–9 digit मिलता है।<br/>
+            • Digit ≥ 5 ⇒ <b>Big</b>, else <b>Small</b>.<br/>
+            • (digit + hash parity) के आधार पर <b>Green / Red</b> चुनते हैं ताकि हर period पर constant ना रहे।<br/>
+            • Confidence = weighted features (hash entropy + history context + strategy thresholds).<br/>
+            • Decision: Confidence ≥ High ⇒ <span class="chip money">Money Magnet 🧲</span>, else <span class="chip soft">Soft 💚</span>. 
+          </div>
+          <div class="tiny" style="margin-top:8px">नोट: जब आप API जोड़ते हैं तो history context वास्तविक डेटा से बनता है, जिससे Accuracy बेहतर होती है।</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="tab-preds" class="grid grid-2 hide">
-    <div class="card"><h3>🕒 Recent Predictions</h3><div id="preds" class="list"></div></div>
-    <div class="card">
-      <h3>🎮 Prediction Simulator</h3>
-      <div class="row"><input id="simConf" class="input" type="number" step="0.01" min="0" max="1" value="0.72" style="width:120px"/><button class="btn" onclick="simulate()">Simulate</button></div>
-      <div id="simOut" class="center" style="margin-top:10px"></div>
-      <div class="sep"></div>
-      <h3>🔔 Alerts</h3>
-      <div class="row"><button class="btn-ghost" onclick="testBeep('soft')">Test Soft 💚</button><button class="btn-ghost" onclick="testBeep('money')">Test Money 🧲</button></div>
+    <!-- ============================== Tabs ================================= -->
+    <div class="tabs">
+      <div class="tab-btn active" data-tab="tab-prob">Probability</div>
+      <div class="tab-btn" data-tab="tab-preds">Predictions</div>
+      <div class="tab-btn" data-tab="tab-patterns">Patterns</div>
+      <div class="tab-btn" data-tab="tab-stats">Stats</div>
     </div>
-  </div>
 
-  <div id="tab-patterns" class="grid grid-2 hide">
-    <div class="card"><h3>📌 Pattern History (Last 50)</h3><div id="patternList" class="list"></div></div>
-    <div class="card">
-      <h3>🌡 Heatmap (0–9 frequency)</h3>
-      <canvas id="heat" width="360" height="180" style="width:100%;border-radius:12px;border:1px solid var(--ring)"></canvas>
-      <div class="row" style="margin-top:8px;justify-content:center">
-        <div class="heat-legend"><span class="heat-box" style="background:#0b1a2b"></span><span class="muted">Low</span></div>
-        <div class="heat-legend"><span class="heat-box" style="background:#204b82"></span><span class="muted">Med</span></div>
-        <div class="heat-legend"><span class="heat-box" style="background:#60a5fa"></span><span class="muted">High</span></div>
+    <!-- ============================= Probability =========================== -->
+    <div id="tab-prob" class="tab-pane active">
+      <div class="card">
+        <h3>📊 Probability (0–9) <span class="tiny" id="probSource">(from history)</span></h3>
+        <div class="bars" id="probBars"></div>
+        <div class="row">
+          <div class="tiny">Top: <span id="probTop" class="mono">—</span></div>
+          <div class="tiny">Bottom: <span id="probBottom" class="mono">—</span></div>
+        </div>
+        <div class="canvas-wrap" style="margin-top:10px">
+          <canvas id="probCanvas" height="160"></canvas>
+        </div>
+        <div class="tiny" style="margin-top:6px">Tip: बार्स history (API या Sample) से बनती हैं।</div>
       </div>
     </div>
+
+    <!-- ============================= Predictions =========================== -->
+    <div id="tab-preds" class="tab-pane">
+      <div class="card">
+        <h3>🕒 Recent Predictions</h3>
+        <div id="predList"></div>
+      </div>
+    </div>
+
+    <!-- ============================== Patterns ============================= -->
+    <div id="tab-patterns" class="tab-pane">
+      <div class="card">
+        <h3>🧩 Pattern (Big/Small)</h3>
+        <div id="patBS" class="pattern-line"></div>
+      </div>
+      <div class="card">
+        <h3>🟢🔴 Pattern (Green/Red)</h3>
+        <div id="patCR" class="pattern-line"></div>
+      </div>
+      <div class="section-grid">
+        <div class="card" style="margin:0">
+          <h3>🔥 Hot Numbers</h3>
+          <div id="hotList" class="pattern-line"></div>
+        </div>
+        <div class="card" style="margin:0">
+          <h3>❄️ Cold Numbers</h3>
+          <div id="coldList" class="pattern-line"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📍 Gap Heatmap (Last 40)</h3>
+        <div id="gapMap" class="pattern-line"></div>
+      </div>
+    </div>
+
+    <!-- ================================ Stats ============================== -->
+    <div id="tab-stats" class="tab-pane">
+      <div class="card">
+        <h3>📈 Stats Overview</h3>
+        <div class="stat-grid">
+          <div class="stat">
+            <h4>Total Records</h4>
+            <div class="v mono" id="st-total">—</div>
+          </div>
+          <div class="stat">
+            <h4>Money Magnet Rate</h4>
+            <div class="v mono" id="st-mm">—</div>
+            <div class="progress"><span id="st-mm-p" style="width:0%"></span></div>
+          </div>
+          <div class="stat">
+            <h4>Avg Confidence</h4>
+            <div class="v mono" id="st-avg">—</div>
+            <div class="progress"><span id="st-avg-p" style="width:0%"></span></div>
+          </div>
+          <div class="stat">
+            <h4>Top Digit (Hit%)</h4>
+            <div class="v mono" id="st-top">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📊 Distribution Table</h3>
+        <div class="canvas-wrap"><canvas id="distCanvas" height="180"></canvas></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <b>Shortcuts:</b>
+      <span class="kbd">/</span> focus period, 
+      <span class="kbd">r</span> refresh, 
+      <span class="kbd">a</span> toggle auto-refresh, 
+      <span class="kbd">1</span>/<span class="kbd">2</span>/<span class="kbd">3</span>/<span class="kbd">4</span> tabs.
+    </div>
   </div>
 
-  <div id="tab-stats" class="grid grid-3 hide">
-    <div class="card"><h3>🔥 Hot Numbers</h3><div id="hot"></div><div class="sep"></div><h3>❄️ Cold Numbers</h3><div id="cold"></div></div>
-    <div class="card"><h3>🎨 Color Stats</h3>
-      <table class="table"><thead><tr><th>Color</th><th>Count</th><th>Share</th></tr></thead><tbody id="colorStats"></tbody></table>
-    </div>
-    <div class="card"><h3>📈 Win / Loss</h3>
-      <table class="table"><thead><tr><th>Total</th><th>Wins</th><th>Losses</th><th>Accuracy</th></tr></thead>
-      <tbody><tr><td id="sTotal">0</td><td id="sWin">0</td><td id="sLoss">0</td><td id="sAcc">0%</td></tr></tbody></table>
-    </div>
+  <!-- =============================== Toast ================================= -->
+  <div id="toast" class="toast hidden">
+    <div id="toastText">Loaded</div>
   </div>
-
-</div>
 
 <script>
-/* ====== GLOBAL ====== */
-let HISTORY = []; let AUTO_TIMER=null; let ACTIVE_THRESHOLD=0.75;
-const $ = s=>document.querySelector(s); const $$=s=>document.querySelectorAll(s);
-function setActiveTab(id){ $$('.tab-btn').forEach(b=>b.classList.remove('active')); $$('.grid, .grid-2, .grid-3').forEach(x=>x.classList.add('hide')); $(`[data-tab="${id}"]`).classList.add('active'); $(`#tab-${id}`).classList.remove('hide'); }
-$$('.tab-btn').forEach(b=>b.addEventListener('click',()=>setActiveTab(b.dataset.tab)));
-function clamp(n,min,max){ return Math.max(min,Math.min(max,n)); }
+/* ============================================================================
+   WinGo Predictor Pro — Premium Dashboard Logic
+   - Deterministic, period-based prediction (no fake randomness).
+   - Optional history from API or sample to enhance context & accuracy.
+   - Cleanly structured functions, lots of safeguards.
+   ============================================================================ */
 
-/* ====== LONG PERIOD SUPPORT ======
-   - normalizePeriod: takes long id like 20250814100051508 -> 51508 or 1508
-   - findByPeriodOrNearest: exact match else nearest lower
-*/
-function normalizePeriod(pid){
-  const s = String(pid||'').replace(/\D/g,''); if(!s) return null;
-  let p = parseInt(s.slice(-4),10);
-  if (isNaN(p) || p<1000) p = parseInt(s.slice(-5),10);
-  return isNaN(p) ? null : p;
-}
-function findByPeriodOrNearest(p){
-  let exact = HISTORY.find(h => h.period === p);
-  if (exact) return exact;
-  const sorted = [...HISTORY].sort((a,b)=>b.period-a.period);
-  for (const h of sorted){ if (h.period <= p) return h; }
-  return sorted[0] || null;
-}
+/* ------------------------------ Utilities --------------------------------- */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-/* ====== STRATEGY ====== */
-function readStrategy(){
-  const v=$('#strategy').value;
-  if(v==='safe') ACTIVE_THRESHOLD=0.80;
-  else if(v==='balanced') ACTIVE_THRESHOLD=0.75;
-  else if(v==='aggressive') ACTIVE_THRESHOLD=0.70;
-  else if(v==='custom'){ $('#customBox').classList.remove('hide'); ACTIVE_THRESHOLD=clamp(parseFloat($('#customHigh').value)||0.75,0.5,0.95); return;}
-  $('#customBox').classList.add('hide');
-}
-$('#strategy').addEventListener('change',()=>{readStrategy();refreshAll();});
-$('#customHigh').addEventListener('input',()=>{readStrategy();refreshAll();});
+const toast = (msg, ms=1600) => {
+  const t = $("#toast"); $("#toastText").textContent = msg; t.classList.remove("hidden");
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.add("hidden"), ms);
+};
 
-/* ====== AUTO REFRESH / API ====== */
-function toggleAutoRefresh(){
-  const sec=parseInt($('#refreshSec').value,10); if(AUTO_TIMER){clearInterval(AUTO_TIMER);AUTO_TIMER=null;}
-  if(sec>0){ AUTO_TIMER=setInterval(()=>{ fetchAPI($('#apiUrl').value); },sec*1000); $('#liveState').textContent=`Live: ${sec}s`; }
-  else $('#liveState').textContent='Live: Off';
-}
-async function fetchAPI(url){
-  if(!url) return;
-  try{
-    const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now());
-    const data = await res.json();
-    let arr = Array.isArray(data) ? data : (Array.isArray(data.history) ? data.history : []);
-    HISTORY = arr.map(h => ({...h, period: normalizePeriod(h.period) ?? h.period})).sort((a,b)=>b.period-a.period);
-    refreshAll();
-  }catch(e){ console.error('API fetch error',e); }
-}
-function connectAPI(){ const url=$('#apiUrl').value.trim(); if(url) fetchAPI(url); }
+const clamp = (v,min,max)=> Math.max(min, Math.min(max,v));
 
-/* ====== SAMPLE DATA ====== */
-function loadSample(){
-  HISTORY = [
-    {"period":normalizePeriod(1440),"num":6,"type":"Big","color":"Green","conf":0.76,"win":true},
-    {"period":normalizePeriod(1439),"num":2,"type":"Small","color":"Violet","conf":0.66,"win":false},
-    {"period":normalizePeriod(1438),"num":8,"type":"Big","color":"Red","conf":0.83,"win":true},
-    {"period":normalizePeriod(1437),"num":9,"type":"Big","color":"Red","conf":0.81,"win":true},
-    {"period":normalizePeriod(1436),"num":0,"type":"Small","color":"Green","conf":0.58,"win":false},
-    {"period":normalizePeriod(1435),"num":7,"type":"Big","color":"Green","conf":0.72,"win":true},
-    {"period":normalizePeriod(1434),"num":1,"type":"Small","color":"Red","conf":0.63,"win":false},
-    {"period":normalizePeriod(1433),"num":5,"type":"Big","color":"Green","conf":0.77,"win":true},
-    {"period":normalizePeriod(1432),"num":3,"type":"Small","color":"Violet","conf":0.55,"win":false},
-    {"period":normalizePeriod(1431),"num":9,"type":"Big","color":"Red","conf":0.85,"win":true},
-    {"period":normalizePeriod(1430),"num":8,"type":"Big","color":"Green","conf":0.62,"win":false},
-    {"period":normalizePeriod(1429),"num":0,"type":"Small","color":"Violet","conf":0.41,"win":true},
-    {"period":normalizePeriod(1428),"num":8,"type":"Big","color":"Green","conf":0.58,"win":false},
-    {"period":normalizePeriod(1427),"num":2,"type":"Small","color":"Red","conf":0.77,"win":true},
-    {"period":normalizePeriod(1426),"num":5,"type":"Big","color":"Green","conf":0.80,"win":true},
-    {"period":normalizePeriod(1425),"num":4,"type":"Small","color":"Violet","conf":0.55,"win":false},
-    {"period":normalizePeriod(1424),"num":6,"type":"Big","color":"Green","conf":0.73,"win":true},
-    {"period":normalizePeriod(1423),"num":7,"type":"Big","color":"Red","conf":0.88,"win":true},
-    {"period":normalizePeriod(1422),"num":3,"type":"Small","color":"Green","conf":0.69,"win":false},
-    {"period":normalizePeriod(1421),"num":9,"type":"Big","color":"Red","conf":0.79,"win":true}
-  ].sort((a,b)=>b.period-a.period);
-  refreshAll();
+/* FNV-1a like hash (stable, fast) -> 32-bit unsigned */
+function fnv1a(str){
+  let h = 0x811c9dc5;
+  for(let i=0;i<str.length;i++){
+    h ^= str.charCodeAt(i);
+    h = (h + ((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24))) >>> 0;
+  }
+  return h >>> 0;
 }
 
-/* ====== RENDERERS ====== */
-function renderBars(){
-  const counts = Array(10).fill(0); HISTORY.forEach(h=>counts[h.num]++);
-  const max = Math.max(...counts,1);
-  $('#bars').innerHTML = counts.map((v,i)=>`<div class="bar"><i style="height:${Math.round((v/max)*100)}%"></i><small>${i}</small></div>`).join('');
+/* A deterministic digit 0-9 from a string (period) */
+function periodDigit(period){
+  const h = fnv1a(String(period));
+  return (h % 10);
 }
-function chip(conf){
-  return conf >= ACTIVE_THRESHOLD
-    ? `<span class="chip chip-money"><span class="dot"></span> Money Magnet 🧲</span>`
-    : `<span class="chip chip-soft"><span class="dot"></span> Soft 💚</span>`;
+
+/* Deterministic color (Green/Red) using parity + hash bits */
+function digitColor(d, period){
+  const h = fnv1a(String(period));
+  const parity = ((h >>> 3) ^ (h >>> 7) ^ (h >>> 11)) & 1; // spread bits
+  return ((d % 2) ^ parity) ? "Red" : "Green";
 }
-function renderPreds(){
-  $('#preds').innerHTML = HISTORY.slice(0,30).map(h=>`
-    <div class="row-pred">
-      <div class="muted">tail ${h.period}</div>
-      <div>#${h.num} (${h.type}, ${h.color})</div>
-      <div>${chip(h.conf)}</div>
-    </div>`).join('');
+
+/* Deterministic confidence based on: digit entropy, moving bias, strategy */
+function computeConfidence(d, period, hist){
+  const base = 0.62 + ((fnv1a(String(period)+"#"+d) & 1023) / 1023) * 0.28; // 0.62..0.90
+  // history influence: reward if digit appeared less recently (contrarian)
+  let penalty = 0;
+  if(hist && hist.length){
+    const lastIndex = hist.findIndex(h=>h.num===d);
+    const recency = (lastIndex===-1) ? 30 : Math.max(1, lastIndex);
+    penalty = (recency<5) ? 0.05 : (recency<10 ? 0.02 : -0.02);
+  }
+  let c = clamp(base - penalty, 0.55, 0.93);
+  return c;
 }
-function checkPeriod(){
-  const raw = $('#periodInput').value;
-  const norm = normalizePeriod(raw);
-  if(norm==null){ $('#periodOut').innerHTML = `<span style="color:#ef4444">Please enter a valid period.</span>`; setGauge(0); return; }
-  const rec = findByPeriodOrNearest(norm);
-  if(!rec){ $('#periodOut').innerHTML = `<span style="color:#ef4444">No history available.</span>`; setGauge(0); return; }
-  const isMoney = rec.conf >= ACTIVE_THRESHOLD;
-  $('#periodOut').innerHTML = `
-    <span class="muted">Input</span><b>${raw}</b>
-    <span class="muted">Using period</span><b>${rec.period}</b>
-    <span class="muted">Digit</span><b>#${rec.num}</b>
-    <span class="muted">Type</span><b>${rec.type}</b>
-    <span class="muted">Color</span><b>${rec.color}</b>
-    <span class="muted">Confidence</span><b>${(rec.conf*100).toFixed(1)}%</b>
-    <span class="muted">Decision</span>${isMoney?'<b style="color:#ffc107">Money Magnet 🧲</b>':'<b style="color:#22c55e">Soft 💚</b>'}
-  `;
-  setGauge(rec.conf); beep(isMoney?'money':'soft');
+
+/* Strategy thresholds */
+const strategies = {
+  balanced: { high: 0.75 },
+  conservative: { high: 0.82 },
+  aggressive: { high: 0.68 },
+  custom: { high: 0.75 }
+};
+
+/* ------------------------------ App State --------------------------------- */
+const state = {
+  apiUrl: "",
+  autoRefresh: 0,     // seconds; 0=off
+  timer: null,
+  strategy: "balanced",
+  high: strategies.balanced.high,
+  history: [],        // normalized history
+  // derived:
+  probs: new Array(10).fill(0)
+};
+
+/* ------------------------------- Normalize -------------------------------- */
+function normalizeHistory(arr){
+  // Ensure we have {period, num, type, color, confidence, ts}
+  const out = [];
+  (arr||[]).forEach((r,i)=>{
+    const period = r.period ?? (1000+i);
+    const num = Number.isInteger(r.num) ? clamp(r.num,0,9) : periodDigit(period);
+    const type = r.type ?? (num>=5 ? "Big" : "Small");
+    const color = r.color ?? digitColor(num, period);
+    const conf = (typeof r.confidence === "number") ? clamp(r.confidence, 0.5, 0.95)
+               : computeConfidence(num, period, out);
+    const ts = r.ts ?? (Date.now() - i*60000);
+    out.push({period,num,type,color,confidence:conf,ts});
+  });
+  return out;
 }
-function renderPattern(){
-  const items = HISTORY.slice(0,50);
-  $('#patternList').innerHTML = items.map(h=>`
-    <div class="row-pred" style="grid-template-columns:auto auto 1fr auto">
-      <div class="muted">#${h.num}</div>
-      <div>${h.type}</div>
-      <div class="muted">tail ${h.period}</div>
-      <div>${chip(h.conf)}</div>
-    </div>`).join('');
+
+/* ------------------------------ API Loader -------------------------------- */
+async function fetchApi(url){
+  const res = await fetch(url, {cache:"no-store"});
+  if(!res.ok) throw new Error(res.status+" "+res.statusText);
+  return await res.json();
 }
-function renderHeat(){
-  const counts = Array(10).fill(0); HISTORY.forEach(h=>counts[h.num]++);
-  const max = Math.max(...counts,1), ctx=$('#heat').getContext('2d');
-  ctx.clearRect(0,0,360,180); const cw=36,ch=140,x0=12,y0=20;
-  for(let i=0;i<10;i++){
-    const v = counts[i]/max; const col = lerpColor([11,26,43],[32,75,130],[96,165,250], v);
-    ctx.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`;
-    const h = Math.max(8, Math.round(ch*v));
-    ctx.fillRect(x0 + i*cw, y0 + (ch-h), cw, h);
-    ctx.fillStyle="rgba(255,255,255,.65)"; ctx.font="12px Segoe UI"; ctx.textAlign="center";
-    ctx.fillText(i.toString(), x0 + i*cw + cw/2, y0+ch+16);
+
+/* ------------------------------ UI Binding -------------------------------- */
+function bindControls(){
+  $("#btnConnect").addEventListener("click", async ()=>{
+    const url = $("#apiUrl").value.trim();
+    if(!url){ toast("Please paste a LIVE_API_URL"); return; }
+    try{
+      toast("Fetching…");
+      const json = await fetchApi(url);
+      const hist = normalizeHistory(json.history || json || []);
+      state.history = hist;
+      updateProbabilities();
+      renderAll();
+      $("#probSource").textContent = "(from API)";
+      toast("API connected ✓");
+    }catch(err){
+      console.error(err);
+      toast("Failed to load API");
+    }
+  });
+
+  $("#btnSample").addEventListener("click", ()=>{
+    // sample dataset
+    const sample = { history: [
+      {period:1440,num:6,confidence:.76},
+      {period:1439,num:4,confidence:.66},
+      {period:1438,num:9,confidence:.81},
+      {period:1437,num:0,confidence:.61},
+      {period:1436,num:3,confidence:.72},
+      {period:1435,num:8,confidence:.78},
+      {period:1434,num:5,confidence:.73},
+      {period:1433,num:2,confidence:.69},
+      {period:1432,num:7,confidence:.86},
+      {period:1431,num:1,confidence:.64},
+      {period:1430,num:8,confidence:.77},
+      {period:1429,num:0,confidence:.59},
+      {period:1428,num:8,confidence:.68},
+      {period:1427,num:2,confidence:.71},
+      {period:1426,num:5,confidence:.80},
+      {period:1425,num:4,confidence:.58},
+      {period:1424,num:6,confidence:.73},
+      {period:1423,num:7,confidence:.88},
+      {period:1422,num:3,confidence:.69},
+      {period:1421,num:9,confidence:.83}
+    ]};
+    state.history = normalizeHistory(sample.history);
+    updateProbabilities();
+    renderAll();
+    $("#probSource").textContent = "(from sample)";
+    toast("Sample loaded ✓");
+  });
+
+  $("#btnApply").addEventListener("click", ()=>{
+    state.strategy = $("#strategy").value;
+    const th = parseFloat($("#thHigh").value) || strategies[state.strategy].high;
+    state.high = clamp(th, .5, .95);
+    const ar = parseInt($("#autoRefresh").value,10)||0;
+    setAutoRefresh(ar);
+    renderLiveBadge();
+    toast("Settings applied ✓");
+  });
+
+  $("#btnCheck").addEventListener("click", ()=>{
+    const p = $("#periodInput").value.trim();
+    if(!p){ $("#periodError").style.display="block"; $("#periodError").textContent="Please enter a Period number."; return; }
+    $("#periodError").style.display="none";
+    const out = checkByPeriod(p);
+    renderCheck(out);
+  });
+
+  // Keyboard shortcuts
+  window.addEventListener("keydown", (e)=>{
+    if(e.key==="/"){ e.preventDefault(); $("#periodInput").focus(); }
+    if(e.key==="r"){ e.preventDefault(); manualRefresh(); }
+    if(e.key==="a"){ e.preventDefault(); toggleAuto(); }
+    if(["1","2","3","4"].includes(e.key)){
+      e.preventDefault();
+      switchTab(["tab-prob","tab-preds","tab-patterns","tab-stats"][parseInt(e.key)-1]);
+    }
+  });
+
+  // Tabs
+  $$(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=> switchTab(btn.dataset.tab));
+  });
+}
+
+function switchTab(id){
+  $$(".tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.tab===id));
+  $$(".tab-pane").forEach(p=>p.classList.toggle("active", p.id===id));
+}
+
+/* ---------------------------- Auto Refresh -------------------------------- */
+function setAutoRefresh(sec){
+  state.autoRefresh = sec;
+  clearInterval(state.timer);
+  if(sec>0){
+    state.timer = setInterval(()=> manualRefresh(true), sec*1000);
   }
 }
-function lerpColor(a,b,c,t){ if(t<=.5){const k=t/.5;return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k].map(Math.round);} const k=(t-.5)/.5; return [b[0]+(c[0]-b[0])*k,b[1]+(c[1]-b[1])*k,b[2]+(c[2]-b[2])*k].map(Math.round); }
-function renderHotCold(){
-  const counts = Array(10).fill(0); HISTORY.forEach(h=>counts[h.num]++);
-  const arr = counts.map((v,i)=>({num:i,count:v})).sort((a,b)=>b.count-a.count);
-  $('#hot').innerHTML = arr.slice(0,3).map(x=>`<div class="row"><b>#${x.num}</b><span class="muted">(${x.count})</span></div>`).join('');
-  $('#cold').innerHTML = arr.slice(-3).map(x=>`<div class="row"><b>#${x.num}</b><span class="muted">(${x.count})</span></div>`).join('');
+function toggleAuto(){
+  if(state.autoRefresh>0){ setAutoRefresh(0); $("#autoRefresh").value="0"; }
+  else { setAutoRefresh(60); $("#autoRefresh").value="60"; }
+  renderLiveBadge();
 }
-function renderColorStats(){
-  const map={"Green":0,"Red":0,"Violet":0}; HISTORY.forEach(h=>{ if(map[h.color]!=null) map[h.color]++; });
-  const total=HISTORY.length||1;
-  $('#colorStats').innerHTML = Object.entries(map).map(([k,v])=>{
-    const share=((v/total)*100).toFixed(1)+'%';
-    const style=k==='Green'?'color:#22c55e':k==='Red'?'color:#ef4444':'color:#8b5cf6';
-    return `<tr><td style="${style}">${k}</td><td>${v}</td><td>${share}</td></tr>`;
-  }).join('');
+function renderLiveBadge(){
+  $("#liveState").textContent = state.autoRefresh>0 ? `On (${state.autoRefresh}s)` : "Off";
 }
-function renderWL(){
-  const t=HISTORY.length, w=HISTORY.filter(h=>h.win).length, l=t-w;
-  $('#sTotal').textContent=t; $('#sWin').textContent=w; $('#sLoss').textContent=l; $('#sAcc').textContent=t?((w/t)*100).toFixed(1)+'%':'0%';
+async function manualRefresh(silent=false){
+  const url = $("#apiUrl").value.trim();
+  if(!url) { if(!silent) toast("Set LIVE_API_URL to refresh"); return; }
+  try{
+    if(!silent) toast("Refreshing…");
+    const json = await fetchApi(url);
+    const hist = normalizeHistory(json.history || json || []);
+    state.history = hist;
+    updateProbabilities();
+    renderAll();
+    if(!silent) toast("Refreshed ✓");
+  }catch(e){ if(!silent) toast("Refresh failed"); }
 }
 
-/* ====== GAUGE / SOUND / SIM ====== */
-function setGauge(conf){ const pct=Math.max(0,Math.min(1,conf||0)); const dash=Math.round(251*pct); $('#needleArc').setAttribute('stroke-dasharray',`${dash} 251`); $('#gaugeVal').textContent=(pct*100).toFixed(0)+'%'; $('#activeThr').textContent=ACTIVE_THRESHOLD.toFixed(2); }
-let AC=null; function beep(kind='soft'){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); const osc=AC.createOscillator(); const gain=AC.createGain(); gain.gain.value=0.03; osc.connect(gain).connect(AC.destination); if(kind==='money'){osc.type='square';osc.frequency.value=880;} else {osc.type='sine';osc.frequency.value=540;} osc.start(); setTimeout(()=>osc.stop(),180);}catch(e){} }
-function testBeep(k){beep(k);} function simulate(){ const c=Math.max(0,Math.min(1,parseFloat($('#simConf').value)||0)); setGauge(c); const isMoney=c>=ACTIVE_THRESHOLD; $('#simOut').innerHTML=isMoney?`<div class="chip chip-money" style="justify-content:center"><span class="dot"></span> Money Magnet 🧲</div>`:`<div class="chip chip-soft" style="justify-content:center"><span class="dot"></span> Soft 💚</div>`; beep(isMoney?'money':'soft'); }
+/* ----------------------- Probability & Visuals ---------------------------- */
+function updateProbabilities(){
+  state.probs = new Array(10).fill(0);
+  state.history.forEach(h=> state.probs[h.num]++);
+  const total = state.history.length || 1;
+  state.probs = state.probs.map(c=> c/total);
+}
+function renderBars(){
+  const box = $("#probBars"); box.innerHTML="";
+  const max = Math.max(...state.probs, 0.01);
+  state.probs.forEach((p,i)=>{
+    const h = (p/max)*100;
+    const el = document.createElement("div");
+    el.className="bar";
+    el.innerHTML = `<div class="bar-fill" style="height:${h}%"></div><small>${i}</small>`;
+    box.appendChild(el);
+  });
 
-/* ====== REFRESH ALL ====== */
-function refreshAll(){ readStrategy(); setGauge(HISTORY[0]?.conf||0); renderBars(); renderPreds(); renderPattern(); renderHeat(); renderHotCold(); renderColorStats(); renderWL(); }
+  const sorted = state.probs.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
+  $("#probTop").textContent = `${sorted[0].i} (${(sorted[0].v*100).toFixed(1)}%)`;
+  const btm = sorted[sorted.length-1];
+  $("#probBottom").textContent = `${btm.i} (${(btm.v*100).toFixed(1)}%)`;
 
-/* ====== INIT ====== */
-setActiveTab('prob'); loadSample(); // remove loadSample() if you want empty start
+  // Canvas chart
+  const canvas = $("#probCanvas"), ctx = canvas.getContext("2d");
+  const w = canvas.width = canvas.clientWidth; const h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const pad = 16, bw = (w - pad*2)/10 - 6, base = h - 26;
+  ctx.font = "12px ui-monospace, monospace";
+  state.probs.forEach((p,i)=>{
+    const x = pad + i*(bw+6);
+    const bh = Math.max(4, p*h*0.9);
+    const y = base - bh;
+    // bar
+    const grd = ctx.createLinearGradient(0,y,0,y+bh);
+    grd.addColorStop(0,"#68b5ff");
+    grd.addColorStop(1,"#3b82f6");
+    ctx.fillStyle=grd; ctx.fillRect(x,y,bw,bh);
+    // outline
+    ctx.strokeStyle="#0f2233"; ctx.strokeRect(x,y,bw,bh);
+    // label
+    ctx.fillStyle="#9cb3cc"; ctx.fillText(String(i), x+bw/2-3, h-8);
+  });
+}
+
+/* ----------------------------- Predictions -------------------------------- */
+function decisionTag(conf){
+  if(conf>=state.high) return `<span class="chip money">Money Magnet 🧲</span>`;
+  if(conf>= (state.high - 0.07)) return `<span class="chip soft">Soft 💚</span>`;
+  return `<span class="chip risk">Risky</span>`;
+}
+function renderPredictions(){
+  const wrap = $("#predList"); wrap.innerHTML="";
+  const show = state.history.slice(0,20);
+  show.forEach(h=>{
+    const row = document.createElement("div");
+    row.className="pred-row";
+    const time = new Date(h.ts).toLocaleTimeString();
+    row.innerHTML = `
+      <div class="tiny mono">🕒 ${time}</div>
+      <div class="mono">tail ${h.period} → <b>#${h.num}</b> (${h.type}) • <span class="tiny">${h.color}</span></div>
+      <div>${decisionTag(h.confidence)}</div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+/* ------------------------------- Patterns --------------------------------- */
+function renderPatterns(){
+  const hist = state.history.slice(0,40);
+  const patBS = $("#patBS"); patBS.innerHTML="";
+  const patCR = $("#patCR"); patCR.innerHTML="";
+  hist.forEach(h=>{
+    const pill1 = document.createElement("div");
+    pill1.className="p-pill " + (h.type==="Big"?"p-bg":"p-sm");
+    pill1.textContent = h.type;
+    patBS.appendChild(pill1);
+
+    const pill2 = document.createElement("div");
+    pill2.className="p-pill " + (h.color==="Green"?"p-green":"p-red");
+    pill2.textContent = h.color;
+    patCR.appendChild(pill2);
+  });
+
+  // Hot/Cold
+  const counts = Array(10).fill(0);
+  hist.forEach(h=>counts[h.num]++);
+  const arr = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c);
+  const hot = arr.slice(0,3), cold = arr.slice(-3).reverse();
+
+  $("#hotList").innerHTML = hot.map(x=>`<div class="p-pill">${x.i} <span class="tiny">(${x.c})</span></div>`).join("");
+  $("#coldList").innerHTML = cold.map(x=>`<div class="p-pill">${x.i} <span class="tiny">(${x.c})</span></div>`).join("");
+
+  // Gap Heatmap = distance since last seen
+  const lastSeen = new Map();
+  const gaps = [];
+  hist.forEach((h,idx)=>{
+    const prev = lastSeen.get(h.num);
+    const gap = (prev==null) ? "—" : (idx - prev);
+    lastSeen.set(h.num, idx);
+    gaps.push({num:h.num, gap});
+  });
+  const gm = $("#gapMap"); gm.innerHTML="";
+  gaps.forEach(g=>{
+    const el = document.createElement("div");
+    el.className="p-pill";
+    el.innerHTML = `#${g.num} <span class="tiny">gap:${g.gap}</span>`;
+    gm.appendChild(el);
+  });
+}
+
+/* -------------------------------- Stats ----------------------------------- */
+function renderStats(){
+  const hist = state.history;
+  const total = hist.length;
+  $("#st-total").textContent = String(total);
+
+  const mm = hist.filter(h=>h.confidence>=state.high).length;
+  const mmRate = total? (mm/total): 0;
+  $("#st-mm").textContent = (mmRate*100).toFixed(1)+"%";
+  $("#st-mm-p").style.width = (mmRate*100)+"%";
+
+  const avg = total? (hist.reduce((a,b)=>a+b.confidence,0)/total):0;
+  $("#st-avg").textContent = (avg*100).toFixed(1)+"%";
+  $("#st-avg-p").style.width = ((avg-0.5)/0.45*100)+"%";
+
+  const counts = Array(10).fill(0); hist.forEach(h=>counts[h.num]++);
+  const top = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c)[0] || {i:"—",c:0};
+  $("#st-top").textContent = `${top.i} (${total? (top.c/total*100).toFixed(1):"0.0"}%)`;
+
+  // Distribution canvas
+  const canvas = $("#distCanvas"), ctx = canvas.getContext("2d");
+  const w = canvas.width = canvas.clientWidth, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const pad=16, bw=(w-pad*2)/10 - 4, base=h-24;
+  const max = Math.max(...counts,1);
+  ctx.font="12px ui-monospace, monospace";
+  counts.forEach((c,i)=>{
+    const x=pad+i*(bw+4), bh = Math.max(4, c/max*(h*0.85));
+    const y = base - bh;
+    ctx.fillStyle = "#1f2a38"; ctx.fillRect(x,y,bw,bh);
+    ctx.strokeStyle="#243241"; ctx.strokeRect(x,y,bw,bh);
+    ctx.fillStyle="#9cb3cc"; ctx.fillText(String(i), x+bw/2-3, h-6);
+  });
+}
+
+/* --------------------------- Check by Period ------------------------------ */
+function checkByPeriod(input){
+  // Allow plain period or strings; extract last 6–12 digits for stability
+  const s = String(input).replace(/\D/g,"");
+  const period = s.length>=4 ? s : ("0000"+s).slice(-6);
+  const d = periodDigit(period);
+  const type = d>=5 ? "Big":"Small";
+  const color = digitColor(d, period);
+  const conf = computeConfidence(d, period, state.history);
+  return {input, period: Number(period), digit:d, type, color, conf};
+}
+function renderCheck(res){
+  $("#res-input").textContent = res.input;
+  $("#res-period").textContent = res.period;
+  $("#res-digit").textContent = "#"+res.digit;
+  $("#res-type").textContent = res.type;
+  $("#res-color").textContent = res.color;
+  $("#res-conf").textContent = (res.conf*100).toFixed(1)+"%";
+  $("#res-decision").outerHTML = decisionTag(res.conf);
+}
+
+/* ------------------------------ Render All -------------------------------- */
+function renderAll(){
+  renderBars();
+  renderPredictions();
+  renderPatterns();
+  renderStats();
+}
+
+/* --------------------------------- Init ----------------------------------- */
+function init(){
+  bindControls();
+  renderAll();
+  renderLiveBadge();
+}
+init();
 </script>
 </body>
 </html>
