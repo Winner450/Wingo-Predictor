@@ -1,474 +1,529 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🎯 Wingo Predictor Pro</title>
-<link rel="manifest" href="/manifest.json">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>🎯 WinGo Predictor Pro</title>
 <meta name="theme-color" content="#000000">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
-  --gold:#ffd700;--gold2:#f6d564;--ink:#e8edf7;--muted:#a9b3c9;
-  --card:#12151c;--stroke:#222a39;
-  --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;
-  --shadow:0 20px 50px rgba(0,0,0,.45);--radius:16px;
+  --gold:#ffd700; --gold-2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
+  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+  --card:#12141b; --edge:#1b2232; --edge2:#242c3f;
+  --radius:16px; --shadow:0 14px 28px rgba(0,0,0,.35);
 }
-/* Starfield */
-body{margin:0;color:#fff;font:16px/1.45 ui-sans-serif,system-ui,"Segoe UI",Roboto;background:#000;overflow-x:hidden}
-.star-layer,.star-layer:after{
-  position:fixed;inset:0;content:"";
-  background:
-    radial-gradient(2px 2px at 20% 30%,rgba(255,255,255,.7) 40%,transparent 42%) repeat,
-    radial-gradient(2px 2px at 80% 60%,rgba(255,255,255,.5) 40%,transparent 42%) repeat,
-    radial-gradient(1px 1px at 50% 80%,rgba(255,255,255,.35) 40%,transparent 42%) repeat;
-  background-size:220px 220px,300px 300px,180px 180px;
-  animation:drift 90s linear infinite; opacity:.25; pointer-events:none
+
+/* ===== Starfield background (CSS only) ===== */
+body{
+  margin:0; color:#fff; font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto;
+  background: radial-gradient(1200px 800px at 50% -20%, #0b0f1a 0%, #02040a 60%, #000 100%);
+  overflow-x:hidden;
 }
-.star-layer:after{animation-duration:140s;opacity:.18;filter:blur(.3px)}
-@keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:800px 400px,-600px 300px,500px -400px}}
+.bg-stars:before, .bg-stars:after{
+  content:""; position:fixed; inset:-200px; z-index:-1; pointer-events:none;
+  background-repeat:repeat;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.8) 0, transparent 60%),
+    radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,255,255,.6) 0, transparent 60%),
+    radial-gradient(1.2px 1.2px at 40% 80%, rgba(255,255,255,.5) 0, transparent 60%),
+    radial-gradient(1.8px 1.8px at 85% 20%, rgba(255,215,0,.9) 0, transparent 60%);
+  animation: drift 120s linear infinite;
+  opacity:.55;
+}
+.bg-stars:after{ animation-duration: 220s; opacity:.35; filter: blur(0.3px); }
+@keyframes drift{ from{transform:translateY(0)} to{transform:translateY(200px)} }
 
-header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#090b10,#04060a);border-bottom:1px solid #0f1420}
-.brand{max-width:1100px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:10px;justify-content:center}
-.brand .dot{width:10px;height:10px;border-radius:50%;background:#ffd400;box-shadow:0 0 10px #ffd400}
-.brand .title{font-weight:900;letter-spacing:.4px;color:#ffd700;font-size:clamp(18px,4.5vw,22px);text-transform:uppercase}
+/* ===== Header ===== */
+header{position:sticky; top:0; z-index:50; background:rgba(0,0,0,.7); backdrop-filter: blur(6px); border-bottom:1px solid #0f1422}
+.bar{max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 16px}
+.logo{font-weight:900; font-size:clamp(18px,4.4vw,24px); color:var(--gold); letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.right{display:flex; gap:10px; align-items:center; color:#cbd5e1; font-size:13px}
 
-.container{max-width:1100px;margin:18px auto 42px;padding:0 14px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(6px);padding:16px}
-.section-title{font-weight:900;font-size:18px;margin:0 0 12px}
+/* ===== Layout ===== */
+.container{max-width:1200px; margin:0 auto; padding:18px 16px 46px}
+.card{background:linear-gradient(180deg,#0f1422,#0d121d); border:1px solid var(--edge); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+.h1{font-size:18px; font-weight:800; margin:0 0 10px}
+.sub{color:var(--muted); font-size:13px; margin-top:6px}
 
-label{font-size:13px;color:#cfdaff}
-.input,select{width:100%;padding:14px 14px;border-radius:12px;color:#fff;background:#0c111a;border:2px solid #1e2634;outline:none;font-size:16px}
-.input:focus,select:focus{border-color:#ffd700}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.btn{padding:12px 18px;border:0;border-radius:12px;cursor:pointer;font-weight:800;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
-.btn.primary{background:linear-gradient(180deg,#ffd700,#f6d564);color:#111}
-.btn.ghost{background:#162032;color:#dbe2ff;border:1px solid #2a3650}
-.btn.danger{background:#2a1c1c;color:#ffc4c4;border:1px solid #4a2b2b}
+.grid{display:grid; grid-template-columns:1.3fr .9fr; gap:16px}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:980px){.grid2{grid-template-columns:1fr}}
 
-.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
+label{font-size:13px; color:#d8dbe2; font-weight:700; margin-bottom:6px; display:block}
+input,select{
+  width:100%; padding:14px; background:#0b0f16; border:2px solid #1b2436; border-radius:12px; color:#fff; font-size:16px; outline:none
+}
+input:focus,select:focus{border-color:var(--gold)}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
 
-.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#cfdaff}
-.switch input{transform:scale(1.1)}
+.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2)); color:#000; font-weight:900; border:0; border-radius:12px; padding:12px 18px; cursor:pointer}
+.btn.sec{background:#172034; color:#e5e7eb; border:1px solid var(--edge2)}
+.btn.ghost{background:transparent; color:#cbd5e1; border:1px dashed #33405b}
 
-.metric{background:#0c1119;border:1px solid #20283a;border-radius:14px;padding:14px}
-.key{font-size:13px;color:#9fb0d0;margin-bottom:6px}
-.val{font-size:36px;font-weight:900;color:#ffd700}
-.progress{height:10px;background:#1b2434;border-radius:999px;overflow:hidden}
-.progress>span{height:10px;display:block;background:linear-gradient(90deg,#ffd700,#ffe28a);width:0%}
-.pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #2a3750;font-weight:800}
-.pill.ok{color:#22c55e}.pill.warn{color:#f59e0b}.pill.bad{color:#ef4444}
-.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #2a3750;padding:8px 12px;border-radius:999px;background:#0c121c;font-weight:800;color:#cfe2ff}
+.switch{display:inline-flex; gap:8px; align-items:center; color:#e0e3ea; font-size:13px}
+.chip{display:inline-flex; align-items:center; gap:8px; background:#0f1625; border:1px solid #202b42; border-radius:999px; padding:8px 12px; color:#cfd4e1; font-weight:700}
 
-.helper{color:#a8b3c9;font-size:12px}
-.tip{color:#a8b1c3;font-size:12px;text-align:center;white-space:normal;line-height:1.4}
-.hr{height:1px;background:#1a2332;margin:12px 0;border-radius:10px}
+/* ===== KPIs ===== */
+.kv{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+@media (max-width:980px){.kv{grid-template-columns:1fr}}
+.box{background:#0b0f15; border:1px solid #1a2130; border-radius:14px; padding:14px}
+.key{color:#a1a8b8; font-size:12px}
+.val{color:var(--gold); font-weight:900; font-size:30px}
+.line{height:10px; background:#1c2534; border-radius:999px; overflow:hidden; margin:10px 0 2px}
+.bar{height:10px; width:0%; background:linear-gradient(90deg,var(--gold-2),var(--gold))}
+.pill{display:inline-block; border:1px solid #2a3448; border-radius:999px; padding:6px 10px; font-weight:800; margin-right:6px}
+.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.history{font-size:12px; color:#cfd4e1; max-height:260px; overflow:auto}
+.hrow{padding:6px 0; border-bottom:1px dashed #24304a}
+.helper{font-size:12px; color:#9ca3af}
+.hr{height:1px; background:#1a2130; margin:12px 0}
 
-/* Verify message colors */
-#verifyMsg.ok{color:var(--ok)} #verifyMsg.bad{color:var(--bad)} #verifyMsg.neu{color:#a8b3c9}
+/* compact mode */
+.compact #probWrap{display:none}
+.compact #histWrap{display:none}
+
+/* small helper for verify text color */
+#verifyMsg{transition: color .2s ease}
 </style>
 </head>
-<body>
-<div class="star-layer"></div>
-
+<body class="bg-stars">
 <header>
-  <div class="brand">
-    <span class="dot"></span>
-    <div class="title">WINGO PREDICTOR PRO</div>
+  <div class="bar">
+    <div class="logo">🎯 WinGo Predictor Pro</div>
+    <div class="right">
+      <label class="switch"><input type="checkbox" id="compactToggle"> Compact View</label>
+    </div>
   </div>
 </header>
 
-<div class="container">
-  <!-- CONTROL -->
+<div class="container" id="appRoot">
+  <!-- Controls -->
   <div class="card">
-    <div class="section-title">Quick Predict</div>
+    <div class="h1">Quick Predict</div>
     <div class="grid">
       <div>
         <label for="period">🧾 Period Number</label>
-        <input id="period" class="input" placeholder="e.g. 20250813100052810">
-        <div class="helper" style="margin-top:6px">केवल digits (0–9) • tail खुद-ब-खुद दिखेगा</div>
-
-        <div class="hr"></div>
-
-        <!-- Pattern Boosts -->
-        <div class="section-title" style="font-size:16px">🎛️ Pattern Boosts</div>
-        <div class="row">
-          <label class="switch"><input type="checkbox" id="pMirror" checked> Mirror</label>
-          <label class="switch"><input type="checkbox" id="pReverse"> Reverse</label>
-          <label class="switch"><input type="checkbox" id="pRepeat" checked> Repeat</label>
-          <label class="switch"><input type="checkbox" id="pAlt" checked> Alternating</label>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <label>Strength</label>
-          <select id="patStrength" class="input" style="max-width:220px">
-            <option value="light" selected>Light</option>
-            <option value="medium">Medium</option>
-            <option value="heavy">Heavy</option>
-          </select>
-          <span class="helper">Pattern learning पिछले रिज़ल्ट से auto-tune होगा।</span>
-        </div>
+        <input id="period" placeholder="e.g. 20250813100052810"/>
+        <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
       </div>
-
       <div>
-        <label>⏱ Auto mode</label>
-        <select id="interval" class="input">
-          <option value="30">30 seconds</option>
-          <option value="60">60 seconds</option>
+        <label for="mode">Strategy</label>
+        <select id="mode">
+          <option value="balanced" selected>Normal</option>
+          <option value="conservative">Confidence</option>
+          <option value="aggressive">Very Confident</option>
         </select>
-        <div class="row" style="margin-top:10px">
-          <button id="btnAuto" class="btn primary">▶ Start Auto</button>
-          <button id="btnNotify" class="btn ghost">🔔 Notifications</button>
+        <div class="row" style="margin-top:8px">
+          <label class="switch"><input id="autoNext" type="checkbox"> Auto Mode</label>
+          <span class="chip" id="presetWrap">
+            ⏱ Preset:
+            <label class="switch"><input type="radio" name="preset" value="30" checked>30s</label>
+            <label class="switch"><input type="radio" name="preset" value="60">60s</label>
+          </span>
+          <label class="switch"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
+          <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON</label>
+          <button class="btn sec" id="notifyBtn">🔔 Notifications</button>
         </div>
       </div>
     </div>
 
     <div class="row" style="margin-top:12px">
-      <button id="btnPredict" class="btn primary">🪄 Predict</button>
-      <button id="btnClear" class="btn ghost">Clear</button>
-      <button id="btnCopy" class="btn ghost">Copy</button>
-      <span id="periodInfo" class="helper">—</span>
+      <button class="btn" id="btnPredict">🔮 Predict</button>
+      <button class="btn sec" id="btnClear">Clear</button>
+      <button class="btn sec" id="btnCopy">Copy</button>
+      <button class="btn ghost" id="btnSound">🔊 Test Ting</button>
+      <span class="helper" id="periodInfo">—</span>
     </div>
-  </div>
 
-  <!-- RESULT -->
-  <div class="card" style="margin-top:14px">
+    <div class="hr"></div>
+
+    <!-- Verify & Learn (Big/Small only) -->
     <div class="grid">
-      <div class="metric">
-        <div class="key">Predicted Number</div>
-        <div id="vNum" class="val">—</div>
-        <div class="key" style="margin-top:8px">Size</div>
-        <div id="vSize" class="val" style="font-size:32px">—</div>
-      </div>
-      <div class="metric">
-        <div class="key">Confidence</div>
-        <div class="progress"><span id="confBar"></span></div>
-        <div class="key" style="margin-top:10px">Signal</div>
-        <span id="playSignal" class="pill">—</span>
-        <div class="key" style="margin-top:10px">Extras</div>
+      <div>
+        <label>✅ Actual size — optional (Learning)</label>
         <div class="row">
-          <span id="top2" class="badge">Safe set: —</span>
-          <span id="scoreTag" class="badge">Score —</span>
+          <label class="switch"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
+          <label class="switch"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
         </div>
       </div>
+      <div class="row" style="align-items:end">
+        <button class="btn sec" id="btnVerify">Verify & Learn</button>
+        <span class="helper" id="verifyMsg">—</span>
+      </div>
     </div>
   </div>
 
-  <!-- VERIFY & LEARN -->
-  <div class="card" style="margin-top:14px">
-    <div class="section-title">Verify & Learn</div>
-    <div class="row">
-      <label class="switch"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
-      <label class="switch"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
-      <button id="btnVerify" class="btn ghost">Verify & Learn</button>
-      <span id="verifyMsg" class="helper neu">—</span>
+  <!-- Result -->
+  <div class="card" id="resultCard" style="margin-top:16px;display:none">
+    <div class="kv">
+      <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
+      <div class="box"><div class="key">🔢 Predicted Number</div><div class="val" id="vNum">—</div></div>
+      <div class="box"><div class="key">📏 Size</div><div class="val" id="vSize">—</div></div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="key">🧠 Confidence <span id="hiAcc" class="chip" style="display:none">🔥 High Accuracy</span></div>
+      <div class="line"><div class="bar" id="confBar"></div></div>
+    </div>
+    <div style="margin-top:10px">
+      <span id="playSignal" class="pill">—</span>
+      <span id="top2" class="pill">Safe set: —</span>
+      <span id="top3" class="pill">Top-3: —</span>
+      <span id="reasons" class="pill">—</span>
     </div>
   </div>
 
-  <!-- CHART + HISTORY -->
-  <div class="grid" style="margin-top:14px">
-    <div class="card">
-      <div class="section-title">📊 Probability (0–9)</div>
+  <!-- Charts + History -->
+  <div class="grid2" style="margin-top:16px">
+    <div class="card" id="probWrap">
+      <div class="h1">📊 Probability (0–9)</div>
       <canvas id="probChart" height="220"></canvas>
     </div>
-    <div class="card">
-      <div class="section-title">🕘 Recent Predictions</div>
-      <div id="hist" class="helper">—</div>
+    <div class="card" id="histWrap">
+      <div class="h1">🕘 Recent Predictions</div>
+      <div id="hist" class="history">—</div>
     </div>
-  </div>
-
-  <div class="card" style="margin-top:14px">
-    <div class="tip">Tip: Auto ON + Notifications रखें। नया period आने पर popup + sound बजेगा। Verify करें ताकि size-learning और pattern-learning smart होता रहे।</div>
   </div>
 </div>
 
 <script>
-/* ---------- Utils ---------- */
-const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||"");
-const clamp01=x=>Math.max(0,Math.min(1,x));
-const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);}
-const argmax=a=>a.indexOf(Math.max(...a));
-const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}}
-const describe=p=>isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';
-function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
-function rng(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-
-function playCoin(){
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const o=ctx.createOscillator(), g=ctx.createGain();
-    o.type="triangle"; o.frequency.value=880;
-    o.connect(g); g.connect(ctx.destination);
-    const now=ctx.currentTime;
-    g.gain.setValueAtTime(0.001,now);
-    g.gain.exponentialRampToValueAtTime(0.6,now+0.02);
-    o.frequency.exponentialRampToValueAtTime(440,now+0.25);
-    g.gain.exponentialRampToValueAtTime(0.0001,now+0.35);
-    o.start(now); o.stop(now+0.36);
-  }catch{}
-}
-
-/* ---------- SW + Notifications ---------- */
-let swReady=false;
-(async function(){
+/* ===== SERVICE WORKER / NOTIFY (fallback safe) ===== */
+(async function setupSW(){
   if('serviceWorker' in navigator){
-    try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; swReady=true; }catch{}
+    try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; }catch(e){}
   }
 })();
-async function ensureNotify(){
+async function ensureNotifyPerm(){
   if(!('Notification' in window)) return false;
   if(Notification.permission==='granted') return true;
   if(Notification.permission==='denied') return false;
   try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
 }
-async function pushNotify({title,body,tag}){
+async function fireNotify(tail, digit, size){
+  const ok = await ensureNotifyPerm(); if(!ok) return;
   try{
-    if(!swReady) return;
-    const ok=await ensureNotify(); if(!ok) return;
-    const reg=await navigator.serviceWorker.ready;
-    await reg.showNotification(title,{body,tag,renotify:true,requireInteraction:true,icon:'/icons/icon-192.png',badge:'/icons/icon-192.png',vibrate:[60,20,60]});
+    const reg = (navigator.serviceWorker && await navigator.serviceWorker.ready) || null;
+    const payload = { body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true,
+                      icon:'/icons/icon-192.png', badge:'/icons/icon-192.png', vibrate:[60,30,60] };
+    if(reg && reg.showNotification){ await reg.showNotification(`Next • ${tail}`, payload); }
+    else { new Notification(`Next • ${tail}`, payload); }
   }catch{}
 }
 
-/* ---------- Persistence ---------- */
+/* ===== COIN "TING" SOUND (WebAudio, ~1s) ===== */
+let audioCtx=null;
+function playTing(){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const ctx=audioCtx;
+    const o1=ctx.createOscillator(), o2=ctx.createOscillator(), gain=ctx.createGain();
+    o1.type='triangle'; o2.type='square';
+    o1.frequency.value=1320; o2.frequency.value=880; // bright + sub
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.8, ctx.currentTime+0.02);
+    // short metallic decay
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.95);
+    // slight pitch drop
+    o1.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime+0.95);
+    o2.frequency.exponentialRampToValueAtTime(780, ctx.currentTime+0.95);
+    o1.connect(gain); o2.connect(gain); gain.connect(ctx.destination);
+    o1.start(); o2.start();
+    o1.stop(ctx.currentTime+1.0); o2.stop(ctx.currentTime+1.0);
+  }catch{}
+}
+
+/* ===== Helpers ===== */
+const el=id=>document.getElementById(id);
+const root=document.getElementById('appRoot');
+const isDigits=s=>/^\d+$/.test(s||"");
+const clamp01=x=>Math.max(0,Math.min(1,x));
+const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
+const argmax=a=>a.indexOf(Math.max(...a));
+const fmtPct=x=>(x*100).toFixed(1)+'%';
+const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
+function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
+function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+
+/* ===== Local learning (size only) ===== */
 const LS_SIZE='WPP_SIZE2';
-const loadSize=()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
-const saveSize=s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
+const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
 
-const LS_PAT='WPP_PATSTAT';
-const defaultPat=()=>({mirror:{w:1,l:1},reverse:{w:1,l:1},repeat:{w:1,l:1},alt:{w:1,l:1}});
-const loadPat=()=>{try{return Object.assign(defaultPat(),JSON.parse(localStorage.getItem(LS_PAT))||{})}catch{return defaultPat()}};
-const savePat=stat=>localStorage.setItem(LS_PAT,JSON.stringify(stat));
-
-/* ---------- Base features ---------- */
-function f_checksum(period){
+/* ===== Pattern signals ===== */
+/* Base signals kept robust & non-sequential so it won't 1,2,3... */
+function sigChecksum(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
-  const v=Array(10).fill(0.1); v[t]+=0.34; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);
+  const v=Array(10).fill(0.1); v[t]+=0.28; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);
 }
-function f_parity(period){
+function sigParity(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const even=(+period.slice(-2))%2===0; const v=Array(10).fill(0.1);
-  for(let i=even?0:1;i<10;i+=2) v[i]+=0.22; return normalize(v);
+  const even=(+period.slice(-2))%2===0, v=Array(10).fill(0.1);
+  if(even){for(let i=0;i<10;i+=2)v[i]+=0.22}else{for(let i=1;i<10;i+=2)v[i]+=0.22}
+  return normalize(v);
 }
-function f_bucket(period,anti){
+function sigHashedDistance(period){ // distance from a hashed anchor (not last digit)
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const anchor = hash32(period+'seed')%10;
+  const v=Array(10).fill(0.1);
+  for(let i=0;i<10;i++){ const d=Math.min((i-anchor+10)%10,(anchor-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d); }
+  return normalize(v);
+}
+function sigBucket(period, antiSeq){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const tail=+period.slice(-3), m=tail%10, v=Array(10).fill(0.1);
-  const k=anti?0.18:0.38; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45; return normalize(v);
+  const k=antiSeq?0.16:0.34; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45; return normalize(v);
 }
-function f_mods(period){
+function sigPeriodProfile(period){ // soft profile from overall digits
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const d=[...period].map(Number), s=d.reduce((a,b)=>a+b,0);
-  const a=(s%7*3)%10, b=(s%11*7)%10; const v=Array(10).fill(0.1);
-  v[a]+=0.22; v[b]+=0.20; return normalize(v);
+  const d=[...period].map(Number), s=d.reduce((a,b)=>a+b,0), mod10=s%10, mod7=s%7;
+  const v=Array(10).fill(0.1);
+  v[mod10]+=0.36; v[(mod7*3)%10]+=0.20; v[(mod7*5)%10]+=0.18; return normalize(v);
 }
-function f_hashedDistance(period){
+
+/* Advanced patterns built on hashed pseudo-history (so page works standalone) */
+function sigReverse(period){
+  // Use hashed pseudo-seq to emulate "reverse" tendency
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const center=hash32(period+'seed')%10; const v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){const d=Math.min((i-center+10)%10,(center-i+10)%10); v[i]+=0.30*Math.exp(-0.55*d)}
+  const h=hash32('rev'+period); const a=(h%10), b=((h>>>8)%10), c=((h>>>16)%10);
+  const v=Array(10).fill(0.1);
+  v[(10-a)%10]+=0.22; v[(10-b)%10]+=0.16; v[(10-c)%10]+=0.12; return normalize(v);
+}
+function sigMirror(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const m = (hash32('mir'+period)%10);
+  const mirror = (x)=> (9-x);
+  const v=Array(10).fill(0.1);
+  v[mirror(m)]+=0.24; v[mirror((m+1)%10)]+=0.12; v[mirror((m+9)%10)]+=0.12; return normalize(v);
+}
+function sigContinuous(period){ // penalize repeat, prefer mild shift
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const last = (hash32('cont'+period)%10);
+  const v=Array(10).fill(0.1);
+  v[(last+1)%10]+=0.18; v[(last+9)%10]+=0.18; v[last]+=0.05; return normalize(v);
+}
+function sigGap(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const ref=(hash32('gap'+period)%10);
+  const v=Array(10).fill(0.1);
+  for(let i=0;i<10;i++){ const d=Math.min((i-ref+10)%10,(ref-i+10)%10); v[i]+=0.22*Math.exp(-0.38*d); }
   return normalize(v);
 }
 
-/* ---------- Pattern boosts ---------- */
-function pb_mirror(period){const v=Array(10).fill(0); const s=hash32(period+'mir')%10; v[s]+=1; v[(9-s+10)%10]+=1; return normalize(v.map(x=>x||0.1));}
-function pb_reverse(period){if(!isDigits(period)) return Array(10).fill(0.1); const m=(+period.slice(-3))%10; const r=(9-m+10)%10; const v=Array(10).fill(0.1); v[r]+=0.9; v[(r+1)%10]+=0.5; v[(r+9)%10]+=0.5; return normalize(v);}
-function pb_repeat(period){const h=hash32(period+'rep')%10; const v=Array(10).fill(0.1); v[h]+=0.9; v[(h+1)%10]+=0.4; v[(h+9)%10]+=0.4; return normalize(v);}
-function pb_alt(period){const odd=(hash32(period+'alt')%2)===1; const v=Array(10).fill(0.1); for(let i=odd?0:1;i<10;i+=2) v[i]+=0.8; return normalize(v);}
+/* Regime tilt via size-learning */
+function sizeTilt(base, learnBoost){
+  const sz=loadSize(); const total=(sz[0]+sz[1])||1;
+  const smallBias=sz[0]/total, bigBias=sz[1]/total;
+  let out=base.slice();
+  for(let i=0;i<5;i++) out[i]*=(1 - learnBoost + learnBoost*smallBias);
+  for(let i=5;i<10;i++) out[i]*=(1 - learnBoost + learnBoost*bigBias);
+  return normalize(out);
+}
 
-/* ---------- Ensemble predictor with pattern injection + learning ---------- */
-function patternStrengthValue(sel){return sel==='heavy'?0.25: sel==='medium'?0.18: 0.12}
-function regimeWeights(baseW){
-  const sz=loadSize(); const big=sz[1]/(sz[0]+sz[1]); const w=baseW.slice();
-  if(big>0.62||big<0.38) w[4]+=0.02; const s=w.reduce((a,b)=>a+b,0); return w.map(x=>x/s);
-}
-function patPerfWeight(name){
-  const st=loadPat()[name]; const q=(st.w+1)/(st.w+st.l+2); // 0..1
-  // Map to [0.85, 1.15]
-  return 0.85 + 0.30*q;
-}
-function predict(period,{mode='balanced',antiSeq=true,learn=true,patterns={},patStrength='light'}={}){
-  const hyper={
-    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.22,0.18,0.22,0.18,0.20],learnBoost:0.25},
-    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.20,0.18,0.24,0.18,0.20],learnBoost:0.30},
-    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.18,0.18,0.26,0.18,0.20],learnBoost:0.35}
+/* ===== Predictor (Weighted Hybrid + Confidence Adjust) ===== */
+function predictLocal(period, mode, antiSeq, learnOn){
+  const HYP={
+    conservative:{temp:1.05,cap:0.60,jitter:0.05,adapt:0.12, learnBoost:0.22,
+      w:{base:[0.22,0.16,0.18,0.16,0.10], adv:[0.08,0.06,0.06,0.06]}},
+    balanced:{temp:1.06,cap:0.64,jitter:0.08,adapt:0.18, learnBoost:0.28,
+      w:{base:[0.20,0.18,0.20,0.16,0.10], adv:[0.08,0.04,0.06,0.08]}},
+    aggressive:{temp:1.08,cap:0.68,jitter:0.12,adapt:0.24, learnBoost:0.34,
+      w:{base:[0.18,0.18,0.22,0.16,0.10], adv:[0.10,0.06,0.06,0.04]}}
   }[mode];
 
-  const P1=f_checksum(period), P2=f_parity(period), P3=f_bucket(period,antiSeq), P4=f_mods(period), P5=f_hashedDistance(period);
-  const w=regimeWeights(hyper.w);
-  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
+  // base signals
+  const S1=sigChecksum(period);
+  const S2=sigParity(period);
+  const S3=sigHashedDistance(period);
+  const S4=sigBucket(period, antiSeq);
+  const S5=sigPeriodProfile(period);
 
-  // pattern injection
-  const kBase = patternStrengthValue(patStrength);
-  let pat=null, k=0;
-  if(patterns.mirror){ pat = pat? normalize(pat.map((x,i)=>x*pb_mirror(period)[i])) : pb_mirror(period); k+=kBase*patPerfWeight('mirror'); }
-  if(patterns.reverse){ pat = pat? normalize(pat.map((x,i)=>x*pb_reverse(period)[i])): pb_reverse(period); k+=kBase*patPerfWeight('reverse'); }
-  if(patterns.repeat){ pat = pat? normalize(pat.map((x,i)=>x*pb_repeat(period)[i])) : pb_repeat(period); k+=kBase*patPerfWeight('repeat'); }
-  if(patterns.alt){ pat = pat? normalize(pat.map((x,i)=>x*pb_alt(period)[i])) : pb_alt(period); k+=kBase*patPerfWeight('alt'); }
-  if(pat){
-    const maxp=Math.max(...pat);
-    base=normalize(base.map((p,i)=>p*(1 - Math.min(.45,k) + Math.min(.45,k)*(pat[i]/maxp))));
-  }
+  // advanced patterns
+  const A1=sigReverse(period);
+  const A2=sigMirror(period);
+  const A3=sigContinuous(period);
+  const A4=sigGap(period);
 
-  // adaptive sharpener
-  const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  base=normalize(base.map(p=>p*(1+0.18*((p-t)/(t+1e-9)))));
+  // noise filter: median blend across signals to damp spikes
+  const fuse=(arrs)=> normalize(arrs.reduce((acc,a)=>{
+    for(let i=0;i<10;i++) acc[i]+=a[i]; return acc;
+  }, Array(10).fill(0)).map(x=>x/arrs.length));
 
-  // size-learning
-  if(learn){
-    const sz=loadSize(); const total=(sz[0]+sz[1])||1; const small=sz[0]/total, big=sz[1]/total, L=hyper.learnBoost;
-    for(let i=0;i<5;i++)  base[i]*=(1 - L + L*small);
-    for(let i=5;i<10;i++) base[i]*=(1 - L + L*big);
-    base=normalize(base);
-  }
+  // weighted hybrid
+  let base = normalize(Array(10).fill(0).map((_,i)=>
+    HYP.w.base[0]*S1[i] + HYP.w.base[1]*S2[i] + HYP.w.base[2]*S3[i] + HYP.w.base[3]*S4[i] + HYP.w.base[4]*S5[i]
+  ));
+  const adv  = normalize(Array(10).fill(0).map((_,i)=>
+    HYP.w.adv[0]*A1[i] + HYP.w.adv[1]*A2[i] + HYP.w.adv[2]*A3[i] + HYP.w.adv[3]*A4[i]
+  ));
+  let mix = fuse([base, adv, fuse([base, adv, S3])]); // extra distance reinforcement
 
-  // bootstrap + temp + cap
-  const rnd=rng(hash32(period)), B=72, j=0.08;
-  const agg=Array(10).fill(0), votes=Array(10).fill(0);
+  // adaptive sharpening towards top-3
+  const sorted=mix.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
+  mix=normalize(mix.map(p=>p*(1+HYP.adapt*((p-t)/(t+1e-9)))));
+
+  // regime & learning tilt (size only)
+  if(learnOn) mix = sizeTilt(mix, HYP.learnBoost);
+
+  // bootstrap with deterministic jitter (seeded) for stability score
+  const seed=hash32(period+'boot'); const rnd=mulberry32(seed);
+  const B=80, j=HYP.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
   for(let b=0;b<B;b++){
-    const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j))));
+    const p=normalize(mix.map(x=>Math.max(0, x*(1+(rnd()*2-1)*j))));
     p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++;
   }
-  let probs=normalize(agg).map(p=>Math.pow(p,1/1.06)); probs=normalize(probs);
+  let probs=normalize(agg).map(p=>Math.pow(p,1/HYP.temp)); probs=normalize(probs);
+
+  // cap the max prob to avoid overconfidence
   const iM=argmax(probs), mx=probs[iM];
-  if(mx>0.62){
-    const extra=mx-0.62; probs[iM]-=extra;
-    const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1;
-    const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs);
+  if(mx>HYP.cap){
+    const excess=mx-HYP.cap; probs[iM]-=excess;
+    const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest;
+    for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs);
   }
+
+  // stability ~ agreement across bootstraps
   const stability=Math.max(...votes)/B;
-  return {probs,stability};
+  return {probs, stability};
 }
 
-/* ---------- Charts + Render ---------- */
-let probChart=null,lastPred=null;
-function drawChart(probs){
-  const data=probs.map(p=>Math.round(p*1000)/10), labels=[...Array(10).keys()].map(String);
+/* ===== Chart ===== */
+let probChart=null;
+function renderChart(probs){
+  const data=probs.map(p=>Math.round(p*1000)/10);
+  const labels=[...Array(10).keys()].map(String);
   if(probChart) probChart.destroy();
-  probChart=new Chart(document.getElementById('probChart').getContext('2d'),{
-    type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
+  probChart=new Chart(el('probChart').getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets:[{label:'Probability (%)',data}]},
     options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}
   });
 }
-function render(period,out,source='manual',enabledPatterns={}){
-  const probs=out.probs.slice(), pick=argmax(probs);
-  drawChart(probs);
 
-  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
-  const stability=clamp01(out.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
+/* ===== Render Result ===== */
+function renderResult(period, out, source='manual'){
+  const probs=out.probs.slice(); const pick=argmax(probs);
+  renderChart(probs);
 
+  // confidence by entropy + stability
+  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) });
+  const entropy=clamp01(1-H/Math.log(10));
+  const stability=clamp01(out.stability||0);
+  const score=clamp01(0.55*entropy+0.45*stability);
+
+  el('resultCard').style.display='block';
+  el('vPeriod').textContent=period;
   el('vNum').textContent=pick;
   el('vSize').textContent=pick>=5?'Big':'Small';
   el('confBar').style.width=(score*100).toFixed(1)+'%';
-  el('scoreTag').textContent='Score '+(score*100|0)+'%';
+  el('hiAcc').style.display=score>=0.86?'inline-flex':'none';
 
-  const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.28) issues.push('unstable');
-  let sig='Play',cls='ok'; if(issues.length===1){sig='Caution';cls='warn'} if(issues.length>=2){sig='Wait';cls='bad'}
-  const ps=el('playSignal'); ps.textContent=sig; ps.className='pill '+cls;
+  const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.30) issues.push('unstable');
+  let signal='Play', cls='ok';
+  if(issues.length===1){ signal='Caution'; cls='warn'; }
+  if(issues.length>=2){ signal='Wait'; cls='bad'; }
+  el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
 
   const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
   el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
+  el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
+  el('reasons').textContent=`Score ${(score*100).toFixed(0)}%`;
 
-  const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  h.insertAdjacentHTML('afterbegin',`<div>🕒 ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
-  while(h.childElementCount>14) h.removeChild(h.lastElementChild);
+  const h=el('hist');
+  if(h.textContent==='—') h.textContent='';
+  h.insertAdjacentHTML('afterbegin',
+    `<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`
+  );
+  [...h.children].slice(16).forEach(n=>n.remove());
 
-  // save last prediction for Verify
-  lastPred={
-    period, pick, size:(pick>=5?'big':'small'),
-    patterns:enabledPatterns
-  };
-
-  playCoin();
-  if(source==='auto'){
-    pushNotify({title:`Next • ${String(period).slice(-3)}`, body:`#${pick} • ${pick>=5?'Big':'Small'}`, tag:'wingo-auto'});
+  // Auto notifications + sound on auto ticks
+  if(source==='auto' && el('autoNext').checked){
+    fireNotify(String(period).slice(-3), pick, (pick>=5?'Big':'Small'));
+    playTing();
   }
 }
 
-/* ---------- Actions ---------- */
-let autoOn=false, autoTimer=null, busy=false;
-function currentPatterns(){ return {
-  mirror: el('pMirror').checked,
-  reverse: el('pReverse').checked,
-  repeat: el('pRepeat').checked,
-  alt: el('pAlt').checked
-};}
-function runPredict(source='manual'){
-  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
-  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें'); return;}
-  el('periodInfo').textContent='Period: '+describe(pr);
-  const out=predict(pr,{
-    mode:'balanced',antiSeq:true,learn:true,
-    patterns:currentPatterns(),
-    patStrength:el('patStrength').value
-  });
-  render(pr,out,source,currentPatterns());
+/* ===== Actions ===== */
+let autoTimer=null, busy=false;
+async function runPredict(source='manual'){
+  if(busy) return; busy=true; setTimeout(()=>busy=false,130);
+  const pr=el('period').value.trim(); if(!isDigits(pr)){ alert('Valid period number भरें'); return; }
+  el('periodInfo').textContent='Period: '+describePeriod(pr);
+  const out=predictLocal(pr, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
+  renderResult(pr, out, source);
 }
 function startAuto(){
-  if(autoOn) return;
-  autoOn=true; el('btnAuto').textContent='⏸ Stop Auto'; el('btnAuto').classList.remove('primary'); el('btnAuto').classList.add('danger');
-  const sec=parseInt(el('interval').value,10);
+  const preset = +document.querySelector('input[name="preset"]:checked').value || 30;
   clearInterval(autoTimer);
   autoTimer=setInterval(()=>{
     const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur);
     runPredict('auto');
-  }, Math.max(5,sec)*1000);
-}
-function stopAuto(){
-  autoOn=false; el('btnAuto').textContent='▶ Start Auto'; el('btnAuto').classList.add('primary'); el('btnAuto').classList.remove('danger');
-  clearInterval(autoTimer); autoTimer=null;
+  }, preset*1000);
 }
 
-/* ---------- Verify & Learn (size + pattern stats) ---------- */
-function verifyAndLearn(){
-  const pick = el('vNum').textContent.trim();
-  if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').className='helper neu'; return; }
-  const chosen = document.querySelector('input[name="actSize"]:checked');
-  if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').className='helper neu'; return; }
-
-  const actual = chosen.value; // 'small' | 'big'
-  const win = (actual === ( (+pick>=5)?'big':'small' ));
-
-  // size learning
-  if(win!==null){
-    const s=loadSize(); (actual==='small') ? s[0]++ : s[1]++; saveSize(s);
-  }
-  // pattern learning (credit/debit enabled patterns of lastPred)
-  if(lastPred && lastPred.patterns){
-    const stat=loadPat();
-    for(const k of Object.keys(lastPred.patterns)){
-      if(lastPred.patterns[k]){
-        if(win) stat[k].w++; else stat[k].l++;
-      }
-    }
-    savePat(stat);
-  }
-
-  if(win){ el('verifyMsg').textContent='WIN ✔'; el('verifyMsg').className='helper ok'; }
-  else    { el('verifyMsg').textContent='LOSS ✘'; el('verifyMsg').className='helper bad'; }
-}
-
-/* ---------- Bindings ---------- */
+/* ===== Bindings ===== */
 document.addEventListener('DOMContentLoaded', ()=>{
   el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
   el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
-  el('btnAuto').addEventListener('click', ()=>{ autoOn?stopAuto():startAuto(); });
-  el('interval').addEventListener('change', ()=>{ if(autoOn){ stopAuto(); startAuto(); } });
-  el('btnNotify').addEventListener('click', async ()=> alert((await ensureNotify())?'Notifications enabled':'Notifications blocked / unsupported'));
+
   el('btnClear').addEventListener('click', ()=>{
-    stopAuto(); el('period').value=''; el('periodInfo').textContent='—';
-    el('vNum').textContent='—'; el('vSize').textContent='—'; el('confBar').style.width='0%';
-    el('playSignal').textContent='—'; el('playSignal').className='pill'; el('top2').textContent='Safe set: —'; el('scoreTag').textContent='Score —';
-    el('hist').textContent='—'; if(probChart){probChart.destroy(); probChart=null;} lastPred=null;
-    el('verifyMsg').textContent='—'; el('verifyMsg').className='helper neu';
-    document.querySelectorAll('input[name="actSize"]').forEach(r=>r.checked=false);
+    clearInterval(autoTimer); autoTimer=null; el('autoNext').checked=false;
+    el('period').value=''; el('periodInfo').textContent='—'; el('resultCard').style.display='none'; el('hist').textContent='—';
+    if(probChart){probChart.destroy(); probChart=null;}
   });
+
   el('btnCopy').addEventListener('click', async ()=>{
-    const on=Object.entries(currentPatterns()).filter(([k,v])=>v).map(([k])=>k).join(',')||'none';
-    const txt=`${new Date().toLocaleTimeString()} | Period ${el('period').value} | #${el('vNum').textContent} (${el('vSize').textContent}) | Patterns:${on} | Strength:${el('patStrength').value}`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{ alert(txt); }
+    const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
+    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{}
   });
-  el('btnVerify').addEventListener('click', verifyAndLearn);
+
+  el('btnSound').addEventListener('click', playTing);
+
+  // Auto mode toggle + preset
+  el('autoNext').addEventListener('change', async e=>{
+    clearInterval(autoTimer); autoTimer=null;
+    if(e.target.checked){
+      await ensureNotifyPerm();
+      startAuto();
+    }
+  });
+  document.querySelectorAll('input[name="preset"]').forEach(r=>{
+    r.addEventListener('change', ()=>{ if(el('autoNext').checked){ startAuto(); }});
+  });
+
+  el('notifyBtn').addEventListener('click', async ()=>{
+    alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked');
+  });
+
+  // Verify & Learn (Big/Small) with color feedback
+  el('btnVerify').addEventListener('click', ()=>{
+    const pick = el('vNum').textContent.trim();
+    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9ca3af'; return; }
+    const chosen = document.querySelector('input[name="actSize"]:checked');
+    if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9ca3af'; return; }
+
+    const actualSize = chosen.value;            // 'small' | 'big'
+    const predictedSize = (+pick>=5)?'big':'small';
+    const win = (actualSize===predictedSize);
+
+    if(win){
+      el('verifyMsg').textContent = `WIN ✔ size ${predictedSize.toUpperCase()}`;
+      el('verifyMsg').style.color = 'var(--ok)';
+    }else{
+      el('verifyMsg').textContent = `LOSS ✘ picked ${predictedSize.toUpperCase()} • actual ${actualSize.toUpperCase()}`;
+      el('verifyMsg').style.color = 'var(--bad)';
+    }
+    if(el('learnOn').checked){
+      const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
+    }
+  });
+
+  // Compact toggle
+  el('compactToggle').addEventListener('change', e=>{
+    if(e.target.checked) root.classList.add('compact'); else root.classList.remove('compact');
+  });
 });
 </script>
 </body>
