@@ -1,143 +1,122 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>🎯 WinGo Predictor Pro</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{
-  --gold:#ffd700; --gold-2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
-  --card:#14161b; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-  --radius:16px; --shadow:0 12px 26px rgba(0,0,0,.35);
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: url('https://media.giphy.com/media/26BRBupa9K3A1JecQ/giphy.gif') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
 }
-body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif}
-header{position:sticky;top:0;background:#000;border-bottom:1px solid #0f1117}
-.bar{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
-.logo{font-weight:900;font-size:20px;color:var(--gold);white-space:nowrap}
-.container{max-width:1180px;margin:auto;padding:18px}
-.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:14px}
-.h1{font-size:18px;font-weight:800}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border-radius:12px;padding:12px 18px;cursor:pointer;border:none}
-.history{font-size:12px;max-height:220px;overflow:auto;color:#cfd4e1}
+header {
+  background: rgba(0,0,0,0.8);
+  padding: 15px;
+  text-align: center;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: gold;
+  box-shadow: 0 0 15px #000;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 15px;
+  box-shadow: 0 0 20px #000;
+}
+input, select, button {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: none;
+  font-size: 1em;
+}
+button {
+  background: linear-gradient(90deg, gold, orange);
+  color: black;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover {
+  background: linear-gradient(90deg, orange, gold);
+}
+.result-box {
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 1.2em;
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="logo">🎯 WinGo Predictor Pro</div>
-    <label><input type="checkbox" id="autoNext"> Auto Mode</label>
-  </div>
-</header>
-
+<header>🎯 WinGo Predictor Pro</header>
 <div class="container">
-  <div class="card">
-    <div class="h1">Quick Predict</div>
-    <input id="period" placeholder="Enter Period ID" style="width:100%;padding:10px;border-radius:8px;margin:8px 0">
-    <button class="btn" id="btnPredict">🔮 Predict</button>
-    <audio id="soundPredict" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
-  </div>
-
-  <div class="card">
-    <div class="h1">Verify & Learn</div>
-    <label><input type="radio" name="actSize" value="small"> Small</label>
-    <label><input type="radio" name="actSize" value="big"> Big</label>
-    <button class="btn" id="btnVerify">Verify</button>
-    <span id="verifyMsg">—</span>
-    <audio id="soundWin" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-    <audio id="soundLoss" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
-  </div>
-
-  <div class="card">
-    <div class="h1">Result</div>
-    <div id="result">—</div>
-  </div>
-
-  <div class="card">
-    <div class="h1">Recent Predictions</div>
-    <div id="hist" class="history">—</div>
-  </div>
+  <label>🧾 Period Number</label>
+  <input id="period" placeholder="e.g. 20250813100052810">
+  <label>⏱ Auto Mode Interval</label>
+  <select id="interval">
+    <option value="30">30 seconds</option>
+    <option value="60">1 minute</option>
+  </select>
+  <br>
+  <button id="btnPredict">🔮 Predict</button>
+  <button id="btnAuto">▶ Auto Mode</button>
+  <div class="result-box" id="resultBox">Prediction will appear here...</div>
 </div>
 
+<audio id="coinSound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+
 <script>
-// Notification Permission
-async function ensureNotifyPerm(){
-  if(!('Notification' in window)) return false;
-  if(Notification.permission==='granted') return true;
-  if(Notification.permission==='denied') return false;
-  return (await Notification.requestPermission())==='granted';
-}
-function notifyUser(msg){
-  ensureNotifyPerm().then(ok=>{ if(ok) new Notification('Prediction', {body: msg}); });
-}
-
-// Learning Data
-const LS_SIZE='WPP_SIZE2';
-const loadSize=()=>JSON.parse(localStorage.getItem(LS_SIZE)||'[1,1]');
-const saveSize=s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
-
-// Pattern Based Prediction
-function predict(period){
-  if(!/^\d+$/.test(period)) return {pick:Math.floor(Math.random()*10), size:'small'};
-  const digits=period.split('').map(Number);
-  const sum=digits.reduce((a,b)=>a+b,0);
-  const reverse=Number(String(period).split('').reverse().join(''))%10;
-  const mirror=(9-digits[digits.length-1]);
-  const cont=(digits[digits.length-1]+1)%10;
-  const score=[sum%10,reverse,mirror,cont];
-  const pick=score[Math.floor(Math.random()*score.length)];
-  return {pick, size: pick>=5?'big':'small'};
-}
-
-// Render Result
-function renderResult(period,res){
-  document.getElementById('result').textContent=`Period: ${period} • #${res.pick} (${res.size.toUpperCase()})`;
-  const hist=document.getElementById('hist');
-  if(hist.textContent==='—') hist.textContent='';
-  hist.insertAdjacentHTML('afterbegin',`<div>⏱ ${new Date().toLocaleTimeString()} → ${res.pick} (${res.size})</div>`);
-  notifyUser(`#${res.pick} • ${res.size.toUpperCase()}`);
-  document.getElementById('soundPredict').play();
-}
-
-// Bind
-document.getElementById('btnPredict').addEventListener('click',()=>{
-  const period=document.getElementById('period').value.trim();
-  const res=predict(period);
-  renderResult(period,res);
-});
-
-document.getElementById('btnVerify').addEventListener('click',()=>{
-  const pick=document.getElementById('result').textContent.match(/#(\d+)/);
-  if(!pick){ document.getElementById('verifyMsg').textContent='पहले Predict करो'; return; }
-  const chosen=document.querySelector('input[name="actSize"]:checked');
-  if(!chosen){ document.getElementById('verifyMsg').textContent='Actual Size चुनो'; return; }
-  const predictedSize=+pick[1]>=5?'big':'small';
-  const actualSize=chosen.value;
-  if(predictedSize===actualSize){
-    document.getElementById('verifyMsg').textContent='WIN ✔';
-    document.getElementById('soundWin').play();
-    const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
-  }else{
-    document.getElementById('verifyMsg').textContent='LOSS ✘';
-    document.getElementById('soundLoss').play();
-    const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
-  }
-});
-
-// Auto Mode
 let autoTimer=null;
-document.getElementById('autoNext').addEventListener('change',e=>{
-  clearInterval(autoTimer);
-  if(e.target.checked){
-    autoTimer=setInterval(()=>{
-      const inp=document.getElementById('period');
-      inp.value=(BigInt(inp.value||Date.now())+1n).toString();
-      const res=predict(inp.value);
-      renderResult(inp.value,res);
-    },8000);
+
+function weightedPrediction(period) {
+  if (!period || period.length < 5) return {num: Math.floor(Math.random()*10), size: "Small", conf: 50};
+  let digits = period.split("").map(Number);
+  let sum = digits.reduce((a,b)=>a+b,0);
+  let reverse = parseInt(digits.reverse().join("")) % 10;
+  let mirror = parseInt([...period].map(d => 9 - parseInt(d)).join("")) % 10;
+  let continuous = (digits[digits.length-1] + 1) % 10;
+  let candidates = [sum % 10, reverse, mirror, continuous];
+  let counts = {};
+  candidates.forEach(c => counts[c] = (counts[c]||0)+1);
+  let predicted = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+  return {num: parseInt(predicted), size: predicted>=5?"Big":"Small", conf: Math.floor((counts[predicted]/4)*100)};
+}
+
+function showResult(p) {
+  document.getElementById("resultBox").innerHTML = `Predicted: <b>${p.num}</b> (${p.size}) — Confidence: ${p.conf}%`;
+  document.getElementById("coinSound").play();
+  if (Notification.permission === "granted") {
+    new Notification(`Next: ${p.num} (${p.size})`, {body:`Confidence: ${p.conf}%`, requireInteraction:true});
   }
+}
+
+document.getElementById("btnPredict").addEventListener("click", ()=>{
+  let period = document.getElementById("period").value.trim();
+  showResult(weightedPrediction(period));
+});
+
+document.getElementById("btnAuto").addEventListener("click", ()=>{
+  if (autoTimer) { clearInterval(autoTimer); autoTimer=null; alert("Auto Mode stopped"); return; }
+  let interval = parseInt(document.getElementById("interval").value)*1000;
+  if (Notification.permission !== "granted") Notification.requestPermission();
+  autoTimer = setInterval(()=>{
+    let period = document.getElementById("period").value.trim();
+    if (period) {
+      period = (BigInt(period) + 1n).toString();
+      document.getElementById("period").value = period;
+      showResult(weightedPrediction(period));
+    }
+  }, interval);
+  alert("Auto Mode started");
 });
 </script>
 </body>
