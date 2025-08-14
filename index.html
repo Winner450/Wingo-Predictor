@@ -525,7 +525,7 @@ function previewUploaded(){
   if(!uploadedData){ toast('No file uploaded'); return; }
   const preview = uploadedData.slice(0,50).map(x=>`period:${x.period} -> #${x.num} (${x.type})`).join('<br>');
   showModal('Preview (first 50)', `<div style="max-height:300px;overflow:auto">${preview}</div>`);
-}<!-- Part 2: continue the script and closing tags -->
+}<!->continue the script and closing tags -->
 <script>
 /* ========= Tuner (random search) ========= */
 async function runTune(iterations=300){
