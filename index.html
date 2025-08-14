@@ -6,62 +6,50 @@
 <title>🎯 Wingo Predictor Pro</title>
 <meta name="theme-color" content="#000000">
 <style>
-:root{
-  --gold:#ffd900; --gold2:#f3c14a; --ink:#eef3ff; --muted:#a8b1c3;
-  --card:rgba(16,20,28,.72); --stroke:rgba(255,255,255,.08);
-  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --r:16px; --shadow:0 12px 30px rgba(0,0,0,.5);
-}
-/* Starfield background (no images) */
-html,body{height:100%}
-body{margin:0;color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;background:#000;
-  background-image: radial-gradient(900px 600px at 20% -10%,rgba(255,217,0,.12),transparent);
-  overflow-x:hidden}
-.stars,.stars2,.stars3{position:fixed;inset:-50px;z-index:-1;pointer-events:none;opacity:.7;
-  background-repeat:repeat;filter:drop-shadow(0 0 4px rgba(255,255,255,.3));
-  background-image:
-   radial-gradient(2px 2px at 20px 30px,#fff,transparent),
-   radial-gradient(2px 2px at 120px 80px,#fff,transparent),
-   radial-gradient(1.5px 1.5px at 200px 10px,#fff,transparent),
-   radial-gradient(1.5px 1.5px at 300px 120px,#fff,transparent),
-   radial-gradient(1.2px 1.2px at 500px 180px,#fff,transparent);
-  animation: drift 120s linear infinite}
-.stars2{opacity:.5;transform:scale(1.4);animation-duration:160s}
-.stars3{opacity:.35;transform:scale(2.1);animation-duration:220s}
+:root{--gold:#ffd900;--gold2:#f3c14a;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;
+ --muted:#a8b1c3;--card:rgba(16,20,28,.72);--stroke:rgba(255,255,255,.08);--r:16px;}
+html,body{height:100%}body{margin:0;color:#fff;background:#000;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+.stars,.stars2,.stars3{position:fixed;inset:-50px;z-index:-1;pointer-events:none;opacity:.7;background-repeat:repeat;
+ background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+ radial-gradient(2px 2px at 120px 80px,#fff,transparent),
+ radial-gradient(1.5px 1.5px at 200px 10px,#fff,transparent),
+ radial-gradient(1.5px 1.5px at 300px 120px,#fff,transparent),
+ radial-gradient(1.2px 1.2px at 500px 180px,#fff,transparent);animation:drift 120s linear infinite}
+.stars2{opacity:.5;transform:scale(1.4);animation-duration:160s}.stars3{opacity:.35;transform:scale(2.1);animation-duration:220s}
 @keyframes drift{to{transform:translateY(1200px)}}
-/* Header */
 header{position:sticky;top:0;z-index:10;background:#0b0b0b;border-bottom:1px solid #1a1a1a}
 .brand{max-width:980px;margin:0 auto;padding:10px 14px;display:flex;gap:10px;justify-content:center;align-items:center;
-  color:var(--gold);font-weight:900;letter-spacing:.3px;text-transform:uppercase;font-size:clamp(16px,3.8vw,20px)}
+ color:var(--gold);font-weight:900;letter-spacing:.3px;text-transform:uppercase;font-size:clamp(16px,3.8vw,20px)}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
-/* Layout */
 .container{max-width:980px;margin:18px auto;padding:0 14px}
-.card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;backdrop-filter:blur(8px)}
-label{display:block;color:#dfe6f5;font-size:13px;font-weight:800;margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r);backdrop-filter:blur(8px);padding:16px}
+label{display:block;color:#e8efff;font-size:13px;font-weight:800;margin:0 0 6px}
 input,select{width:100%;padding:14px;border-radius:12px;background:rgba(8,10,14,.9);color:#fff;border:2px solid #202636;outline:none;font-size:16px}
 input:focus,select:focus{border-color:var(--gold)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{border:0;border-radius:12px;cursor:pointer;font-weight:900;padding:12px 16px;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#000;box-shadow:0 12px 18px rgba(255,217,0,.18)}
-.btn.sec{background:#1d2636;color:#e7edf8;border:1px solid #2b3448;box-shadow:none}
+.btn{border:0;border-radius:12px;cursor:pointer;font-weight:900;padding:12px 16px;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#000}
+.btn.sec{background:#1d2636;color:#e7edf8;border:1px solid #2b3448}
 .btn.tiny{padding:10px 12px;font-size:.92rem}
-/* Result */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.status{margin-left:8px;font-size:12px;border-radius:999px;padding:4px 8px;border:1px solid #2b3448}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:820px){.grid{grid-template-columns:1fr}}
 .tile{background:rgba(255,255,255,.06);border:1px solid var(--stroke);border-radius:12px;padding:14px}
-.key{color:#9fb0c7;font-size:12px}
-.value{font-size:28px;font-weight:900;color:var(--gold)}
+.key{color:#9fb0c7;font-size:12px}.value{font-size:28px;font-weight:900;color:var(--gold)}
 .line{height:10px;background:#223047;border-radius:999px;overflow:hidden;margin:8px 0 4px}
-.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.bar{height:10px;width:0%;background:linear-gradient(90deg,#ffe27a,var(--gold))}
 .pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #2a3448;font-weight:800;margin-right:6px}
 .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.history{max-height:220px;overflow:auto;color:#cfd7e6;font-size:12px}
-.hrow{padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.09)}
+.history{max-height:220px;overflow:auto;color:#cfd7e6;font-size:12px}.hrow{padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.09)}
 .sub{color:#a8b1c3;font-size:12px;margin-top:6px}
 </style>
 </head>
-<body>
+<body onload="init()">
 <div class="stars"></div><div class="stars2"></div><div class="stars3"></div>
 
-<header><div class="brand"><span class="dot"></span> WINGO PREDICTOR PRO</div></header>
+<header>
+  <div class="brand"><span class="dot"></span> WINGO PREDICTOR PRO
+    <span id="jsStatus" class="status" style="border-color:#5b1f20;color:#ffb4b8;background:#2b0f12">JS: OFF</span>
+  </div>
+</header>
 
 <div class="container">
   <div class="card">
@@ -73,10 +61,7 @@ input:focus,select:focus{border-color:var(--gold)}
 
     <label for="interval">⏱ Auto mode</label>
     <div class="row">
-      <select id="interval">
-        <option value="30">30 seconds</option>
-        <option value="60">1 minute</option>
-      </select>
+      <select id="interval"><option value="30">30 seconds</option><option value="60">1 minute</option></select>
       <button class="btn tiny" id="btnAuto">▶ Start Auto</button>
       <button class="btn sec tiny" id="notifyBtn">🔔 Notifications</button>
     </div>
@@ -93,16 +78,12 @@ input:focus,select:focus{border-color:var(--gold)}
 
     <div class="grid" id="resultWrap" style="display:none">
       <div class="tile">
-        <div class="key">Predicted Number</div>
-        <div class="value" id="vNum">—</div>
-        <div class="key" style="margin-top:6px">Size</div>
-        <div class="value" id="vSize">—</div>
+        <div class="key">Predicted Number</div><div class="value" id="vNum">—</div>
+        <div class="key" style="margin-top:6px">Size</div><div class="value" id="vSize">—</div>
       </div>
       <div class="tile">
-        <div class="key">Confidence</div>
-        <div class="line"><div class="bar" id="confBar"></div></div>
-        <div class="key" style="margin-top:8px">Signal</div>
-        <span id="playSignal" class="pill">—</span>
+        <div class="key">Confidence</div><div class="line"><div class="bar" id="confBar"></div></div>
+        <div class="key" style="margin-top:8px">Signal</div><span id="playSignal" class="pill">—</span>
       </div>
     </div>
 
@@ -117,151 +98,136 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
 </div>
 
-<!-- 1s coin chime (first play must be user-gesture) -->
 <audio id="coinSound" preload="auto"
 src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0a9b0f58b1.mp3?filename=coin-199621.mp3"></audio>
 
 <script>
-/* ===== Utilities ===== */
-const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||"");
-const clamp01=x=>Math.max(0,Math.min(1,x));
-const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
-const argmax=a=>a.indexOf(Math.max(...a));
-const tail4=p=>String(p).slice(-4);
-const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
-function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
-function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+/*** ========== SAFE INIT (runs via body onload) ========== ***/
+function init(){
+  // show JS alive
+  (function(){const s=document.getElementById('jsStatus'); if(s){s.textContent='JS: ON'; s.style.background='#0c2013'; s.style.color='#9af0b4'; s.style.borderColor='#164d2a';}})();
 
-/* ===== Memory (size learning) ===== */
-const SIZE_KEY='WPP_SIZE2';
-const loadSize=()=>{try{return JSON.parse(localStorage.getItem(SIZE_KEY))||[1,1]}catch{return [1,1]}};
-const saveSize=s=>localStorage.setItem(SIZE_KEY,JSON.stringify(s));
+  /* ===== Utilities ===== */
+  const el=id=>document.getElementById(id);
+  const isDigits=s=>/^\d+$/.test(s||"");
+  const clamp01=x=>Math.max(0,Math.min(1,x));
+  const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
+  const argmax=a=>a.indexOf(Math.max(...a));
+  const tail4=p=>String(p).slice(-4);
+  const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
+  function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+  function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-/* ===== Priors (anti-linear ensemble) ===== */
-function priorChecksum(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const sum=[...period].reduce((a,b)=>a+(+b),0)%10;
-  const v=Array(10).fill(0.08); v[sum]+=0.34; v[(sum+1)%10]+=0.16; v[(sum+9)%10]+=0.16; return normalize(v);
+  /* ===== Memory ===== */
+  const SIZE_KEY='WPP_SIZE2';
+  const loadSize=()=>{try{return JSON.parse(localStorage.getItem(SIZE_KEY))||[1,1]}catch{return [1,1]}};
+  const saveSize=s=>localStorage.setItem(SIZE_KEY,JSON.stringify(s));
+
+  /* ===== Priors ===== */
+  function priorChecksum(period){
+    if(!isDigits(period)) return Array(10).fill(0.1);
+    const sum=[...period].reduce((a,b)=>a+(+b),0)%10; const v=Array(10).fill(0.08);
+    v[sum]+=0.34; v[(sum+1)%10]+=0.16; v[(sum+9)%10]+=0.16; return normalize(v);
+  }
+  function priorCyclic(period){
+    if(!isDigits(period)) return Array(10).fill(0.1);
+    const s=[...period].reduce((a,b)=>a+(+b),0), a=s%7, b=s%9; const v=Array(10).fill(0.08);
+    v[(a*3)%10]+=0.18; v[(a*5)%10]+=0.16; v[(b*4)%10]+=0.14; return normalize(v);
+  }
+  function priorMirrorReverse(period){
+    if(!isDigits(period)) return Array(10).fill(0.1);
+    const rev=(+([...period].reverse().join('')))%10, mir=(+([...period].map(x=>9-x).join('')))%10;
+    const v=Array(10).fill(0.08); v[rev]+=0.14; v[mir]+=0.12; return normalize(v);
+  }
+  function priorHashedDistance(period){
+    if(!isDigits(period)) return Array(10).fill(0.1);
+    const seed=hash32(period+'seed')%10; const v=Array(10).fill(0.06);
+    for(let i=0;i<10;i++){const d=Math.min((i-seed+10)%10,(seed-i+10)%10); v[i]+=0.24*Math.exp(-0.52*d)} return normalize(v);
+  }
+  function priorAntiSequence(period){
+    if(!isDigits(period)) return Array(10).fill(0.1);
+    const last=+period.slice(-1); const v=Array(10).fill(0.1);
+    v[(last+1)%10]-=0.06; v[(last+9)%10]-=0.06; return normalize(v.map(x=>Math.max(0.01,x)));
+  }
+  function sizeTilt(){
+    const s=loadSize(); const tot=s[0]+s[1]; const small=s[0]/tot, big=s[1]/tot; const t=Array(10).fill(1);
+    for(let i=0;i<5;i++)  t[i]*=(0.9+0.2*small);
+    for(let i=5;i<10;i++) t[i]*=(0.9+0.2*big);
+    return t;
+  }
+
+  /* ===== Predictor ===== */
+  function predict(period){
+    const P1=priorChecksum(period), P2=priorCyclic(period), P3=priorMirrorReverse(period),
+          P4=priorHashedDistance(period), P5=priorAntiSequence(period);
+    let base=normalize(P1.map((_,i)=>0.30*P1[i]+0.22*P2[i]+0.16*P3[i]+0.24*P4[i]+0.08*P5[i]));
+    const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
+    base=normalize(base.map(p=>p*(1+0.18*((p-t)/(t+1e-9)))));
+    const tilt=sizeTilt(); base=normalize(base.map((p,i)=>p*tilt[i]));
+    const rnd=mulberry32(hash32(period)); const B=74, j=0.09;
+    const agg=Array(10).fill(0), votes=Array(10).fill(0);
+    for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
+    let probs=normalize(agg).map(p=>Math.pow(p,1/1.06)); probs=normalize(probs);
+    const iM=argmax(probs), CAP=0.64;
+    if(probs[iM]>CAP){ const excess=probs[iM]-CAP; probs[iM]-=excess;
+      const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest;
+      for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
+    const stability=Math.max(...votes)/B;
+    return {probs,stability};
+  }
+
+  /* ===== Notify & Sound ===== */
+  async function ensureNotify(){
+    if(!('Notification' in window)) return false;
+    if(Notification.permission==='granted') return true;
+    if(Notification.permission==='denied') return false;
+    try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
+  }
+  async function pushNotify(tail, digit, size){
+    try{ if(await ensureNotify()){ new Notification(`Next • ${tail}`, { body:`#${digit} • ${size}`, requireInteraction:true }); } }catch{}
+  }
+  function beep(){ try{ const a=el('coinSound'); a.currentTime=0; a.play().catch(()=>{});}catch{} }
+
+  /* ===== Render ===== */
+  function setInfo(p){ el('periodInfo').textContent=isDigits(p)?(`len ${p.length} • tail ${tail4(p)}`):'केवल digits (0–9) • tail खुद दिखेगा'; }
+  function render(period, out, cause='manual'){
+    const probs=out.probs, pick=argmax(probs), size=(pick>=5?'Big':'Small');
+    let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
+    const stability=clamp01(out.stability), score=clamp01(0.55*entropy+0.45*stability);
+    el('resultWrap').style.display='grid';
+    el('vNum').textContent=pick; el('vSize').textContent=size; el('confBar').style.width=(score*100).toFixed(0)+'%';
+    const issues=[]; if(entropy<0.20) issues.push('low'); if(stability<0.28) issues.push('unstable');
+    let sig='Play',cls='ok'; if(issues.length===1){sig='Caution';cls='warn'} if(issues.length>=2){sig='Wait';cls='bad'}
+    const ps=el('playSignal'); ps.textContent=sig; ps.className='pill '+cls;
+    const h=el('hist'); if(h.textContent==='—') h.textContent='';
+    h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${tail4(period)} → <b>#${pick}</b> (${size})</div>`);
+    [...h.children].slice(14).forEach(n=>n.remove());
+    beep(); if(cause==='auto') pushNotify(tail4(period), pick, size);
+  }
+
+  /* ===== Actions ===== */
+  let timer=null, BUSY=false;
+  async function run(cause='manual'){
+    if(BUSY) return; BUSY=true; setTimeout(()=>BUSY=false,120);
+    const p=el('period').value.trim(); if(!isDigits(p)){ alert('Valid period number भरें'); return; }
+    setInfo(p); const out=predict(p); render(p,out,cause);
+  }
+  function toggleAuto(){
+    if(timer){ clearInterval(timer); timer=null; el('btnAuto').textContent='▶ Start Auto'; return; }
+    const sec=parseInt(el('interval').value,10); el('btnAuto').textContent='⏸ Stop Auto';
+    timer=setInterval(()=>{ const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur); run('auto'); }, sec*1000);
+  }
+
+  /* ===== Bind Buttons (with guards) ===== */
+  try{ el('btnPredict').addEventListener('click', ()=>run('manual')); }catch(e){}
+  try{ el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') run('manual'); }); }catch(e){}
+  try{ el('btnAuto').addEventListener('click', toggleAuto); }catch(e){}
+  try{ el('notifyBtn').addEventListener('click', ensureNotify); }catch(e){}
+  try{ el('btnClear').addEventListener('click', ()=>{ if(timer){clearInterval(timer);timer=null;el('btnAuto').textContent='▶ Start Auto';}
+      el('period').value=''; setInfo(''); el('resultWrap').style.display='none'; el('hist').textContent='—'; }); }catch(e){}
+  try{ el('btnCopy').addEventListener('click', async ()=>{ const txt=`tail ${tail4(el('period').value||'—')} • #${el('vNum').textContent} (${el('vSize').textContent})`;
+      try{ await navigator.clipboard.writeText(txt); alert('Copied'); }catch{} }); }catch(e){}
 }
-function priorCyclic(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const s=[...period].reduce((a,b)=>a+(+b),0), a=s%7, b=s%9;
-  const v=Array(10).fill(0.08); v[(a*3)%10]+=0.18; v[(a*5)%10]+=0.16; v[(b*4)%10]+=0.14; return normalize(v);
-}
-function priorMirrorReverse(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const rev=(+([...period].reverse().join('')))%10;
-  const mir=(+([...period].map(x=>9-x).join('')))%10;
-  const v=Array(10).fill(0.08); v[rev]+=0.14; v[mir]+=0.12; return normalize(v);
-}
-function priorHashedDistance(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const seed=hash32(period+'seed')%10;
-  const v=Array(10).fill(0.06);
-  for(let i=0;i<10;i++){const d=Math.min((i-seed+10)%10,(seed-i+10)%10); v[i]+=0.24*Math.exp(-0.52*d)}
-  return normalize(v);
-}
-function priorAntiSequence(period){
-  if(!isDigits(period)) return Array(10).fill(0.1);
-  const last=+period.slice(-1); const v=Array(10).fill(0.1);
-  v[(last+1)%10]-=0.06; v[(last+9)%10]-=0.06; return normalize(v.map(x=>Math.max(0.01,x)));
-}
-function sizeTilt(){
-  const s=loadSize(); const tot=s[0]+s[1]; const small=s[0]/tot, big=s[1]/tot; const t=Array(10).fill(1);
-  for(let i=0;i<5;i++)  t[i]*=(0.9+0.2*small);
-  for(let i=5;i<10;i++) t[i]*=(0.9+0.2*big);
-  return t;
-}
-
-/* ===== Predictor ===== */
-function predict(period){
-  const P1=priorChecksum(period), P2=priorCyclic(period), P3=priorMirrorReverse(period),
-        P4=priorHashedDistance(period), P5=priorAntiSequence(period);
-  let base=normalize(P1.map((_,i)=>0.30*P1[i]+0.22*P2[i]+0.16*P3[i]+0.24*P4[i]+0.08*P5[i]));
-  const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  base=normalize(base.map(p=>p*(1+0.18*((p-t)/(t+1e-9)))));
-  const tilt=sizeTilt(); base=normalize(base.map((p,i)=>p*tilt[i]));
-
-  const rnd=mulberry32(hash32(period)); const B=74, j=0.09;
-  const agg=Array(10).fill(0), votes=Array(10).fill(0);
-  for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
-  let probs=normalize(agg).map(p=>Math.pow(p,1/1.06)); probs=normalize(probs);
-  const iM=argmax(probs), CAP=0.64;
-  if(probs[iM]>CAP){ const excess=probs[iM]-CAP; probs[iM]-=excess;
-    const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest;
-    for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
-  const stability=Math.max(...votes)/B;
-  return {probs, stability};
-}
-
-/* ===== Notifications ===== */
-async function ensureNotify(){
-  if(!('Notification' in window)) return false;
-  if(Notification.permission==='granted') return true;
-  if(Notification.permission==='denied') return false;
-  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
-}
-async function pushNotify(tail, digit, size){
-  try{ if(await ensureNotify()){ new Notification(`Next • ${tail}`, { body:`#${digit} • ${size}`, requireInteraction:true }); } }catch{}
-}
-
-/* ===== Render ===== */
-function render(period, out, cause='manual'){
-  const probs=out.probs, pick=argmax(probs), size=(pick>=5?'Big':'Small');
-  // score
-  let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
-  const stability=clamp01(out.stability), score=clamp01(0.55*entropy+0.45*stability);
-
-  el('resultWrap').style.display='grid';
-  el('vNum').textContent=pick; el('vSize').textContent=size; el('confBar').style.width=(score*100).toFixed(0)+'%';
-
-  const issues=[]; if(entropy<0.20) issues.push('low'); if(stability<0.28) issues.push('unstable');
-  let sig='Play', cls='ok'; if(issues.length===1){sig='Caution';cls='warn'} if(issues.length>=2){sig='Wait';cls='bad'}
-  const ps=el('playSignal'); ps.textContent=sig; ps.className='pill '+cls;
-
-  const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${tail4(period)} → <b>#${pick}</b> (${size})</div>`);
-  [...h.children].slice(14).forEach(n=>n.remove());
-
-  // play coin sound (unlocked after first user click)
-  try{ const a=el('coinSound'); a.currentTime=0; a.play().catch(()=>{});}catch{}
-  if(cause==='auto') pushNotify(tail4(period), pick, size);
-}
-
-/* ===== Actions ===== */
-let timer=null, busy=false, audioUnlocked=false;
-function setInfo(p){ el('periodInfo').textContent=isDigits(p)?(`len ${p.length} • tail ${tail4(p)}`):'केवल digits (0–9) • tail खुद दिखेगा'; }
-async function run(cause='manual'){
-  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
-  const p=el('period').value.trim(); if(!isDigits(p)){ alert('Valid period number भरें'); return; }
-  setInfo(p); const out=predict(p); render(p,out,cause);
-}
-function toggleAuto(){
-  if(timer){ clearInterval(timer); timer=null; el('btnAuto').textContent='▶ Start Auto'; return; }
-  const sec=parseInt(el('interval').value,10); el('btnAuto').textContent='⏸ Stop Auto';
-  timer=setInterval(()=>{ const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur); run('auto'); }, sec*1000);
-}
-
-/* ===== Bindings ===== */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // unlock audio on first user gesture
-  const unlock=()=>{ if(audioUnlocked) return; const a=el('coinSound'); a.play().then(()=>{a.pause();a.currentTime=0; audioUnlocked=true;}).catch(()=>{}); document.removeEventListener('click',unlock); };
-  document.addEventListener('click',unlock,{once:true});
-
-  el('btnPredict').addEventListener('click', ()=>run('manual'));
-  el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') run('manual'); });
-  el('btnAuto').addEventListener('click', toggleAuto);
-  el('notifyBtn').addEventListener('click', ensureNotify);
-  el('btnClear').addEventListener('click', ()=>{
-    if(timer){clearInterval(timer);timer=null;el('btnAuto').textContent='▶ Start Auto';}
-    el('period').value=''; setInfo(''); el('resultWrap').style.display='none'; el('hist').textContent='—';
-  });
-  el('btnCopy').addEventListener('click', async ()=>{
-    const txt=`tail ${tail4(el('period').value||'—')} • #${el('vNum').textContent} (${el('vSize').textContent})`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied'); }catch{}
-  });
-});
 </script>
 </body>
 </html>
