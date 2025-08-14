@@ -13,7 +13,8 @@
   --ok:#22c55e;--am:#f59e0b;--bad:#ef4444;
   --shadow:0 14px 28px rgba(0,0,0,.35);
 }
-*{box-sizing:border-box}body{margin:0;background:#070b12;color:#fff;font:15.5px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+*{box-sizing:border-box}
+body{margin:0;background:#070b12;color:#fff;font:15.5px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
 .header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#05070d,#0b0f19)}
 .brand-wrap{max-width:1180px;margin:0 auto;padding:12px 16px;display:flex;align-items:center}
 .brand{display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:999px;background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#111;font-weight:900;letter-spacing:.6px;box-shadow:inset 0 1px 0 #fff8}
@@ -35,7 +36,8 @@ input:focus,select:focus{border-color:var(--gold)}
 .kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media (max-width:900px){.kv{grid-template-columns:1fr}}
 .box{background:#0c1321;border:1px solid #1b2335;border-radius:14px;padding:14px}
-.key{color:#a1a8b8;font-size:12px}.val{color:#ffd54a;font-weight:900;font-size:30px}
+.key{color:#a1a8b8;font-size:12px}
+.val{color:#ffd54a;font-weight:900;font-size:30px}
 .line{height:10px;background:#1a2536;border-radius:999px;overflow:hidden;margin:10px 0 4px}
 .bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
 .sig-ok{color:#22c55e}.sig-am{color:#f59e0b}.sig-bad{color:#ef4444}
@@ -49,7 +51,11 @@ input:focus,select:focus{border-color:var(--gold)}
 </style>
 </head>
 <body>
-<div class="header"><div class="brand-wrap"><div class="brand">WINGO PREDICTOR PRO</div></div></div>
+<div class="header">
+  <div class="brand-wrap">
+    <div class="brand">WINGO PREDICTOR PRO</div>
+  </div>
+</div>
 
 <div class="container">
   <div class="card">
@@ -70,11 +76,13 @@ input:focus,select:focus{border-color:var(--gold)}
 
         <div class="row" style="margin-top:8px">
           <label class="pill"><input id="autoNext" type="checkbox"> Auto Next</label>
-          <select id="interval" style="width:130px"><option value="30">30 sec</option><option value="60">60 sec</option></select>
+          <select id="interval" style="width:130px">
+            <option value="30">30 sec</option><option value="60">60 sec</option>
+          </select>
           <label class="pill"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
           <label class="pill"><input id="learnOn" type="checkbox" checked> Learning ON</label>
           <label class="pill"><input id="soundOn" type="checkbox" checked> Sound ON</label>
-          <button class="btn sec" id="notifyBtn">🔔 Notifications</button>
+          <button class="btn sec" id="notifyBtn" type="button" onclick="handleNotify()">🔔 Notifications</button>
         </div>
 
         <div class="row" style="margin-top:8px">
@@ -98,9 +106,7 @@ input:focus,select:focus{border-color:var(--gold)}
             </select>
           </span>
           <span class="badge">Max Skip:
-            <select id="maxSkip">
-              <option selected>2</option><option>3</option><option>4</option>
-            </select>
+            <select id="maxSkip"><option selected>2</option><option>3</option><option>4</option></select>
           </span>
         </div>
       </div>
@@ -109,9 +115,9 @@ input:focus,select:focus{border-color:var(--gold)}
     <div class="hr"></div>
 
     <div class="row">
-      <button class="btn" id="btnPredict">🔮 Predict</button>
-      <button class="btn sec" id="btnClear">Clear</button>
-      <button class="btn sec" id="btnCopy">Copy Result</button>
+      <button class="btn" id="btnPredict" type="button" onclick="run('manual')">🔮 Predict</button>
+      <button class="btn sec" id="btnClear" type="button" onclick="doClear()">Clear</button>
+      <button class="btn sec" id="btnCopy" type="button" onclick="doCopy()">Copy Result</button>
       <span class="pill" id="periodInfo">—</span>
     </div>
 
@@ -163,6 +169,9 @@ input:focus,select:focus{border-color:var(--gold)}
 </div>
 
 <script>
+/* ======= SAFE GUARDS ======= */
+window.onerror=(m,s,l,c,e)=>{try{console.log('JS error:',m,s,l,c,e)}catch{}};
+
 /* ========= helpers ========= */
 const el=id=>document.getElementById(id);
 const isDigits=s=>/^\d+$/.test(s||"");const clamp01=x=>Math.max(0,Math.min(1,x));
@@ -179,8 +188,9 @@ let audioCtx=null;function coin(){if(!el('soundOn').checked)return;try{if(!audio
 (async function(){ if('serviceWorker'in navigator){try{await navigator.serviceWorker.register('/sw.js',{scope:'/'});await navigator.serviceWorker.ready;}catch{}}})();
 async function ensureNotifyPerm(){if(!('Notification'in window))return false;if(Notification.permission==='granted')return true;if(Notification.permission==='denied')return false;try{return(await Notification.requestPermission())==='granted'}catch{return false}}
 async function notify({tail,digit,size,signal}){try{const reg=await navigator.serviceWorker.ready;if(!reg)return;const ok=await ensureNotifyPerm();if(!ok)return;await reg.showNotification(`${signal}: #${digit} (${size})`,{body:`Period tail ${tail}`,tag:`wingo-${tail}`,renotify:true,requireInteraction:false,vibrate:[50,20,50]});}catch{}}
+function handleNotify(){ensureNotifyPerm().then(ok=>alert(ok?'Notifications enabled':'Notifications blocked'));}
 
-/* ========= learning store ========= */
+/* ========= learning ========= */
 const LS='WPP_SIZE2';const loadSz=()=>{try{return JSON.parse(localStorage.getItem(LS))||[1,1]}catch{return [1,1]}};
 const saveSz=s=>localStorage.setItem(LS,JSON.stringify(s));
 
@@ -192,7 +202,7 @@ function pChecksum(period){if(!isDigits(period))return Array(10).fill(0.1);const
 function pHashed(period){if(!isDigits(period))return Array(10).fill(0.1);const sd=hash32(period+'d')%10;const v=Array(10).fill(0.1);for(let i=0;i<10;i++){const d=Math.min((i-sd+10)%10,(sd-i+10)%10);v[i]+=0.28*Math.exp(-0.55*d)}return normalize(v)}
 function regime(w){const s=loadSz();const big=s[1]/(s[0]+s[1]);const out=w.slice();if(big>0.62||big<0.38)out[4]+=0.02;const sum=out.reduce((a,b)=>a+b,0);return out.map(x=>x/sum)}
 
-/* ========= core predictor ========= */
+/* ========= predictor ========= */
 function predict(period,mode,anti,learn,patterns){
   const H={
     conservative:{temp:1.04,cap:0.58,jit:0.05,adapt:0.12,w:[0.34,0.16,0.18,0.18,0.14],k:0.25},
@@ -220,18 +230,15 @@ function predict(period,mode,anti,learn,patterns){
   return {probs,stability};
 }
 
-/* ========= decision engine (tuned) ========= */
+/* ========= decision ========= */
 let skipStreak=0, stat={plays:0,soft:0,skips:0,sum:0,n:0};
 function gapTop(p){const s=p.slice().sort((a,b)=>b-a);return s[0]-s[1];}
 function decide(conf,probs,modeSel){
   const gate=el('gate').value, softSel=el('softGate').value, maxSkip=parseInt(el('maxSkip').value||'2',10);
-  // RC defaults
   let hard=0.60, soft=0.46, gH=0.055, gS=0.035;
-  if(modeSel==='ht'){ hard=0.54; soft=0.40; gH=0.045; gS=0.028; } // High-Trade
+  if(modeSel==='ht'){ hard=0.54; soft=0.40; gH=0.045; gS=0.028; }
   if(gate==='very'){ hard+=0.06; gH+=0.01 } else if(gate==='med'){ hard-=0.04; gH-=0.006 }
-  if(softSel==='med'){ soft+=0.03; gS+=0.006 } // low = default
-
-  // dynamic easing with skip
+  if(softSel==='med'){ soft+=0.03; gS+=0.006 }
   const ease=Math.min(skipStreak,maxSkip);
   soft -= 0.02*ease; gS -= 0.004*ease;
 
@@ -249,48 +256,49 @@ function decide(conf,probs,modeSel){
   skipStreak++; stat.skips++; return {sig:'Skip',cls:'sig-bad',stake:'No bet',why:`conf ${Math.round(conf*100)}% • gap ${(gap*100).toFixed(1)}%`,pick,size};
 }
 
-/* ========= charts & render ========= */
-let probChart=null;function draw(probs){const data=probs.map(p=>Math.round(p*1000)/10),labels=[...Array(10).keys()].map(String);if(probChart)probChart.destroy();probChart=new Chart(el('probChart').getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'Probability (%)',data}]},options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}})}
+/* ========= chart/render ========= */
+let probChart=null;function draw(probs){const data=probs.map(p=>Math.round(p*1000)/10),labels=[...Array(10).keys()].map(String);try{if(probChart)probChart.destroy();probChart=new Chart(el('probChart').getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'Probability (%)',data}]},options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}})}catch(e){console.log(e)}}
 function render(period,out,dec){
   const probs=out.probs.slice();draw(probs);
-  let H=0;probs.forEach(p=>{if(p>0)H+=-p*Math.log(p)});const entropy=clamp01(1-H/Math.log(10));
-  const conf=clamp01(0.70*entropy+0.30*clamp01(out.stability||0)); // tuned 70/30
-
+  let H=0;probs.forEach(p=>{if(p>0)H+=-p*Math.log(p)});const conf=clamp01(0.70*(1-H/Math.log(10))+0.30*(clamp01(out.stability||0)));
   el('resultCard').style.display='block';
   el('vPeriod').textContent=period; el('vNum').textContent=dec.pick; el('vSize').textContent=(dec.pick>=5)?'Big':'Small';
   el('confBar').style.width=(conf*100).toFixed(1)+'%'; el('signal').textContent=dec.sig+' • '+dec.stake; el('signal').className='pill '+dec.cls; el('why').textContent='Why: '+dec.why;
-
   const h=el('hist'); if(h.textContent==='—')h.textContent='';
   const tag=(dec.sig==='Skip')?'Skip':('#'+dec.pick+' ('+((dec.pick>=5)?'Big':'Small')+')');
   h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → ${tag}</div>`);
   [...h.children].slice(18).forEach(n=>n.remove());
-
   stat.sum+=conf; stat.n++; el('stPlays').textContent=stat.plays; el('stSoft').textContent=stat.soft; el('stSkips').textContent=stat.skips; el('stAvg').textContent=(stat.n?Math.round(stat.sum/stat.n*100)+'%':'—');
 }
 
-/* ========= run & bindings ========= */
+/* ========= run / API ========= */
 let timer=null,busy=false;
 function patterns(){return{reverse:el('pReverse').checked,mirror:el('pMirror').checked,cont:el('pCont').checked,gap:el('pGap').checked,streak:el('pStreak').checked}}
-async function run(source='manual'){
-  if(busy)return;busy=true;setTimeout(()=>busy=false,120);
-  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
-  el('periodInfo').textContent='Period: '+describe(pr);
-  const out=predict(pr,el('modeSel').value,el('antiSeq').checked,el('learnOn').checked,patterns());
-  // confidence (same formula used in render)
-  let H=0; out.probs.forEach(p=>{if(p>0)H+=-p*Math.log(p)});const conf=clamp01(0.70*(1-H/Math.log(10))+0.30*(clamp01(out.stability||0)));
-  const dec=decide(conf,out.probs,el('riskMode').value); render(pr,out,dec);
-  if(dec.sig!=='Skip'){coin(); if(source==='auto'&&el('autoNext').checked){notify({tail:String(pr).slice(-3),digit:dec.pick,size:dec.size,signal:dec.sig});}}
+function run(source='manual'){
+  try{
+    if(busy)return;busy=true;setTimeout(()=>busy=false,120);
+    const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
+    el('periodInfo').textContent='Period: '+describe(pr);
+    const out=predict(pr,el('modeSel').value,el('antiSeq').checked,el('learnOn').checked,patterns());
+    let H=0; out.probs.forEach(p=>{if(p>0)H+=-p*Math.log(p)});const conf=clamp01(0.70*(1-H/Math.log(10))+0.30*(clamp01(out.stability||0)));
+    const dec=decide(conf,out.probs,el('riskMode').value); render(pr,out,dec);
+    if(dec.sig!=='Skip'){coin(); if(source==='auto'&&el('autoNext').checked){notify({tail:String(pr).slice(-3),digit:dec.pick,size:dec.size,signal:dec.sig});}}
+  }catch(e){console.log('run err',e)}
 }
-function startAuto(){clearInterval(timer);const sec=parseInt(el('interval').value,10)||30;timer=setInterval(()=>{const cur=el('period').value.trim();if(isDigits(cur))el('period').value=bump(cur);run('auto');},sec*1000)}
+function startAuto(){try{clearInterval(timer);const sec=parseInt(el('interval').value,10)||30;timer=setInterval(()=>{const cur=el('period').value.trim();if(isDigits(cur))el('period').value=bump(cur);run('auto');},sec*1000)}catch(e){console.log(e)}}
+function doClear(){try{clearInterval(timer);timer=null;el('autoNext').checked=false;el('period').value='';el('periodInfo').textContent='—';el('resultCard').style.display='none';el('hist').textContent='—';if(probChart){probChart.destroy();probChart=null}skipStreak=0;stat={plays:0,soft:0,skips:0,sum:0,n:0};el('stPlays').textContent='0';el('stSoft').textContent='0';el('stSkips').textContent='0';el('stAvg').textContent='—';}catch(e){console.log(e)}}
+async function doCopy(){try{const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, ${el('signal').textContent}`;await navigator.clipboard.writeText(txt);alert('Copied!')}catch(e){console.log(e)}}
 
+/* ======= optional listeners (backup to inline) ======= */
 document.addEventListener('DOMContentLoaded',()=>{
-  el('btnPredict').addEventListener('click',()=>run('manual'));
-  el('period').addEventListener('keydown',e=>{if(e.key==='Enter')run('manual')});
-  el('btnClear').addEventListener('click',()=>{clearInterval(timer);timer=null;el('autoNext').checked=false;el('period').value='';el('periodInfo').textContent='—';el('resultCard').style.display='none';el('hist').textContent='—';if(probChart){probChart.destroy();probChart=null}skipStreak=0;stat={plays:0,soft:0,skips:0,sum:0,n:0};el('stPlays').textContent='0';el('stSoft').textContent='0';el('stSkips').textContent='0';el('stAvg').textContent='—';});
-  el('btnCopy').addEventListener('click',async()=>{const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, ${el('signal').textContent}`;try{await navigator.clipboard.writeText(txt);alert('Copied!');}catch{}});
-  el('autoNext').addEventListener('change',e=>{clearInterval(timer);timer=null;if(e.target.checked)startAuto()});
-  el('interval').addEventListener('change',()=>{if(el('autoNext').checked)startAuto()});
-  el('notifyBtn').addEventListener('click',async()=>alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
+  try{
+    el('btnPredict')?.addEventListener('click',()=>run('manual'));
+    el('period')?.addEventListener('keydown',e=>{if(e.key==='Enter')run('manual')});
+    el('btnClear')?.addEventListener('click',doClear);
+    el('btnCopy')?.addEventListener('click',doCopy);
+    el('autoNext')?.addEventListener('change',e=>{clearInterval(timer);timer=null;if(e.target.checked)startAuto()});
+    el('interval')?.addEventListener('change',()=>{if(el('autoNext').checked)startAuto()});
+  }catch(e){console.log(e)}
 });
 </script>
 </body>
