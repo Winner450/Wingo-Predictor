@@ -38,10 +38,14 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media (max-width:900px){.kv{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
   .bgstars{position:fixed;inset:0;z-index:-1;background:url('https://media.giphy.com/media/l0Iy5fjHyedk9aDGU/giphy.gif') center/cover no-repeat;opacity:.08;pointer-events:none;filter:grayscale(100%)}
-  /* Verify & Learn centered */
-  .verifyWrap{margin-top:6px;border:1px solid #203154;background:#0b1323;border-radius:14px;padding:14px;text-align:center}
-  .verifyRadios{display:inline-grid;grid-auto-flow:column;gap:16px;margin:10px 0}
-  .verifyMsg{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border-radius:999px;border:1px solid #2a3552;background:#0c1424}
+  /* Verify & Learn — centered & tidy */
+  .verifyWrap{margin-top:10px;border:1px solid #203154;background:#0b1323;border-radius:14px;padding:16px}
+  .verifyHead{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800}
+  .verifyGroup{display:flex;justify-content:center;gap:16px;margin:12px 0}
+  .verifyRadio{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid #2a3552;background:#0c1424}
+  .verifyActions{display:flex;justify-content:center;margin-top:6px}
+  .verifyMsg{display:flex;justify-content:center;margin-top:10px}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid #2a3552;background:#0c1424}
 </style>
 </head>
 <body>
@@ -70,32 +74,23 @@
           <option value="aggressive">Very Confident</option>
         </select>
       </div>
-      <div>
-        <label>&nbsp;</label>
-        <button class="btn primary" type="button" onclick="runPredict('manual')">🔮 Predict</button>
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button class="btn.ghost btn ghost" type="button" onclick="doClear()">Clear</button>
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button class="btn ghost" type="button" onclick="doCopy()">Copy</button>
-      </div>
+      <div><label>&nbsp;</label><button id="btnPredict" class="btn primary" type="button">🔮 Predict</button></div>
+      <div><label>&nbsp;</label><button id="btnClear" class="btn ghost" type="button">Clear</button></div>
+      <div><label>&nbsp;</label><button id="btnCopy" class="btn ghost" type="button">Copy</button></div>
     </div>
 
     <div class="hr"></div>
 
     <div class="row" style="gap:12px">
-      <span class="pill"><input id="autoNext" type="checkbox" onclick="toggleAuto()"> Auto Next</span>
-      <select id="interval" onchange="if(autoOn) startAuto();" style="width:140px">
+      <span class="pill"><input id="autoNext" type="checkbox"> Auto Next</span>
+      <select id="interval" style="width:140px">
         <option value="30">30 sec</option>
         <option value="60">60 sec</option>
       </select>
       <span class="pill"><input id="antiSeq" type="checkbox" checked> Anti-sequence</span>
       <span class="pill"><input id="learnOn" type="checkbox" checked> Learning ON</span>
       <span class="pill"><input id="soundOn" type="checkbox" checked> Sound ON</span>
-      <button class="btn ghost" type="button" onclick="ensureNotify()">🔔 Notifications</button>
+      <button id="btnNotify" class="btn ghost" type="button">🔔 Notifications</button>
       <span id="periodInfo" class="pill">—</span>
     </div>
 
@@ -110,17 +105,17 @@
       <div class="pill"><input id="patStreak" type="checkbox" checked> Streak-Guard</div>
     </div>
 
-    <!-- Verify & Learn (centered) -->
+    <!-- Verify & Learn (centered, improved) -->
     <div class="verifyWrap">
-      <div style="font-weight:800;margin-bottom:4px">✅ Actual size (Learning)</div>
-      <div class="verifyRadios">
-        <label class="pill"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
-        <label class="pill"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
+      <div class="verifyHead">✅ Actual size (Learning)</div>
+      <div class="verifyGroup">
+        <label class="verifyRadio"><input type="radio" name="actSize" value="small"> Small (0–4)</label>
+        <label class="verifyRadio"><input type="radio" name="actSize" value="big"> Big (5–9)</label>
       </div>
-      <div>
-        <button class="btn ghost" type="button" onclick="verifyLearn()">Verify & Learn</button>
+      <div class="verifyActions">
+        <button id="btnVerify" class="btn ghost" type="button">Verify &amp; Learn</button>
       </div>
-      <div id="verifyMsg" class="verifyMsg">—</div>
+      <div class="verifyMsg"><span id="verifyMsg" class="chip">—</span></div>
     </div>
   </div>
 
@@ -156,7 +151,7 @@
 </div>
 
 <script>
-/* ---------- Inline Service Worker ---------- */
+/* ---------- Service Worker (inline) ---------- */
 let swReg=null;
 (async function registerSW(){
   if(!('serviceWorker' in navigator)) return;
@@ -170,8 +165,7 @@ let swReg=null;
         for(const c of clients){ if(c.url===url && 'focus' in c) return c.focus(); }
         if(self.clients.openWindow) return self.clients.openWindow(url);
       }));
-    });
-  `;
+    });`;
   try{
     const blob=new Blob([swCode],{type:'text/javascript'});
     const url=URL.createObjectURL(blob);
@@ -184,19 +178,14 @@ async function ensureNotify(){
   if(Notification.permission==='granted'){ alert('Notifications enabled'); return true; }
   if(Notification.permission==='denied'){ alert('Notifications blocked in browser settings'); return false; }
   const s=await Notification.requestPermission();
-  alert(s==='granted'?'Notifications enabled':'Permission denied');
-  return s==='granted';
+  alert(s==='granted'?'Notifications enabled':'Permission denied'); return s==='granted';
 }
 async function notify(tail, digit, size){
   try{
     if(Notification.permission!=='granted') return;
     if(swReg && swReg.showNotification){
-      await swReg.showNotification(`Next • ${tail}`,{
-        body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true
-      });
-    }else{
-      new Notification(`Next • ${tail}`,{ body:`#${digit} • ${size}` });
-    }
+      await swReg.showNotification(`Next • ${tail}`,{ body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true });
+    }else{ new Notification(`Next • ${tail}`,{ body:`#${digit} • ${size}` }); }
   }catch{}
 }
 
@@ -269,11 +258,10 @@ function strategy(mode){
 
 /* ---------- Pattern toggles -> weight mask ---------- */
 function patternMask(){
-  const mask=[1,1,1,1,1,1,1]; // default all on
-  if(!el('patMirror').checked)   mask[4]=0;
-  if(!el('patReverse').checked)  mask[5]=0;
-  if(!el('patContinuous').checked) mask[6]=0;
-  // Gap/Skip & Streak-Guard influence minConf later (gate logic), not direct priors
+  const mask=[1,1,1,1,1,1,1];
+  if(!document.getElementById('patMirror').checked)     mask[4]=0;
+  if(!document.getElementById('patReverse').checked)    mask[5]=0;
+  if(!document.getElementById('patContinuous').checked) mask[6]=0;
   return mask;
 }
 
@@ -317,11 +305,9 @@ function predict(period, mode, antiSeq, learnOn){
   const stability=Math.max(...votes)/B;
   let conf = clamp01(0.55*entropy + 0.45*stability);
 
-  // Gates: Gap/Skip & Streak-Guard -> raise/lower minConf a bit
   let minConf = prof.minConf;
-  if(el('patGap').checked)    minConf += 0.02;   // be a bit choosy
-  if(el('patStreak').checked) minConf += 0.02;   // avoid bad streaks
-  if(el('high').checked){} // (placeholder if you add extra knobs)
+  if(document.getElementById('patGap').checked)    minConf += 0.02;
+  if(document.getElementById('patStreak').checked) minConf += 0.02;
   const playable = conf>=minConf;
   return {probs, conf, playable, minConf};
 }
@@ -341,12 +327,9 @@ function renderChart(probs){
 
 /* ---------- UI render ---------- */
 function render(period, out, source){
-  el('resultCard').style.display='block';
-  const pick=argmax(out.probs);
-  const size=pick>=5?'Big':'Small';
-  el('vPeriod').textContent=period;
-  el('vNum').textContent=pick;
-  el('vSize').textContent=size;
+  const resultCard=el('resultCard'); resultCard.style.display='block';
+  const pick=argmax(out.probs); const size=pick>=5?'Big':'Small';
+  el('vPeriod').textContent=period; el('vNum').textContent=pick; el('vSize').textContent=size;
   el('confBar').style.width=(out.conf*100).toFixed(1)+'%';
   const sig = out.playable ? (out.conf>0.62?'Play':'Soft Play') : 'Skip';
   const cls = out.playable ? (out.conf>0.62?'ok':'warn') : 'bad';
@@ -414,7 +397,7 @@ async function doCopy(){
   }catch{}
 }
 
-/* ---------- Verify & Learn ---------- */
+/* ---------- Verify & Learn (centered) ---------- */
 function verifyLearn(){
   const pick = el('vNum').textContent.trim();
   const msg = el('verifyMsg');
@@ -431,9 +414,18 @@ function verifyLearn(){
   }
 }
 
-/* key: Enter runs predict */
+/* ---------- Bind all buttons safely ---------- */
 document.addEventListener('DOMContentLoaded',()=>{
-  el('period').addEventListener('keydown',e=>{ if(e.key==='Enter') runPredict('manual'); });
+  // buttons
+  el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
+  el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
+  el('btnClear').addEventListener('click', doClear);
+  el('btnCopy').addEventListener('click', doCopy);
+  el('btnNotify').addEventListener('click', ensureNotify);
+  el('btnVerify').addEventListener('click', verifyLearn);
+  // auto controls
+  el('autoNext').addEventListener('change', ()=>{ toggleAuto(); });
+  el('interval').addEventListener('change', ()=>{ if(autoOn) startAuto(); });
 });
 </script>
 </body>
