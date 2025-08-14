@@ -1,313 +1,192 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🎯 WinGo Predictor Pro</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--gold:#ffd54a;--gold2:#f6c028;--muted:#9aa7bd;--ok:#22c55e;--soft:#34d399;--warn:#f59e0b;--bad:#ef4444}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1200px 700px at 20% -10%,#0d1627 0%,#080c14 38%,#070a12 100%);color:#fff;font:15.5px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+  :root{
+    --bg:#0b0f13;
+    --panel:#0f1620;
+    --panel-2:#0d131c;
+    --text:#e7eef8;
+    --muted:#95a5b3;
+    --gold-1:#FFD94A;
+    --gold-2:#FFC107;
+    --gold-3:#FFB300;
+    --accent:#3b82f6;
+    --green:#22c55e;
+    --green-soft:#b0f3c2;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 600px at 50% -100px, #111827 0%, #0b0f13 40%, #070a0f 100%);
+    color:var(--text);
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:16px 14px 80px}
+  /* Golden Line */
+  .golden-line{
+    position:sticky; top:8px; z-index:5;
+    display:flex; align-items:center; justify-content:center; gap:.6rem;
+    padding:14px 18px; border-radius:999px; font-weight:800; letter-spacing:.4px;
+    color:#121212; text-transform:uppercase;
+    background: linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3));
+    box-shadow: 0 10px 26px rgba(255,193,7,.35), inset 0 2px 0 rgba(255,255,255,.6);
+    overflow:hidden;
+  }
+  .golden-line::before{
+    content:"";
+    position:absolute; inset:0; z-index:0;
+    background:
+      url("https://your-cdn.com/stars-theme.gif") center/cover no-repeat fixed,
+      radial-gradient(120% 180% at 20% -40%, rgba(255,255,255,.2), transparent 60%),
+      radial-gradient(100% 140% at 80% 140%, rgba(0,0,0,.2), transparent 70%);
+    opacity:.38;
+    pointer-events:none;
+  }
+  .golden-line .dot{position:relative; z-index:1; width:.55rem; height:.55rem; border-radius:50%; background:#121212; box-shadow:0 0 0 4px rgba(18,18,18,.18)}
+  .golden-line span{position:relative; z-index:1}
 
-/* --- GOLD RIBBON HEADER (fixed, clean) --- */
-.ribbon-wrap{position:sticky;top:0;z-index:60;background:linear-gradient(180deg,#0a0f19,#070b12);border-bottom:1px solid #0e1320}
-.ribbon{max-width:1200px;margin:10px auto 12px; padding:0 14px}
-.ribbon .pill{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
-  height:44px;border-radius:999px;
-  background:linear-gradient(180deg,var(--gold),var(--gold2));
-  color:#121212;font-weight:900;letter-spacing:.3px;
-  box-shadow:0 10px 26px rgba(255,213,74,.28), inset 0 -2px 0 rgba(0,0,0,.18);
-}
-.ribbon .dot{width:10px;height:10px;border-radius:50%;background:#0b0f17;box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
+  .card{
+    margin-top:16px; background:linear-gradient(180deg, var(--panel), var(--panel-2)); 
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:18px; padding:14px 14px 12px; box-shadow: 0 10px 24px rgba(0,0,0,.35);
+  }
+  .card h3{margin:0 0 8px; font-size:1.05rem; letter-spacing:.3px}
+  .muted{color:var(--muted); font-size:.9rem}
 
-/* --- CARDS / LAYOUT --- */
-.container{max-width:1100px;margin:16px auto;padding:0 14px 70px}
-.card{background:linear-gradient(180deg,#0e1523,#0b1220);border:1px solid rgba(255,255,255,.06);border-radius:16px;box-shadow:0 16px 34px rgba(0,0,0,.35);padding:16px}
-.h1{font-size:19px;font-weight:800;margin:0 0 10px}
-.sub{color:var(--muted);font-size:13px;margin-top:6px}
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
-label{font-size:13px;color:#cbd7ee;font-weight:800;margin-bottom:6px;display:block}
-input,select{width:100%;padding:14px;background:#0f1728;border:2px solid #1e2740;border-radius:12px;color:#fff;font-size:16px;outline:none}
-input:focus,select:focus{border-color:var(--gold)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:10px;background:#10182a;border:1px solid #1e2740;border-radius:18px;padding:10px 14px;color:#d6def2}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#161616;font-weight:900;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
-.btn.sec{background:#10182a;color:#e6ecfb;border:1px solid #24304a}
-.btn.mm{background:linear-gradient(180deg,#ffd86a,#ffc107);color:#111;display:none}
-.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media (max-width:900px){.kv{grid-template-columns:1fr}}
-.box{background:#0d1526;border:1px solid #1b2440;border-radius:14px;padding:14px}
-.key{color:#9fb1d8;font-size:12px}.val{color:var(--gold);font-weight:900;font-size:32px}
-.line{height:12px;background:#172037;border-radius:999px;overflow:hidden;margin:10px 0 2px}
-.bar{height:12px;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
-.sig{display:inline-flex;border-radius:999px;border:1px solid #283557;padding:6px 10px;font-weight:900}
-.ok{color:var(--ok)} .soft{color:var(--soft)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:900px){.grid2{grid-template-columns:1fr}}
-.history{font-size:12px;color:#d2dcf6;max-height:240px;overflow:auto}
-.hrow{padding:7px 0;border-bottom:1px dashed #213053}
-.helper{font-size:12px;color:#9fb1d8}
-.hr{height:1px;background:#16213a;margin:12px 0}
-.verify{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
-.verify .center{display:flex;justify-content:center}
-.win{color:var(--ok);font-weight:900}.lose{color:var(--bad);font-weight:900}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{font-weight:800;border:1px solid #2b3a5f;border-radius:999px;padding:6px 10px;color:#cfe2ff}
+  /* Probability mini bars (0–9) */
+  .bars{display:grid; grid-template-columns: repeat(10,1fr); gap:8px; align-items:end; height:160px; padding:6px 4px 2px}
+  .bar{background:linear-gradient(180deg,#1e293b,#0f172a); border:1px solid rgba(255,255,255,.06); border-radius:10px; position:relative; overflow:hidden}
+  .bar > i{position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(180deg,#60a5fa,#3b82f6)}
+  .bar small{position:absolute; bottom:-18px; width:100%; text-align:center; color:var(--muted); font-size:.7rem}
+
+  /* Predictions list */
+  .list{display:flex; flex-direction:column; gap:10px}
+  .row{
+    display:grid; grid-template-columns: auto 1fr auto; gap:10px; align-items:center;
+    background: rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    padding:10px 12px; border-radius:14px;
+  }
+  .tt{font-variant-numeric: tabular-nums}
+  .chip{
+    font-weight:700; border-radius:999px; padding:6px 10px; font-size:.84rem; letter-spacing:.2px;
+    display:inline-flex; align-items:center; gap:.4rem; white-space:nowrap;
+  }
+  .chip-soft{ background: rgba(34,197,94,.12); color: var(--green); border:1px solid rgba(34,197,94,.35)}
+  .chip-money{ background: rgba(255,215,0,.14); color:#ffd25a; border:1px solid rgba(255,209,36,.45)}
+  .chip .dot{width:.55rem;height:.55rem;border-radius:50%}
+  .chip-soft .dot{ background: var(--green) }
+  .chip-money .dot{ background: #ffd25a }
+
+  /* Helper */
+  .hint{margin-top:10px; font-size:.82rem; color:var(--muted)}
+  .footer-space{height:36px}
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="golden-line">
+      <span class="dot"></span>
+      <span>WINGO PREDICTOR PRO</span>
+    </div>
 
-<!-- GOLDEN LINE -->
-<div class="ribbon-wrap">
-  <div class="ribbon">
-    <div class="pill"><span class="dot"></span> WINGO PREDICTOR PRO</div>
+    <!-- Probability -->
+    <section class="card">
+      <h3>📊 Probability (0–9) <span class="muted">(live)</span></h3>
+      <div class="bars" id="bars"></div>
+      <div class="hint">Tip: High confidence खुद-ब-खुद <b>Money Magnet 🧲</b> में जाएगा; बाकी <b>Soft 💚</b>.</div>
+    </section>
+
+    <!-- Recent Predictions -->
+    <section class="card">
+      <h3>🕒 Recent Predictions</h3>
+      <div class="list" id="predictions"></div>
+    </section>
+
+    <div class="footer-space"></div>
   </div>
-</div>
-
-<div class="container">
-  <div class="card">
-    <div class="h1">Quick Predict</div>
-    <div class="grid">
-      <div>
-        <label for="period">🧾 Period Number</label>
-        <input id="period" placeholder="केवल digits (0–9) • tail खुद-ब-खुद दिखेगा"/>
-        <div class="sub" id="periodInfo">—</div>
-      </div>
-      <div>
-        <label for="mode">Strategy</label>
-        <select id="mode">
-          <option value="high" selected>High-Trade</option>
-          <option value="risk">Risk-Controlled</option>
-          <option value="aggressive">Aggressive</option>
-          <option value="conservative">Conservative</option>
-          <option value="normal">Normal</option>
-        </select>
-        <div class="row" style="margin-top:8px">
-          <label class="pill"><input id="autoNext" type="checkbox"/> <b>Auto Next</b></label>
-          <label class="pill">Interval
-            <select id="interval" style="width:120px">
-              <option value="30">30 sec</option><option value="60">60 sec</option>
-            </select>
-          </label>
-          <label class="pill">Max Skip
-            <select id="maxSkip" style="width:90px">
-              <option>0</option><option>1</option><option>2</option>
-              <option selected>3</option><option>4</option><option>5</option>
-            </select>
-          </label>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <label class="pill"><input id="antiSeq" type="checkbox" checked/> Anti-sequence</label>
-          <label class="pill"><input id="learnOn" type="checkbox" checked/> Learning ON</label>
-          <label class="pill"><input id="soundOn" type="checkbox" checked/> Sound ON</label>
-          <button class="btn sec" id="notifyBtn">🔔 Notifications</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="row" style="margin-top:12px">
-      <button class="btn" id="btnPredict">🔮 Predict</button>
-      <button class="btn mm" id="btnMagnet">🧲 Money Magnet</button>
-      <button class="btn sec" id="btnClear">Clear</button>
-      <button class="btn sec" id="btnCopy">Copy Result</button>
-      <span class="helper" id="why">—</span>
-    </div>
-
-    <div class="hr"></div>
-
-    <div class="row">
-      <label class="pill"><input id="pReverse" type="checkbox" checked/> Reverse</label>
-      <label class="pill"><input id="pMirror" type="checkbox" checked/> Mirror</label>
-      <label class="pill"><input id="pCont" type="checkbox" checked/> Continuous</label>
-      <label class="pill"><input id="pGap" type="checkbox" checked/> Gap/Skip</label>
-      <label class="pill"><input id="pStreak" type="checkbox" checked/> Streak-Guard</label>
-    </div>
-  </div>
-
-  <div class="card" id="resultCard" style="margin-top:14px;display:none">
-    <div class="kv">
-      <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
-      <div class="box"><div class="key">🔢 Predicted Number</div><div class="val" id="vNum">—</div></div>
-      <div class="box"><div class="key">📏 Size</div><div class="val" id="vSize">—</div></div>
-    </div>
-    <div style="margin-top:10px">
-      <div class="key">🧠 Confidence</div>
-      <div class="line"><div class="bar" id="confBar"></div></div>
-    </div>
-    <div style="margin-top:10px" class="chips">
-      <span id="signal" class="sig">—</span>
-      <span id="scoreChip" class="chip">—</span>
-      <span id="patternChip" class="chip">—</span>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:14px">
-    <div class="h1">Verify & Learn</div>
-    <div class="verify">
-      <div><label class="pill"><input type="radio" name="actSize" id="actSmall" value="small"/> Small (0–4)</label></div>
-      <div class="center"><button class="btn sec" id="btnVerify">Verify & Learn</button></div>
-      <div><label class="pill"><input type="radio" name="actSize" id="actBig" value="big"/> Big (5–9)</label></div>
-    </div>
-    <div class="helper" id="verifyMsg" style="margin-top:8px">—</div>
-  </div>
-
-  <div class="grid2" style="margin-top:14px">
-    <div class="card"><div class="h1">📊 Probability (0–9)</div><canvas id="probChart" height="220"></canvas></div>
-    <div class="card"><div class="h1">🕘 Recent Predictions</div><div id="hist" class="history">—</div></div>
-  </div>
-</div>
 
 <script>
-const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||""); const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);}; const argmax=a=>a.indexOf(Math.max(...a));
-const clamp01=x=>Math.max(0,Math.min(1,x));
-function bump(p){try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}}
-function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
-function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-/* Sound */
-let pingCtx=null; function coinPing(){ if(!el('soundOn').checked) return; try{ if(!pingCtx) pingCtx=new (window.AudioContext||window.webkitAudioContext)(); const o=pingCtx.createOscillator(), g=pingCtx.createGain(); o.type='triangle'; o.frequency.value=880; g.gain.value=0.15; o.connect(g); g.connect(pingCtx.destination); o.start(); setTimeout(()=>o.stop(),120); setTimeout(()=>{const o2=pingCtx.createOscillator(), g2=pingCtx.createGain(); o2.type='sine'; o2.frequency.value=1568; g2.gain.value=0.12; o2.connect(g2); g2.connect(pingCtx.destination); o2.start(); setTimeout(()=>o2.stop(),140);},140);}catch{} }
-/* Notify */
-async function ensureNotifyPerm(){ if(!('Notification'in window)) return false; if(Notification.permission==='granted') return true; if(Notification.permission==='denied') return false; try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; } }
-function notifyNow(txt){ try{ if(Notification.permission==='granted') new Notification(txt); }catch{} }
-/* Learning */
-const LS_SIZE='WPP_SIZE2'; const loadSize=()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return[1,1]}}; const saveSize=s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+/* === Demo Data / Wire-up ===
+   अपनी backend fetch से probabilities और predictions भर दें.
+   Skip पूरी तरह हटाया गया है: status = 'SOFT' या 'MONEY'
+*/
+const bars = document.getElementById('bars');
+const predsEl = document.getElementById('predictions');
 
-/* Priors */
-function prior_checksum(p){ if(!isDigits(p))return Array(10).fill(0.1); const s=[...p].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10; const v=Array(10).fill(0.1); v[t]+=0.30; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);}
-function prior_cycle(p){ if(!isDigits(p))return Array(10).fill(0.1); const d=[...p].map(Number), s=d.reduce((a,b)=>a+b,0), m=s%7; const v=Array(10).fill(0.1); v[(m*3)%10]+=0.22; v[(m*5)%10]+=0.20; return normalize(v);}
-function prior_parity(p){ if(!isDigits(p))return Array(10).fill(0.1); const even=(+p.slice(-2))%2===0; const v=Array(10).fill(0.1); if(even){for(let i=0;i<10;i+=2)v[i]+=0.22}else{for(let i=1;i<10;i+=2)v[i]+=0.22} return normalize(v);}
-function prior_hashed(p){ if(!isDigits(p))return Array(10).fill(0.1); const seed=hash32(p+'d')%10; const v=Array(10).fill(0.1); for(let i=0;i<10;i++){const d=Math.min((i-seed+10)%10,(seed-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);} return normalize(v);}
-function prior_bucket(p,anti){ if(!isDigits(p))return Array(10).fill(0.1); const tail=+p.slice(-3), m=tail%10, v=Array(10).fill(0.1); const k=anti?0.16:0.36; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45; return normalize(v);}
-/* Patterns */
-function pat_mirror(pro){ const map=[9,8,7,6,5,4,3,2,1,0]; const out=pro.slice(); for(let i=0;i<10;i++) out[i]=(out[i]*0.85 + pro[map[i]]*0.15); return normalize(out);}
-function pat_reverse(pro){ const out=pro.slice(); for(let i=1;i<10;i++) out[i]*=(1+0.01*i); return normalize(out);}
-function pat_continuous(pro){ const s=pro.slice().sort((a,b)=>b-a), t=s[1]; return normalize(pro.map(p=>p*(1+0.25*Math.max(0,(p-t)/(t+1e-9)))));}
-function pat_gap(pro){ const m=pro.reduce((a,b)=>a+b,0)/10; return normalize(pro.map(p=>p*0.9 + m*0.1));}
-function pat_streak(pro){ const mx=Math.max(...pro); if(mx>0.28){ const i=argmax(pro); pro[i]-=0.03; } return normalize(pro);}
-/* Strategy */
-function strategy(m){ switch(m){
-  case 'risk':return{temp:1.02,cap:0.56,jitter:0.05,adapt:0.10,learn:0.28,w:[0.22,0.18,0.18,0.18,0.06,0.08,0.10],minConf:0.50};
-  case 'high':return{temp:1.12,cap:0.70,jitter:0.14,adapt:0.28,learn:0.32,w:[0.16,0.14,0.12,0.22,0.08,0.10,0.18],minConf:0.40};
-  case 'aggressive':return{temp:1.08,cap:0.66,jitter:0.10,adapt:0.20,learn:0.30,w:[0.20,0.16,0.16,0.20,0.08,0.06,0.14],minConf:0.44};
-  case 'conservative':return{temp:1.04,cap:0.60,jitter:0.06,adapt:0.14,learn:0.26,w:[0.22,0.18,0.18,0.18,0.06,0.06,0.12],minConf:0.48};
-  default:return{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,learn:0.30,w:[0.20,0.18,0.18,0.18,0.06,0.08,0.12],minConf:0.46}; } }
+// Dummy probabilities (0–9) in %:
+const probs = [15,11,7,8,8,8,7,9,11,15]; // replace with live
+renderBars(probs);
 
-/* ADAPTIVE DECISION — और ढीला + Play promotion */
-let skipStreak=0;
-function decideSig(conf, baseMin, mode){
-  const maxSkip=parseInt(el('maxSkip').value||'3',10);
-  const relaxPer = (mode==='high') ? 0.06 : 0.045;        // हर Skip पर gate तेजी से घटे
-  let min = baseMin - Math.min(0.25, skipStreak * relaxPer);
-  const softBand = Math.max(0.06, 0.12 - skipStreak*0.02); // Soft खिड़की बड़ी
+// Dummy predictions feed:
+const demoFeed = [
+  { t: '5:25:14 PM', pid: 1431, digit: 9, conf: 0.86 },
+  { t: '5:24:44 PM', pid: 1430, digit: 8, conf: 0.62 },
+  { t: '5:24:14 PM', pid: 1429, digit: 0, conf: 0.41 },
+  { t: '5:23:47 PM', pid: 1428, digit: 8, conf: 0.58 }
+];
+renderPredictions(demoFeed);
 
-  let sig='Skip';
-  if(conf >= (min + 0.06)) sig='Play';
-  else if(conf >= (min - softBand) || conf>=0.35) sig='Soft'; // बेसलाइन Soft floor
-
-  // MaxSkip पर हल्का भी भरोसा ⇒ Play
-  if(sig==='Skip' && (skipStreak+1)>=maxSkip && conf >= (min - 0.08)) sig='Play';
-
-  // Money Magnet — हाई भरोसा
-  const moneyGate = Math.max(min + 0.10, 0.54);
-  if(conf >= moneyGate) sig='Money';
-
-  return {sig, usedMin:min, moneyGate};
+// === Mapping Logic (NO SKIP) ===
+// threshold को अपने मॉडल के हिसाब से ट्यून करें:
+function mapStatus(conf){
+  const HIGH = 0.75;      // >= HIGH ⇒ Money Magnet
+  const MID  = 0.50;      // >= MID  ⇒ Soft (strong)
+  // < MID भी Soft (light) रहेगा — UI एक जैसा दिखेगा
+  return conf >= HIGH ? 'MONEY' : 'SOFT';
 }
 
-/* Predictor */
-function predictLocal(period){
-  const mode=el('mode').value; const S=strategy(mode);
-  const P1=prior_checksum(period), P2=prior_cycle(period), P3=prior_parity(period),
-        P4=prior_hashed(period), P7=prior_bucket(period,el('antiSeq').checked);
-  let base=normalize(P1.map((_,i)=> S.w[0]*P1[i]+S.w[1]*P2[i]+S.w[2]*P3[i]+S.w[3]*P4[i]+S.w[6]*P7[i]));
-  const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  base=normalize(base.map(p=>p*(1+S.adapt*((p-t)/(t+1e-9)))));
-  if(el('learnOn').checked){
-    const sz=loadSize(); const total=(sz[0]+sz[1])||1; const small=sz[0]/total, big=sz[1]/total;
-    for(let i=0;i<5;i++) base[i]*=(1 - S.learn + S.learn*small);
-    for(let i=5;i<10;i++) base[i]*=(1 - S.learn + S.learn*big);
-    base=normalize(base);
+function renderBars(arr){
+  bars.innerHTML = '';
+  const max = Math.max(...arr, 1);
+  arr.forEach((v, i)=>{
+    const b = document.createElement('div');
+    b.className = 'bar';
+    const fill = document.createElement('i');
+    fill.style.height = Math.round((v/max)*100) + '%';
+    b.appendChild(fill);
+    const s = document.createElement('small'); s.textContent = i;
+    b.appendChild(s);
+    bars.appendChild(b);
+  });
+}
+
+function chip(status){
+  if(status === 'MONEY'){
+    return `<span class="chip chip-money"><span class="dot"></span> Money Magnet 🧲</span>`;
   }
-  if(el('pMirror').checked) base=pat_mirror(base);
-  if(el('pReverse').checked) base=pat_reverse(base);
-  if(el('pCont').checked) base=pat_continuous(base);
-  if(el('pGap').checked) base=pat_gap(base);
-  if(el('pStreak').checked) base=pat_streak(base);
-
-  const seed=hash32(period); const rnd=mulberry32(seed);
-  const B=72,j=S.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
-  for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
-  let probs=normalize(agg).map(p=>Math.pow(p,1/S.temp)); probs=normalize(probs);
-  const iM=argmax(probs), mx=probs[iM];
-  if(mx>S.cap){ const ex=mx-S.cap; probs[iM]-=ex; const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const sc=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=sc; probs=normalize(probs); }
-  return {probs, pick:argmax(probs), conf:Math.max(...probs), minConf:S.minConf, mode};
+  return `<span class="chip chip-soft"><span class="dot"></span> Soft 💚</span>`;
 }
 
-/* Chart */
-let probChart=null;
-function renderChart(probs){
-  const data=probs.map(p=>Math.round(p*1000)/10), labels=[...Array(10).keys()].map(String);
-  if(probChart) probChart.destroy();
-  probChart=new Chart(el('probChart').getContext('2d'),{ type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]}, options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}} });
-}
-function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
-
-/* Render */
-function render(period,out,source){
-  el('resultCard').style.display='block';
-  el('vPeriod').textContent=period; el('vNum').textContent=out.pick; el('vSize').textContent=(out.pick>=5)?'Big':'Small';
-  el('confBar').style.width=(out.conf*100).toFixed(1)+'%';
-  renderChart(out.probs);
-
-  const dec=decideSig(out.conf,out.minConf,out.mode);
-  let sigTxt=dec.sig, cls='bad';
-  if(sigTxt==='Soft'){ cls='soft'; sigTxt='Soft 💚'; }
-  else if(sigTxt==='Play'){ cls='ok'; }
-  else if(sigTxt==='Money'){ cls='ok'; sigTxt='🧲 Money Magnet'; }
-
-  el('signal').className='sig '+cls; el('signal').textContent=sigTxt;
-  el('why').textContent=`Conf ${(out.conf*100).toFixed(0)}% • gate ${(dec.usedMin*100).toFixed(0)}%`;
-
-  const mmBtn=el('btnMagnet'); mmBtn.style.display=(dec.sig==='Money')?'inline-block':'none';
-
-  if(dec.sig==='Skip') skipStreak++; else skipStreak=0;
-
-  el('patternChip').textContent=`Mode ${out.mode}`;
-  el('scoreChip').textContent=`Pick #${out.pick}`;
-
-  const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  const tag = (dec.sig==='Money')?'🧲':(dec.sig==='Soft'?'💚':'');
-  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${out.pick} (${out.pick>=5?'Big':'Small'}) • ${dec.sig}${tag?' '+tag:''}</div>`);
-  [...h.children].slice(18).forEach(n=>n.remove());
-
-  if(source!=='clear'){ if(dec.sig!=='Skip') coinPing(); if(Notification.permission==='granted'){ notifyNow(`${sigTxt} • #${out.pick} ${(out.pick>=5?'Big':'Small')} • ${(out.conf*100).toFixed(0)}%`);} }
+function renderPredictions(items){
+  predsEl.innerHTML = '';
+  items.forEach(x=>{
+    const st = mapStatus(x.conf);
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div class="muted tt">⏱ ${x.t}</div>
+      <div class="tt">tail ${x.pid} → #${x.digit} (${x.digit>=5?'Big':'Small'})</div>
+      <div>${chip(st)}</div>
+    `;
+    predsEl.prepend(row);
+  });
 }
 
-/* Actions */
-let timer=null, busy=false;
-async function doPredict(source='manual'){
-  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
-  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
-  el('periodInfo').textContent='Period: '+describePeriod(pr);
-  const out=predictLocal(pr); render(pr,out,source);
-}
-function startAuto(){ const sec=parseInt(el('interval').value||'30',10); clearInterval(timer); timer=setInterval(()=>{const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur); doPredict('auto');},sec*1000);}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  el('btnPredict').addEventListener('click',()=>doPredict('manual'));
-  el('period').addEventListener('keydown',e=>{ if(e.key==='Enter') doPredict('manual');});
-  el('btnClear').addEventListener('click',()=>{ clearInterval(timer); timer=null; el('autoNext').checked=false; el('periodInfo').textContent='—'; el('resultCard').style.display='none'; el('hist').textContent='—'; skipStreak=0; renderChart(Array(10).fill(0.1));});
-  el('btnCopy').addEventListener('click',async()=>{ const txt=`${el('vPeriod').textContent} • #${el('vNum').textContent} • ${el('vSize').textContent} • ${el('signal').textContent}`; try{await navigator.clipboard.writeText(txt); alert('Copied!');}catch{} });
-  el('notifyBtn').addEventListener('click',async()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
-  el('autoNext').addEventListener('change',e=>{ clearInterval(timer); timer=null; if(e.target.checked) startAuto();});
-  el('interval').addEventListener('change',()=>{ if(el('autoNext').checked) startAuto(); });
-  el('btnMagnet').addEventListener('click',()=>{ alert('🧲 Money Magnet — High confidence setup!'); });
-  el('btnVerify').addEventListener('click',()=>{ const pick=el('vNum').textContent.trim(); if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').className='helper'; return; } const chosen=document.querySelector('input[name="actSize"]:checked'); if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').className='helper'; return; } const actual=chosen.value; const pred=(+pick>=5)?'big':'small'; const win=(actual===pred); if(win){ el('verifyMsg').textContent=`WIN ✔ ${pred.toUpperCase()}`; el('verifyMsg').className='win'; } else { el('verifyMsg').textContent=`LOSS ✘ picked ${pred.toUpperCase()} • actual ${actual.toUpperCase()}`; el('verifyMsg').className='lose'; } if(el('learnOn').checked){ const s=loadSize(); if(actual==='small') s[0]++; else s[1]++; saveSize(s);} });
-  renderChart(Array(10).fill(0.1));
-});
+/* ⭐️ अगर GIF लोड न हो तो भी Golden Line ठीक दिखे—कुछ ब्राउज़र GIF fixed bg disable कर सकते हैं */
+const testImg = new Image();
+testImg.onload = ()=>{/* ok */};
+testImg.onerror = ()=>{
+  const gl = document.querySelector('.golden-line');
+  gl.style.setProperty('--stars-ok','0');
+  gl.style.setProperty('background','linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3))');
+};
+testImg.src = "https://your-cdn.com/stars-theme.gif";
 </script>
 </body>
 </html>
