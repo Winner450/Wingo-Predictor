@@ -5,174 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>🎯 WinGo Predictor Pro — Soft 💚 / Money Magnet 🧲 Only</title>
 <style>
-/* =========================
-   THEME & RESET
-   ========================= */
 :root{
-  --bg:#0b0f13;
-  --bg-2:#0e141d;
-  --panel:#0f1620;
-  --panel-2:#0c1119;
-  --text:#e7eef8;
-  --muted:#97a6b7;
-  --primary:#3b82f6;
-  --green:#22c55e;
-  --gold:#ffc107;
-  --red:#ef4444;
-  --violet:#8b5cf6;
-  --card-br:18px;
-  --ring:rgba(255,255,255,.08);
-  --border:rgba(255,255,255,.10);
+  --bg:#0b0f13; --bg-2:#0e141d; --panel:#0f1620; --panel-2:#0c1119;
+  --text:#e7eef8; --muted:#97a6b7; --primary:#3b82f6; --green:#22c55e;
+  --gold:#ffc107; --red:#ef4444; --violet:#8b5cf6; --card-br:18px;
+  --ring:rgba(255,255,255,.08); --border:rgba(255,255,255,.10);
   --shadow: 0 10px 24px rgba(0,0,0,.35);
 }
-*{box-sizing:border-box}
-html,body{height:100%}
+*{box-sizing:border-box} html,body{height:100%}
 body{
-  margin:0;
-  font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
   background:
     radial-gradient(1200px 600px at 50% -150px,#111827 0%,transparent 45%),
-    linear-gradient(180deg,#0a0f14,#070a0f 60%,#06090e 100%),
-    var(--bg);
+    linear-gradient(180deg,#0a0f14,#070a0f 60%,#06090e 100%), var(--bg);
   color:var(--text);
 }
-
-/* =========================
-   TOP GOLDEN LINE (with stars ✨)
-   ========================= */
 .wrap{max-width:1120px;margin:0 auto;padding:14px 14px 80px}
 .golden-line{
-  position:sticky; top:10px; z-index:5;
-  display:flex; align-items:center; justify-content:center; gap:.7rem;
+  position:sticky; top:10px; z-index:5; display:flex; align-items:center; justify-content:center; gap:.7rem;
   padding:14px 18px; border-radius:999px; font-weight:800; letter-spacing:.38px;
   color:#111; text-transform:uppercase; box-shadow: var(--shadow);
-  background:linear-gradient(180deg,#ffd94a,#ffc107 55%,#ffb300);
-  overflow:hidden; border:1px solid rgba(255,255,255,.25);
+  background:linear-gradient(180deg,#ffd94a,#ffc107 55%,#ffb300); overflow:hidden; border:1px solid rgba(255,255,255,.25);
 }
 .golden-line::before{
-  content:"";
-  position:absolute; inset:0; z-index:0;
+  content:""; position:absolute; inset:0; z-index:0;
   background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat fixed;
-  opacity:.38; pointer-events:none;
-  filter:contrast(1.05) brightness(1.08);
+  opacity:.38; pointer-events:none; filter:contrast(1.05) brightness(1.08);
 }
 .golden-line .dot{width:.6rem;height:.6rem;border-radius:50%;background:#111; position:relative; z-index:1; box-shadow:0 0 0 4px rgba(17,17,17,.15)}
 .golden-line span{position:relative; z-index:1}
-
-/* =========================
-   LAYOUT: Header Controls
-   ========================= */
-.header{
-  margin-top:16px; display:grid; gap:12px; grid-template-columns: 1fr;
-}
-@media(min-width:760px){ .header{ grid-template-columns: 2fr 1fr; } }
-.card{
-  background:linear-gradient(180deg,var(--panel),var(--panel-2));
-  border:1px solid var(--border); border-radius:var(--card-br);
-  padding:12px; box-shadow:var(--shadow);
-}
+.header{margin-top:16px; display:grid; gap:12px; grid-template-columns: 1fr}
+@media(min-width:760px){ .header{ grid-template-columns: 2fr 1fr } }
+.card{background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--border); border-radius:var(--card-br); padding:12px; box-shadow:var(--shadow)}
 .card h3{margin:0 0 8px; font-size:1.06rem; letter-spacing:.25px}
 .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
 .input, select, button{
-  background:rgba(255,255,255,.05);
-  color:var(--text);
-  border:1px solid var(--ring);
-  border-radius:10px; padding:10px 12px;
-  font-weight:600; letter-spacing:.2px;
+  background:rgba(255,255,255,.05); color:var(--text); border:1px solid var(--ring);
+  border-radius:10px; padding:10px 12px; font-weight:600; letter-spacing:.2px;
 }
 .input::placeholder{color:var(--muted)}
-.btn{background:var(--primary); border-color:#306fe0}
+.btn{background:var(--primary); border-color:#306fe0; cursor:pointer}
 .btn:active{transform:translateY(1px)}
 .btn-ghost{background:rgba(255,255,255,.06)}
 .badge{padding:.35rem .6rem; border-radius:999px; font-weight:700;}
-
-/* =========================
-   TABS
-   ========================= */
 .tabs{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
-.tab-btn{
-  flex:1; min-width:120px; text-align:center; cursor:pointer;
-  background:rgba(255,255,255,.06); border:1px solid var(--ring);
-  padding:10px 12px; border-radius:12px; font-weight:800;
-}
+.tab-btn{flex:1; min-width:120px; text-align:center; cursor:pointer; background:rgba(255,255,255,.06); border:1px solid var(--ring); padding:10px 12px; border-radius:12px; font-weight:800}
 .tab-btn.active{background:var(--primary); border-color:#2f6ad3}
-
-/* =========================
-   GRID SECTIONS
-   ========================= */
 .grid{display:grid; gap:12px}
 @media(min-width:960px){ .grid-2{ grid-template-columns: 1.2fr .8fr } }
 @media(min-width:960px){ .grid-3{ grid-template-columns: 1fr 1fr 1fr } }
-
-/* =========================
-   PROBABILITY BARS
-   ========================= */
 .bars{display:grid; grid-template-columns:repeat(10,1fr); gap:8px; height:160px; align-items:end; padding:6px 4px 2px}
 .bar{position:relative; background:linear-gradient(180deg,#152233,#0f172a); border:1px solid var(--ring); border-radius:12px; overflow:hidden}
 .bar>i{position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(180deg,#60a5fa,#3b82f6)}
 .bar small{position:absolute; bottom:-18px; width:100%; text-align:center; color:var(--muted); font-size:.75rem}
-
-/* =========================
-   LIST / PREDICTIONS
-   ========================= */
 .list{display:flex; flex-direction:column; gap:10px}
-.row-pred{
-  display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center;
-  background:rgba(255,255,255,.03); border:1px solid var(--ring);
-  padding:10px 12px; border-radius:14px;
-}
+.row-pred{display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; background:rgba(255,255,255,.03); border:1px solid var(--ring); padding:10px 12px; border-radius:14px}
 .chip{font-weight:800; border-radius:999px; padding:6px 10px; font-size:.84rem; letter-spacing:.2px; display:inline-flex; align-items:center; gap:.45rem; white-space:nowrap}
 .chip-soft{ background: rgba(34,197,94,.12); color: var(--green); border:1px solid rgba(34,197,94,.35)}
 .chip-money{ background: rgba(255,215,0,.16); color:#ffd25a; border:1px solid rgba(255,209,36,.5)}
 .chip .dot{width:.58rem;height:.58rem;border-radius:50%}
-.chip-soft .dot{background:var(--green)}
-.chip-money .dot{background:#ffd25a}
-
-/* =========================
-   GAUGE
-   ========================= */
-.gauge{
-  position:relative; width:220px; height:120px; margin:auto;
-}
+.chip-soft .dot{background:var(--green)} .chip-money .dot{background:#ffd25a}
+.gauge{position:relative; width:220px; height:120px; margin:auto}
 .gauge svg{display:block; width:100%; height:100%}
-.gauge .value{
-  position:absolute; inset:auto 0 8px 0; text-align:center; font-weight:900; font-size:1.3rem
-}
-
-/* =========================
-   HEATMAP
-   ========================= */
+.gauge .value{position:absolute; inset:auto 0 8px 0; text-align:center; font-weight:900; font-size:1.3rem}
 .heat-legend{display:flex; gap:6px; align-items:center}
 .heat-box{width:16px;height:16px;border-radius:4px;border:1px solid var(--ring)}
 .table{width:100%; border-collapse:collapse; font-size:.9rem}
 .table th,.table td{border:1px solid var(--ring); padding:8px; text-align:center}
 .table th{background:rgba(255,255,255,.06)}
-
-/* small helpers */
-.muted{color:var(--muted); font-size:.9rem}
+.muted{color:var(--muted); font-size:.9rem} .sep{height:1px;background:var(--ring);margin:10px 0}
 .kv{display:grid; grid-template-columns: auto 1fr; gap:8px 12px; align-items:center}
-.sep{height:1px;background:var(--ring);margin:10px 0}
-.right{margin-left:auto}
-.center{text-align:center}
-.hide{display:none}
-.success{color:var(--green)} .warn{color:var(--gold)} .danger{color:var(--red)}
+.center{text-align:center} .hide{display:none}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- TOP BAR -->
-  <div class="golden-line">
-    <span class="dot"></span>
-    <span>WINGO PREDICTOR PRO</span>
-  </div>
+  <div class="golden-line"><span class="dot"></span><span>WINGO PREDICTOR PRO</span></div>
 
-  <!-- HEADER CONTROLS -->
   <div class="header">
     <div class="card">
       <h3>⚙️ Controls</h3>
       <div class="row">
-        <input id="apiUrl" class="input" style="flex:1" placeholder="LIVE_API_URL (Optional: GitHub Raw / Your API)" />
+        <input id="apiUrl" class="input" style="flex:1" placeholder="LIVE_API_URL (GitHub Raw / Your API)"/>
         <button class="btn" onclick="connectAPI()">Connect API</button>
         <button class="btn-ghost" onclick="loadSample()">Load Sample</button>
       </div>
@@ -190,29 +105,23 @@ body{
         </div>
         <label class="badge" style="background:rgba(255,255,255,.08)">Auto-Refresh:</label>
         <select id="refreshSec" class="input">
-          <option value="0" selected>Off</option>
-          <option value="5">5s</option>
-          <option value="10">10s</option>
-          <option value="15">15s</option>
+          <option value="0" selected>Off</option><option value="5">5s</option><option value="10">10s</option><option value="15">15s</option>
         </select>
         <button class="btn" onclick="toggleAutoRefresh()">Apply</button>
-        <span id="liveState" class="muted right">Live: Off</span>
+        <span id="liveState" class="muted" style="margin-left:auto">Live: Off</span>
       </div>
     </div>
 
     <div class="card">
       <h3>🔍 Check by Period</h3>
       <div class="row">
-        <input id="periodInput" class="input" placeholder="Enter Period Number"/>
+        <input id="periodInput" class="input" placeholder="Enter Period Number (short or long)"/>
         <button class="btn" onclick="checkPeriod()">Check</button>
       </div>
-      <div class="kv" id="periodOut" style="margin-top:10px">
-        <!-- Filled dynamically -->
-      </div>
+      <div id="periodOut" class="kv" style="margin-top:10px"></div>
     </div>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <div class="tab-btn active" data-tab="prob">Probability</div>
     <div class="tab-btn" data-tab="preds">Predictions</div>
@@ -220,25 +129,18 @@ body{
     <div class="tab-btn" data-tab="stats">Stats</div>
   </div>
 
-  <!-- TAB CONTENT -->
   <div id="tab-prob" class="grid grid-2">
     <div class="card">
       <h3>📊 Probability (0–9) <span class="muted">(from history)</span></h3>
       <div class="bars" id="bars"></div>
       <div class="sep"></div>
-      <div class="muted">Tip: High confidence ऑटो <b>Money Magnet 🧲</b>, बाकी <b>Soft 💚</b>.</div>
+      <div class="muted">High confidence ⇒ <b>Money Magnet 🧲</b>, else <b>Soft 💚</b>.</div>
     </div>
     <div class="card center">
       <h3>🎯 Confidence Meter</h3>
       <div class="gauge" id="gauge">
-        <!-- SVG gauge -->
         <svg viewBox="0 0 100 60">
-          <defs>
-            <linearGradient id="g" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stop-color="#22c55e"/>
-              <stop offset="100%" stop-color="#ffc107"/>
-            </linearGradient>
-          </defs>
+          <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#ffc107"/></linearGradient></defs>
           <path d="M10 50 A40 40 0 0 1 90 50" fill="none" stroke="url(#g)" stroke-width="10" opacity=".35"/>
           <path id="needleArc" d="M10 50 A40 40 0 0 1 90 50" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 251"/>
         </svg>
@@ -253,31 +155,19 @@ body{
   </div>
 
   <div id="tab-preds" class="grid grid-2 hide">
-    <div class="card">
-      <h3>🕒 Recent Predictions</h3>
-      <div id="preds" class="list"></div>
-    </div>
+    <div class="card"><h3>🕒 Recent Predictions</h3><div id="preds" class="list"></div></div>
     <div class="card">
       <h3>🎮 Prediction Simulator</h3>
-      <div class="row">
-        <input id="simConf" class="input" type="number" step="0.01" min="0.0" max="1" value="0.72" style="width:120px"/>
-        <button class="btn" onclick="simulate()">Simulate</button>
-      </div>
+      <div class="row"><input id="simConf" class="input" type="number" step="0.01" min="0" max="1" value="0.72" style="width:120px"/><button class="btn" onclick="simulate()">Simulate</button></div>
       <div id="simOut" class="center" style="margin-top:10px"></div>
       <div class="sep"></div>
       <h3>🔔 Alerts</h3>
-      <div class="row">
-        <button class="btn-ghost" onclick="testBeep('soft')">Test Soft 💚</button>
-        <button class="btn-ghost" onclick="testBeep('money')">Test Money 🧲</button>
-      </div>
+      <div class="row"><button class="btn-ghost" onclick="testBeep('soft')">Test Soft 💚</button><button class="btn-ghost" onclick="testBeep('money')">Test Money 🧲</button></div>
     </div>
   </div>
 
   <div id="tab-patterns" class="grid grid-2 hide">
-    <div class="card">
-      <h3>📌 Pattern History (Last 50)</h3>
-      <div id="patternList" class="list"></div>
-    </div>
+    <div class="card"><h3>📌 Pattern History (Last 50)</h3><div id="patternList" class="list"></div></div>
     <div class="card">
       <h3>🌡 Heatmap (0–9 frequency)</h3>
       <canvas id="heat" width="360" height="180" style="width:100%;border-radius:12px;border:1px solid var(--ring)"></canvas>
@@ -290,167 +180,138 @@ body{
   </div>
 
   <div id="tab-stats" class="grid grid-3 hide">
-    <div class="card">
-      <h3>🔥 Hot Numbers</h3>
-      <div id="hot"></div>
-      <div class="sep"></div>
-      <h3>❄️ Cold Numbers</h3>
-      <div id="cold"></div>
+    <div class="card"><h3>🔥 Hot Numbers</h3><div id="hot"></div><div class="sep"></div><h3>❄️ Cold Numbers</h3><div id="cold"></div></div>
+    <div class="card"><h3>🎨 Color Stats</h3>
+      <table class="table"><thead><tr><th>Color</th><th>Count</th><th>Share</th></tr></thead><tbody id="colorStats"></tbody></table>
     </div>
-    <div class="card">
-      <h3>🎨 Color Stats</h3>
-      <table class="table">
-        <thead><tr><th>Color</th><th>Count</th><th>Share</th></tr></thead>
-        <tbody id="colorStats"></tbody>
-      </table>
-    </div>
-    <div class="card">
-      <h3>📈 Win / Loss</h3>
-      <table class="table">
-        <thead><tr><th>Total</th><th>Wins</th><th>Losses</th><th>Accuracy</th></tr></thead>
-        <tbody><tr><td id="sTotal">0</td><td id="sWin">0</td><td id="sLoss">0</td><td id="sAcc">0%</td></tr></tbody>
-      </table>
+    <div class="card"><h3>📈 Win / Loss</h3>
+      <table class="table"><thead><tr><th>Total</th><th>Wins</th><th>Losses</th><th>Accuracy</th></tr></thead>
+      <tbody><tr><td id="sTotal">0</td><td id="sWin">0</td><td id="sLoss">0</td><td id="sAcc">0%</td></tr></tbody></table>
     </div>
   </div>
 
 </div>
 
 <script>
-/* ==========================================================
-   DATA SCHEMA (for LIVE API):
-   {
-     "history":[
-       {"period":1431,"num":9,"type":"Big","color":"Red","conf":0.85,"win":true},
-       ...
-     ]
-   }
-   ========================================================== */
-
-/* ----- GLOBAL STATE ----- */
-let HISTORY = []; // filled by sample or API
-let AUTO_TIMER = null;
-let ACTIVE_THRESHOLD = 0.75; // changes via strategy/custom
-
-/* ----- UTIL ----- */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => document.querySelectorAll(sel);
-const fmtPct = x => (x*100).toFixed(0)+'%';
-function setActiveTab(id){
-  $$('.tab-btn').forEach(b=>b.classList.remove('active'));
-  $$('.grid, .grid-2, .grid-3').forEach(x=>x.classList.add('hide'));
-  $(`[data-tab="${id}"]`).classList.add('active');
-  $(`#tab-${id}`).classList.remove('hide');
-}
+/* ====== GLOBAL ====== */
+let HISTORY = []; let AUTO_TIMER=null; let ACTIVE_THRESHOLD=0.75;
+const $ = s=>document.querySelector(s); const $$=s=>document.querySelectorAll(s);
+function setActiveTab(id){ $$('.tab-btn').forEach(b=>b.classList.remove('active')); $$('.grid, .grid-2, .grid-3').forEach(x=>x.classList.add('hide')); $(`[data-tab="${id}"]`).classList.add('active'); $(`#tab-${id}`).classList.remove('hide'); }
 $$('.tab-btn').forEach(b=>b.addEventListener('click',()=>setActiveTab(b.dataset.tab)));
+function clamp(n,min,max){ return Math.max(min,Math.min(max,n)); }
 
-/* ----- STRATEGY ----- */
+/* ====== LONG PERIOD SUPPORT ======
+   - normalizePeriod: takes long id like 20250814100051508 -> 51508 or 1508
+   - findByPeriodOrNearest: exact match else nearest lower
+*/
+function normalizePeriod(pid){
+  const s = String(pid||'').replace(/\D/g,''); if(!s) return null;
+  let p = parseInt(s.slice(-4),10);
+  if (isNaN(p) || p<1000) p = parseInt(s.slice(-5),10);
+  return isNaN(p) ? null : p;
+}
+function findByPeriodOrNearest(p){
+  let exact = HISTORY.find(h => h.period === p);
+  if (exact) return exact;
+  const sorted = [...HISTORY].sort((a,b)=>b.period-a.period);
+  for (const h of sorted){ if (h.period <= p) return h; }
+  return sorted[0] || null;
+}
+
+/* ====== STRATEGY ====== */
 function readStrategy(){
-  const val = $('#strategy').value;
-  if(val==='safe') ACTIVE_THRESHOLD = 0.80;
-  else if(val==='balanced') ACTIVE_THRESHOLD = 0.75;
-  else if(val==='aggressive') ACTIVE_THRESHOLD = 0.70;
-  else if(val==='custom'){ $('#customBox').classList.remove('hide'); ACTIVE_THRESHOLD = clamp(parseFloat($('#customHigh').value)||0.75,0.5,0.95); return; }
+  const v=$('#strategy').value;
+  if(v==='safe') ACTIVE_THRESHOLD=0.80;
+  else if(v==='balanced') ACTIVE_THRESHOLD=0.75;
+  else if(v==='aggressive') ACTIVE_THRESHOLD=0.70;
+  else if(v==='custom'){ $('#customBox').classList.remove('hide'); ACTIVE_THRESHOLD=clamp(parseFloat($('#customHigh').value)||0.75,0.5,0.95); return;}
   $('#customBox').classList.add('hide');
 }
-function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
-$('#strategy').addEventListener('change',()=>{ readStrategy(); refreshAll(); });
-$('#customHigh').addEventListener('input',()=>{ readStrategy(); refreshAll(); });
+$('#strategy').addEventListener('change',()=>{readStrategy();refreshAll();});
+$('#customHigh').addEventListener('input',()=>{readStrategy();refreshAll();});
 
-/* ----- AUTO REFRESH ----- */
+/* ====== AUTO REFRESH / API ====== */
 function toggleAutoRefresh(){
-  const sec = parseInt($('#refreshSec').value,10);
-  if(AUTO_TIMER){ clearInterval(AUTO_TIMER); AUTO_TIMER=null; }
-  if(sec>0){
-    AUTO_TIMER = setInterval(()=>{ fetchAPI($('#apiUrl').value); }, sec*1000);
-    $('#liveState').textContent = `Live: ${sec}s`;
-  } else { $('#liveState').textContent = 'Live: Off'; }
+  const sec=parseInt($('#refreshSec').value,10); if(AUTO_TIMER){clearInterval(AUTO_TIMER);AUTO_TIMER=null;}
+  if(sec>0){ AUTO_TIMER=setInterval(()=>{ fetchAPI($('#apiUrl').value); },sec*1000); $('#liveState').textContent=`Live: ${sec}s`; }
+  else $('#liveState').textContent='Live: Off';
 }
-
-/* ----- API ----- */
 async function fetchAPI(url){
   if(!url) return;
   try{
     const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now());
     const data = await res.json();
-    if(Array.isArray(data)) HISTORY = data;
-    else if(Array.isArray(data.history)) HISTORY = data.history;
-    else { console.warn('Invalid JSON shape. Expect {history:[...]}.'); return; }
+    let arr = Array.isArray(data) ? data : (Array.isArray(data.history) ? data.history : []);
+    HISTORY = arr.map(h => ({...h, period: normalizePeriod(h.period) ?? h.period})).sort((a,b)=>b.period-a.period);
     refreshAll();
-  }catch(e){ console.error('API fetch error', e); }
+  }catch(e){ console.error('API fetch error',e); }
 }
-function connectAPI(){ const url = $('#apiUrl').value.trim(); if(url) fetchAPI(url); }
+function connectAPI(){ const url=$('#apiUrl').value.trim(); if(url) fetchAPI(url); }
 
-/* ----- SAMPLE DATA (good spread) ----- */
+/* ====== SAMPLE DATA ====== */
 function loadSample(){
   HISTORY = [
-    {"period":1440,"num":6,"type":"Big","color":"Green","conf":0.76,"win":true},
-    {"period":1439,"num":2,"type":"Small","color":"Violet","conf":0.66,"win":false},
-    {"period":1438,"num":8,"type":"Big","color":"Red","conf":0.83,"win":true},
-    {"period":1437,"num":9,"type":"Big","color":"Red","conf":0.81,"win":true},
-    {"period":1436,"num":0,"type":"Small","color":"Green","conf":0.58,"win":false},
-    {"period":1435,"num":7,"type":"Big","color":"Green","conf":0.72,"win":true},
-    {"period":1434,"num":1,"type":"Small","color":"Red","conf":0.63,"win":false},
-    {"period":1433,"num":5,"type":"Big","color":"Green","conf":0.77,"win":true},
-    {"period":1432,"num":3,"type":"Small","color":"Violet","conf":0.55,"win":false},
-    {"period":1431,"num":9,"type":"Big","color":"Red","conf":0.85,"win":true},
-    {"period":1430,"num":8,"type":"Big","color":"Green","conf":0.62,"win":false},
-    {"period":1429,"num":0,"type":"Small","color":"Violet","conf":0.41,"win":true},
-    {"period":1428,"num":8,"type":"Big","color":"Green","conf":0.58,"win":false},
-    {"period":1427,"num":2,"type":"Small","color":"Red","conf":0.77,"win":true},
-    {"period":1426,"num":5,"type":"Big","color":"Green","conf":0.80,"win":true},
-    {"period":1425,"num":4,"type":"Small","color":"Violet","conf":0.55,"win":false},
-    {"period":1424,"num":6,"type":"Big","color":"Green","conf":0.73,"win":true},
-    {"period":1423,"num":7,"type":"Big","color":"Red","conf":0.88,"win":true},
-    {"period":1422,"num":3,"type":"Small","color":"Green","conf":0.69,"win":false},
-    {"period":1421,"num":9,"type":"Big","color":"Red","conf":0.79,"win":true}
-  ];
+    {"period":normalizePeriod(1440),"num":6,"type":"Big","color":"Green","conf":0.76,"win":true},
+    {"period":normalizePeriod(1439),"num":2,"type":"Small","color":"Violet","conf":0.66,"win":false},
+    {"period":normalizePeriod(1438),"num":8,"type":"Big","color":"Red","conf":0.83,"win":true},
+    {"period":normalizePeriod(1437),"num":9,"type":"Big","color":"Red","conf":0.81,"win":true},
+    {"period":normalizePeriod(1436),"num":0,"type":"Small","color":"Green","conf":0.58,"win":false},
+    {"period":normalizePeriod(1435),"num":7,"type":"Big","color":"Green","conf":0.72,"win":true},
+    {"period":normalizePeriod(1434),"num":1,"type":"Small","color":"Red","conf":0.63,"win":false},
+    {"period":normalizePeriod(1433),"num":5,"type":"Big","color":"Green","conf":0.77,"win":true},
+    {"period":normalizePeriod(1432),"num":3,"type":"Small","color":"Violet","conf":0.55,"win":false},
+    {"period":normalizePeriod(1431),"num":9,"type":"Big","color":"Red","conf":0.85,"win":true},
+    {"period":normalizePeriod(1430),"num":8,"type":"Big","color":"Green","conf":0.62,"win":false},
+    {"period":normalizePeriod(1429),"num":0,"type":"Small","color":"Violet","conf":0.41,"win":true},
+    {"period":normalizePeriod(1428),"num":8,"type":"Big","color":"Green","conf":0.58,"win":false},
+    {"period":normalizePeriod(1427),"num":2,"type":"Small","color":"Red","conf":0.77,"win":true},
+    {"period":normalizePeriod(1426),"num":5,"type":"Big","color":"Green","conf":0.80,"win":true},
+    {"period":normalizePeriod(1425),"num":4,"type":"Small","color":"Violet","conf":0.55,"win":false},
+    {"period":normalizePeriod(1424),"num":6,"type":"Big","color":"Green","conf":0.73,"win":true},
+    {"period":normalizePeriod(1423),"num":7,"type":"Big","color":"Red","conf":0.88,"win":true},
+    {"period":normalizePeriod(1422),"num":3,"type":"Small","color":"Green","conf":0.69,"win":false},
+    {"period":normalizePeriod(1421),"num":9,"type":"Big","color":"Red","conf":0.79,"win":true}
+  ].sort((a,b)=>b.period-a.period);
   refreshAll();
 }
 
-/* ----- CORE RENDERERS ----- */
+/* ====== RENDERERS ====== */
 function renderBars(){
-  const counts = Array(10).fill(0);
-  HISTORY.forEach(h=>counts[h.num]++);
+  const counts = Array(10).fill(0); HISTORY.forEach(h=>counts[h.num]++);
   const max = Math.max(...counts,1);
-  $('#bars').innerHTML = counts.map((v,i)=>`
-    <div class="bar"><i style="height:${Math.round((v/max)*100)}%"></i><small>${i}</small></div>
-  `).join('');
+  $('#bars').innerHTML = counts.map((v,i)=>`<div class="bar"><i style="height:${Math.round((v/max)*100)}%"></i><small>${i}</small></div>`).join('');
 }
-
 function chip(conf){
   return conf >= ACTIVE_THRESHOLD
     ? `<span class="chip chip-money"><span class="dot"></span> Money Magnet 🧲</span>`
     : `<span class="chip chip-soft"><span class="dot"></span> Soft 💚</span>`;
 }
-
 function renderPreds(){
   $('#preds').innerHTML = HISTORY.slice(0,30).map(h=>`
     <div class="row-pred">
       <div class="muted">tail ${h.period}</div>
       <div>#${h.num} (${h.type}, ${h.color})</div>
       <div>${chip(h.conf)}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
-
 function checkPeriod(){
-  const pid = parseInt($('#periodInput').value,10);
-  if(!pid){ $('#periodOut').innerHTML = `<span class="muted">Enter a valid period.</span>`; return; }
-  const h = HISTORY.find(x=>x.period===pid);
-  if(!h){ $('#periodOut').innerHTML = `<span class="danger">No data found for period ${pid}.</span>`; return; }
-  const isMoney = h.conf >= ACTIVE_THRESHOLD;
+  const raw = $('#periodInput').value;
+  const norm = normalizePeriod(raw);
+  if(norm==null){ $('#periodOut').innerHTML = `<span style="color:#ef4444">Please enter a valid period.</span>`; setGauge(0); return; }
+  const rec = findByPeriodOrNearest(norm);
+  if(!rec){ $('#periodOut').innerHTML = `<span style="color:#ef4444">No history available.</span>`; setGauge(0); return; }
+  const isMoney = rec.conf >= ACTIVE_THRESHOLD;
   $('#periodOut').innerHTML = `
-    <span class="muted">Period</span><b>${h.period}</b>
-    <span class="muted">Digit</span><b>#${h.num}</b>
-    <span class="muted">Type</span><b>${h.type}</b>
-    <span class="muted">Color</span><b>${h.color}</b>
-    <span class="muted">Confidence</span><b>${(h.conf*100).toFixed(1)}%</b>
-    <span class="muted">Decision</span>${isMoney?'<b class="warn">Money Magnet 🧲</b>':'<b class="success">Soft 💚</b>'}
+    <span class="muted">Input</span><b>${raw}</b>
+    <span class="muted">Using period</span><b>${rec.period}</b>
+    <span class="muted">Digit</span><b>#${rec.num}</b>
+    <span class="muted">Type</span><b>${rec.type}</b>
+    <span class="muted">Color</span><b>${rec.color}</b>
+    <span class="muted">Confidence</span><b>${(rec.conf*100).toFixed(1)}%</b>
+    <span class="muted">Decision</span>${isMoney?'<b style="color:#ffc107">Money Magnet 🧲</b>':'<b style="color:#22c55e">Soft 💚</b>'}
   `;
-  setGauge(h.conf);
-  beep(isMoney?'money':'soft');
+  setGauge(rec.conf); beep(isMoney?'money':'soft');
 }
-
 function renderPattern(){
   const items = HISTORY.slice(0,50);
   $('#patternList').innerHTML = items.map(h=>`
@@ -459,112 +320,52 @@ function renderPattern(){
       <div>${h.type}</div>
       <div class="muted">tail ${h.period}</div>
       <div>${chip(h.conf)}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
-
 function renderHeat(){
-  const counts = Array(10).fill(0);
-  HISTORY.forEach(h=>counts[h.num]++);
-  const max = Math.max(...counts,1);
-  const ctx = $('#heat').getContext('2d');
-  ctx.clearRect(0,0,360,180);
-  const cw = 36, ch = 140, x0=12, y0=20;
+  const counts = Array(10).fill(0); HISTORY.forEach(h=>counts[h.num]++);
+  const max = Math.max(...counts,1), ctx=$('#heat').getContext('2d');
+  ctx.clearRect(0,0,360,180); const cw=36,ch=140,x0=12,y0=20;
   for(let i=0;i<10;i++){
-    const v = counts[i]/max; // 0..1
-    const col = lerpColor([11,26,43],[32,75,130],[96,165,250], v);
+    const v = counts[i]/max; const col = lerpColor([11,26,43],[32,75,130],[96,165,250], v);
     ctx.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`;
     const h = Math.max(8, Math.round(ch*v));
-    ctx.fillRect(x0 + i*(cw+0), y0 + (ch-h), cw, h);
-    ctx.fillStyle = "rgba(255,255,255,.65)";
-    ctx.font = "12px Segoe UI"; ctx.textAlign="center";
+    ctx.fillRect(x0 + i*cw, y0 + (ch-h), cw, h);
+    ctx.fillStyle="rgba(255,255,255,.65)"; ctx.font="12px Segoe UI"; ctx.textAlign="center";
     ctx.fillText(i.toString(), x0 + i*cw + cw/2, y0+ch+16);
   }
 }
-function lerpColor(a,b,c,t){
-  // piecewise: a->b for 0..0.5, b->c for 0.5..1
-  if(t<=.5){ const k=t/.5; return [a[0]+(b[0]-a[0])*k, a[1]+(b[1]-a[1])*k, a[2]+(b[2]-a[2])*k].map(Math.round); }
-  const k=(t-.5)/.5; return [b[0]+(c[0]-b[0])*k, b[1]+(c[1]-b[1])*k, b[2]+(c[2]-b[2])*k].map(Math.round);
-}
-
+function lerpColor(a,b,c,t){ if(t<=.5){const k=t/.5;return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k].map(Math.round);} const k=(t-.5)/.5; return [b[0]+(c[0]-b[0])*k,b[1]+(c[1]-b[1])*k,b[2]+(c[2]-b[2])*k].map(Math.round); }
 function renderHotCold(){
-  const counts = Array(10).fill(0);
-  HISTORY.forEach(h=>counts[h.num]++);
+  const counts = Array(10).fill(0); HISTORY.forEach(h=>counts[h.num]++);
   const arr = counts.map((v,i)=>({num:i,count:v})).sort((a,b)=>b.count-a.count);
   $('#hot').innerHTML = arr.slice(0,3).map(x=>`<div class="row"><b>#${x.num}</b><span class="muted">(${x.count})</span></div>`).join('');
   $('#cold').innerHTML = arr.slice(-3).map(x=>`<div class="row"><b>#${x.num}</b><span class="muted">(${x.count})</span></div>`).join('');
 }
-
 function renderColorStats(){
-  const map = {"Green":0,"Red":0,"Violet":0};
-  HISTORY.forEach(h=>{ if(map[h.color]!=null) map[h.color]++ });
-  const total = HISTORY.length || 1;
+  const map={"Green":0,"Red":0,"Violet":0}; HISTORY.forEach(h=>{ if(map[h.color]!=null) map[h.color]++; });
+  const total=HISTORY.length||1;
   $('#colorStats').innerHTML = Object.entries(map).map(([k,v])=>{
-    const share = ((v/total)*100).toFixed(1)+'%';
-    const pill = k==='Green'?'style="color:var(--green)"':k==='Red'?'style="color:var(--red)"':'style="color:var(--violet)"';
-    return `<tr><td ${pill}>${k}</td><td>${v}</td><td>${share}</td></tr>`;
+    const share=((v/total)*100).toFixed(1)+'%';
+    const style=k==='Green'?'color:#22c55e':k==='Red'?'color:#ef4444':'color:#8b5cf6';
+    return `<tr><td style="${style}">${k}</td><td>${v}</td><td>${share}</td></tr>`;
   }).join('');
 }
-
 function renderWL(){
-  const t = HISTORY.length;
-  const w = HISTORY.filter(h=>h.win).length;
-  const l = t-w;
-  const acc = t? ((w/t)*100).toFixed(1)+'%':'0%';
-  $('#sTotal').textContent=t; $('#sWin').textContent=w; $('#sLoss').textContent=l; $('#sAcc').textContent=acc;
+  const t=HISTORY.length, w=HISTORY.filter(h=>h.win).length, l=t-w;
+  $('#sTotal').textContent=t; $('#sWin').textContent=w; $('#sLoss').textContent=l; $('#sAcc').textContent=t?((w/t)*100).toFixed(1)+'%':'0%';
 }
 
-/* ----- GAUGE ----- */
-function setGauge(conf){ // 0..1
-  const pct = clamp(conf,0,1);
-  const dash = Math.round(251 * pct);
-  $('#needleArc').setAttribute('stroke-dasharray', `${dash} 251`);
-  $('#gaugeVal').textContent = fmtPct(pct);
-  $('#activeThr').textContent = ACTIVE_THRESHOLD.toFixed(2);
-}
+/* ====== GAUGE / SOUND / SIM ====== */
+function setGauge(conf){ const pct=Math.max(0,Math.min(1,conf||0)); const dash=Math.round(251*pct); $('#needleArc').setAttribute('stroke-dasharray',`${dash} 251`); $('#gaugeVal').textContent=(pct*100).toFixed(0)+'%'; $('#activeThr').textContent=ACTIVE_THRESHOLD.toFixed(2); }
+let AC=null; function beep(kind='soft'){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); const osc=AC.createOscillator(); const gain=AC.createGain(); gain.gain.value=0.03; osc.connect(gain).connect(AC.destination); if(kind==='money'){osc.type='square';osc.frequency.value=880;} else {osc.type='sine';osc.frequency.value=540;} osc.start(); setTimeout(()=>osc.stop(),180);}catch(e){} }
+function testBeep(k){beep(k);} function simulate(){ const c=Math.max(0,Math.min(1,parseFloat($('#simConf').value)||0)); setGauge(c); const isMoney=c>=ACTIVE_THRESHOLD; $('#simOut').innerHTML=isMoney?`<div class="chip chip-money" style="justify-content:center"><span class="dot"></span> Money Magnet 🧲</div>`:`<div class="chip chip-soft" style="justify-content:center"><span class="dot"></span> Soft 💚</div>`; beep(isMoney?'money':'soft'); }
 
-/* ----- SIMULATOR ----- */
-function simulate(){
-  const c = clamp(parseFloat($('#simConf').value)||0,0,1);
-  setGauge(c);
-  const isMoney = c >= ACTIVE_THRESHOLD;
-  $('#simOut').innerHTML = isMoney
-    ? `<div class="chip chip-money" style="justify-content:center"><span class="dot"></span> Money Magnet 🧲</div>`
-    : `<div class="chip chip-soft" style="justify-content:center"><span class="dot"></span> Soft 💚</div>`;
-  beep(isMoney?'money':'soft');
-}
+/* ====== REFRESH ALL ====== */
+function refreshAll(){ readStrategy(); setGauge(HISTORY[0]?.conf||0); renderBars(); renderPreds(); renderPattern(); renderHeat(); renderHotCold(); renderColorStats(); renderWL(); }
 
-/* ----- SOUND (WebAudio) ----- */
-let AC = null;
-function beep(kind='soft'){
-  try{
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
-    const osc = AC.createOscillator();
-    const gain = AC.createGain();
-    gain.gain.value = 0.03;
-    osc.connect(gain).connect(AC.destination);
-    if(kind==='money'){ osc.type='square'; osc.frequency.value=880; } else { osc.type='sine'; osc.frequency.value=540; }
-    osc.start(); setTimeout(()=>osc.stop(), 180);
-  }catch(e){ /* ignore */ }
-}
-function testBeep(k){ beep(k); }
-
-/* ----- REFRESH ALL ----- */
-function refreshAll(){
-  readStrategy();
-  setGauge(HISTORY[0]?.conf || 0);
-  renderBars();
-  renderPreds();
-  renderPattern();
-  renderHeat();
-  renderHotCold();
-  renderColorStats();
-  renderWL();
-}
-
-/* ----- INIT ----- */
-loadSample(); // remove if you want empty state
-setActiveTab('prob');
+/* ====== INIT ====== */
+setActiveTab('prob'); loadSample(); // remove loadSample() if you want empty start
 </script>
 </body>
 </html>
