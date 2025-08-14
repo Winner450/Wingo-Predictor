@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>🎯 WinGo Predictor Pro — Period Only</title>
+  <title>🎯 WinGo Predictor Pro — Period Only (Pro)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="manifest" id="dynManifest">
+  <meta name="theme-color" content="#000000"/>
   <style>
     :root{
       --gold:#FFD700; --gold-2:#f5d46b; --ink:#e5e7eb;
@@ -23,124 +25,154 @@
     header{
       position:sticky; top:0; z-index:5;
       background:#000; border-bottom:1px solid #111;
-      padding:14px 16px; box-shadow:0 2px 12px rgba(0,0,0,.35);
+      padding:10px 16px; box-shadow:0 2px 12px rgba(0,0,0,.35);
     }
     .brand{
-      max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:10px;
-      font-weight:800; font-size:22px; color:var(--gold);
+      max-width:1220px; margin:0 auto; display:flex; align-items:center; gap:10px;
+      font-weight:800; font-size:20px; color:var(--gold);
+      justify-content:space-between;
     }
-    .container{ max-width:1180px; margin:0 auto; padding:22px 16px 40px 16px }
+    .container{ max-width:1220px; margin:0 auto; padding:18px 16px 40px 16px }
 
-    /* cards */
     .card{
       background:var(--card); border:1px solid rgba(255,255,255,.06);
-      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+      border-radius:var(--radius); padding:16px; box-shadow:var(--shadow);
       transition: background .25s, border-color .25s;
     }
-    .grid2{ display:grid; grid-template-columns:1.6fr 1fr; gap:16px }
-    @media (max-width:900px){ .grid2{ grid-template-columns:1fr } }
+    .grid2{ display:grid; grid-template-columns:1.6fr 1fr; gap:14px }
+    @media (max-width:980px){ .grid2{ grid-template-columns:1fr } }
 
-    /* inputs */
-    label{ font-size:14px; font-weight:700; color:#e7e7e7; display:block; margin-bottom:8px }
+    label{ font-size:13px; font-weight:700; color:#e7e7e7; display:block; margin-bottom:6px }
     input, select{
-      width:100%; padding:14px 14px; border-radius:12px; border:2px solid #333;
-      background:#0b0b0b; color:#fff; font-size:16px; outline:none; transition:.2s border;
+      width:100%; padding:12px 12px; border-radius:12px; border:2px solid #333;
+      background:#0b0b0b; color:#fff; font-size:15px; outline:none; transition:.2s border;
     }
     input:focus, select:focus{ border-color:var(--gold) }
-    .meta{ color:#9ca3af; font-size:13px; margin-top:6px }
+    .meta{ color:#9ca3af; font-size:12px; margin-top:6px }
 
-    /* buttons */
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px }
     .btn{
       background:linear-gradient(180deg,var(--gold),var(--gold-2));
-      color:#000; font-weight:800; border:0; padding:12px 18px; border-radius:12px;
-      cursor:pointer; box-shadow:0 0 0 2px rgba(0,0,0,.2), 0 10px 18px rgba(255,215,0,.15);
+      color:#000; font-weight:800; border:0; padding:10px 14px; border-radius:12px;
+      cursor:pointer; box-shadow:0 0 0 2px rgba(0,0,0,.2), 0 8px 14px rgba(255,215,0,.15);
     }
     .btn.secondary{
       background:#1f2937; color:#e5e7eb; box-shadow:none; border:1px solid #2b3442;
     }
+    .btn.ghost{ background:#0b0b0b; border:1px dashed #333; color:#cbd5e1 }
     .tag{ display:inline-block; padding:6px 10px; border:1px solid #2b3442; border-radius:999px; font-size:12px; color:#cbd5e1 }
     .pill{ display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid #2b3442; margin-right:6px; font-weight:700 }
     .ok{ color:var(--ok) } .warn{ color:var(--warn) } .bad{ color:var(--bad) }
 
-    /* result: BIGGER primary boxes, smaller Big/Small cards */
-    .kv{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px }
-    @media (max-width:900px){ .kv{ grid-template-columns:repeat(2,1fr) } }
+    /* RESULT primary bigger, Big/Small smaller */
+    .kv{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px }
+    @media (max-width:900px){ .kv{ grid-template-columns:1fr } }
     .kv .box{
       background:#0a0a0a; border:1px solid #222; border-radius:14px; padding:16px;
     }
-    .key{ color:#9ca3af; font-size:13px }
-    .val{ font-weight:900; font-size:30px; color:var(--gold) } /* bigger */
+    .key{ color:#9ca3af; font-size:12px }
+    .val{ font-weight:900; font-size:32px; color:var(--gold) } /* bigger */
 
     .bigSmallRow{
-      margin-top:12px; display:grid; grid-template-columns:1.4fr 0.8fr 0.8fr; gap:12px;
+      margin-top:12px; display:grid; grid-template-columns:1.3fr 0.85fr 0.85fr; gap:12px;
     }
     .statCard{
-      background:#0d0f12; border:1px solid #202a36; border-radius:12px; padding:12px; /* slightly smaller */
+      background:#0d0f12; border:1px solid #202a36; border-radius:12px; padding:12px;
     }
-    .valXL{ font-weight:900; font-size:24px; color:var(--gold) } /* smaller than before */
-    .badge{ display:inline-block; padding:4px 8px; border-radius:8px; font-size:12px; background:#1a1a1a; border:1px solid #2a2a2a; margin-left:8px }
+    .valXL{ font-weight:900; font-size:22px; color:var(--gold) } /* a bit smaller */
+    .badge{ display:inline-block; padding:3px 7px; border-radius:8px; font-size:11px; background:#1a1a1a; border:1px solid #2a2a2a; margin-left:8px }
 
     .line{ height:10px; background:#1f2937; border-radius:999px; overflow:hidden; margin:8px 0 2px 0 }
     .bar{ height:10px; width:0%; background:linear-gradient(90deg,var(--gold-2),var(--gold)) }
 
-    /* charts */
-    .gridCharts{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px }
+    .gridCharts{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px }
     @media (max-width:900px){ .gridCharts{ grid-template-columns:1fr } }
 
-    /* history */
     .history{ font-size:12px; color:#cbd5e1; max-height:200px; overflow:auto }
     .hrow{ padding:6px 0; border-bottom:1px dashed #222 }
 
-    /* signal theming on result card */
     .theme-good{ background:var(--goodBg); border-color:#173021 }
     .theme-warn{ background:var(--warnBg); border-color:#3e2d08 }
     .theme-bad { background:var(--badBg);  border-color:#3b1722 }
+
+    .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px }
+    @media (max-width:980px){ .row3{ grid-template-columns:1fr } }
+
+    .pad{ display:flex; gap:6px; flex-wrap:wrap }
+    .pad .digit{ padding:8px 12px; border:1px solid #2b3442; border-radius:10px; background:#0b0b0b; cursor:pointer }
+
+    .dash{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px }
+    @media (max-width:720px){ .dash{ grid-template-columns:1fr } }
+    .stat{ background:#0b0b0b; border:1px solid #1f2937; border-radius:12px; padding:10px }
+    .big{ font-size:20px; font-weight:800; color:#fff }
+    .small{ font-size:12px; color:#9aa3ad }
+
+    .sectionTitle{ font-weight:800; margin:16px 0 8px 0; color:#e9e9e9 }
   </style>
 </head>
 <body>
   <header>
-    <div class="brand">🎯 WinGo Predictor Pro</div>
+    <div class="brand">
+      <span>🎯 WinGo Predictor Pro</span>
+      <div>
+        <select id="lang" style="background:#0b0b0b;color:#fff;border:1px solid #333;padding:6px;border-radius:8px">
+          <option value="hi" selected>हिंदी</option>
+          <option value="en">English</option>
+        </select>
+        <button class="btn ghost" id="installBtn">⇩ Install</button>
+      </div>
+    </div>
   </header>
 
   <div class="container">
 
-    <!-- CONTROL CARD -->
+    <!-- CONTROL -->
     <div class="card">
       <div class="grid2">
         <div>
-          <label for="period">🧾 Period Number (required)</label>
+          <label data-t="period_label">🧾 Period Number (required)</label>
           <input id="period" placeholder="e.g. 20250813100052810" />
-          <div class="meta">bdgop WinGo_30S जैसा लम्बा period ID — केवल digits (0–9)</div>
+          <div class="meta" data-t="period_meta">bdgop WinGo_30S जैसा लम्बा period ID — केवल digits (0–9)</div>
+          <div class="actions" style="margin-top:8px">
+            <button class="btn secondary" id="btnClip" data-t="btn_clip">📋 Paste Period</button>
+            <button class="btn secondary" id="btnFillDemo" data-t="btn_demo">Demo</button>
+            <span class="tag" id="apiStatus">API: local</span>
+          </div>
         </div>
 
         <div>
-          <label for="mode">Strategy</label>
+          <label data-t="mode_label">Strategy</label>
           <select id="mode">
             <option value="balanced" selected>Normal</option>
             <option value="conservative">Confidence</option>
             <option value="aggressive">Very Confident</option>
           </select>
 
-          <div class="meta" style="margin-top:10px">
-            <input id="autoNext" type="checkbox" style="transform:translateY(2px)"> Auto Next
-            <input id="autoEvery" type="number" min="5" value="30" style="width:90px; margin-left:8px"> sec
+          <div class="meta" style="margin-top:8px">
+            <input id="autoNext" type="checkbox" style="transform:translateY(2px)"> <span data-t="auto_label">Auto Next</span>
+            <input id="autoEvery" type="number" min="5" value="30" style="width:86px; margin-left:8px"> <span data-t="sec">sec</span>
+          </div>
+
+          <div class="meta" style="margin-top:8px">
+            <label style="display:block;margin-bottom:6px" data-t="webhook_label">Webhook URL (optional)</label>
+            <input id="webhook" placeholder="https://example.com/hook" />
+            <div class="meta" data-t="webhook_hint">Play signal पर POST {period, pick, score}</div>
           </div>
         </div>
       </div>
 
       <div class="actions">
-        <button class="btn" id="btnPredict">🔮 Predict</button>
-        <button class="btn secondary" id="btnClear">Clear</button>
-        <button class="btn secondary" id="btnCopy">Copy Result</button>
-        <span class="tag" id="apiStatus">API: local</span>
+        <button class="btn" id="btnPredict" data-t="btn_predict">🔮 Predict</button>
+        <button class="btn secondary" id="btnClear" data-t="btn_clear">Clear</button>
+        <button class="btn secondary" id="btnCopy" data-t="btn_copy">Copy Result</button>
+        <button class="btn secondary" id="btnExport" data-t="btn_export">Export CSV</button>
       </div>
 
       <div class="meta" id="periodInfo">—</div>
     </div>
 
-    <!-- RESULT CARD -->
-    <div class="card" id="resultCard" style="margin-top:16px; display:none">
+    <!-- RESULT -->
+    <div class="card" id="resultCard" style="margin-top:14px; display:none">
       <div class="kv">
         <div class="box">
           <div class="key">🧾 Period</div>
@@ -153,10 +185,6 @@
         <div class="box">
           <div class="key">📏 Size</div>
           <div class="val" id="vSize">—</div>
-        </div>
-        <div class="box">
-          <div class="key">🎯 Opposite backup</div>
-          <div class="val" id="vBackup">—</div>
         </div>
       </div>
 
@@ -181,6 +209,47 @@
         <span id="top3" class="pill">Top-3: —</span>
         <span id="reasons" class="pill">—</span>
       </div>
+
+      <!-- Quick tap pad -->
+      <div class="sectionTitle">Quick Tap</div>
+      <div class="pad" id="quickPad"></div>
+
+      <!-- Bet sizing helper -->
+      <div class="sectionTitle" data-t="bet_title">Bet Sizing Helper</div>
+      <div class="row3">
+        <div class="card">
+          <label data-t="bankroll">Bankroll</label>
+          <input id="bankroll" type="number" min="0" value="1000"/>
+          <label style="margin-top:8px" data-t="odds">Payout odds (×)</label>
+          <input id="odds" type="number" step="0.01" value="9.0"/>
+          <label style="margin-top:8px" data-t="risk">Risk mode</label>
+          <select id="risk">
+            <option value="flat">Flat 1%</option>
+            <option value="kelly_half">Kelly 50%</option>
+            <option value="kelly_full">Kelly 100%</option>
+          </select>
+          <div class="meta" id="stakeOut">—</div>
+        </div>
+
+        <div class="card">
+          <div class="sectionTitle" data-t="session_title">Session Guard</div>
+          <label data-t="max_loss">Max Consecutive Losses</label>
+          <input id="maxLoss" type="number" min="1" value="3"/>
+          <label style="margin-top:8px" data-t="cooldown">Cooldown (min)</label>
+          <input id="cooldown" type="number" min="1" value="5"/>
+          <div class="meta" id="guardMsg">—</div>
+        </div>
+
+        <div class="card">
+          <div class="sectionTitle" data-t="stats_title">Accuracy Dashboard</div>
+          <div class="dash">
+            <div class="stat"><div class="big" id="dHit">—</div><div class="small" data-t="dHit_t">Hit rate (manual)</div></div>
+            <div class="stat"><div class="big" id="dPlay">—</div><div class="small" data-t="dPlay_t">Play %</div></div>
+            <div class="stat"><div class="big" id="dStreak">—</div><div class="small" data-t="dStreak_t">Loss streak</div></div>
+            <div class="stat"><div class="big" id="dVar">—</div><div class="small" data-t="dVar_t">Signal variance</div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- CHARTS -->
@@ -196,7 +265,7 @@
     </div>
 
     <!-- HISTORY -->
-    <div class="card" style="margin-top:16px">
+    <div class="card" style="margin-top:14px">
       <h3 style="margin:0 0 8px">🕘 Recent Predictions</h3>
       <div id="hist" class="history">—</div>
     </div>
@@ -204,9 +273,73 @@
   </div>
 
   <script>
+  // =================== I18N ===================
+  const I18N = {
+    hi:{
+      period_label:"🧾 Period Number (required)",
+      period_meta:"bdgop WinGo_30S जैसा लम्बा period ID — केवल digits (0–9)",
+      btn_clip:"📋 Paste Period",
+      btn_demo:"Demo",
+      mode_label:"Strategy",
+      auto_label:"Auto Next",
+      sec:"sec",
+      webhook_label:"Webhook URL (optional)",
+      webhook_hint:"Play signal पर POST {period, pick, score}",
+      btn_predict:"🔮 Predict",
+      btn_clear:"Clear",
+      btn_copy:"Copy Result",
+      btn_export:"Export CSV",
+      bet_title:"Bet Sizing Helper",
+      bankroll:"Bankroll",
+      odds:"Payout odds (×)",
+      risk:"Risk mode",
+      session_title:"Session Guard",
+      max_loss:"Max Consecutive Losses",
+      cooldown:"Cooldown (min)",
+      stats_title:"Accuracy Dashboard",
+      dHit_t:"Hit rate (manual)",
+      dPlay_t:"Play %",
+      dStreak_t:"Loss streak",
+      dVar_t:"Signal variance",
+    },
+    en:{
+      period_label:"🧾 Period Number (required)",
+      period_meta:"Long period ID like bdgop WinGo_30S — digits only (0–9)",
+      btn_clip:"📋 Paste Period",
+      btn_demo:"Demo",
+      mode_label:"Strategy",
+      auto_label:"Auto Next",
+      sec:"sec",
+      webhook_label:"Webhook URL (optional)",
+      webhook_hint:"On Play signal, POST {period, pick, score}",
+      btn_predict:"🔮 Predict",
+      btn_clear:"Clear",
+      btn_copy:"Copy Result",
+      btn_export:"Export CSV",
+      bet_title:"Bet Sizing Helper",
+      bankroll:"Bankroll",
+      odds:"Payout odds (×)",
+      risk:"Risk mode",
+      session_title:"Session Guard",
+      max_loss:"Max Consecutive Losses",
+      cooldown:"Cooldown (min)",
+      stats_title:"Accuracy Dashboard",
+      dHit_t:"Hit rate (manual)",
+      dPlay_t:"Play %",
+      dStreak_t:"Loss streak",
+      dVar_t:"Signal variance",
+    }
+  };
+  function applyI18N(lang){
+    document.querySelectorAll("[data-t]").forEach(el=>{
+      const k=el.getAttribute("data-t");
+      if(I18N[lang] && I18N[lang][k]) el.textContent = I18N[lang][k];
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     // ---------- helpers ----------
-    let probChart=null, bsChart=null, autoTimer=null;
+    let probChart=null, bsChart=null, autoTimer=null, pausedUntil=0;
     const el=id=>document.getElementById(id);
     const isDigits = s => /^\d+$/.test(s||"");
     const clamp01 = x => Math.max(0, Math.min(1, x));
@@ -215,6 +348,71 @@
     const argmax = a => { let i=0,b=-1; for(let k=0;k<a.length;k++){ if(a[k]>b){b=a[k]; i=k;} } return i; };
     const fmtPct = x => (x*100).toFixed(1)+'%';
 
+    // I18N init
+    el('lang').addEventListener('change', e=>applyI18N(e.target.value));
+    applyI18N(el('lang').value);
+
+    // Quick Pad
+    const pad = el('quickPad');
+    for(let i=0;i<=9;i++){
+      const b=document.createElement('button'); b.className='digit'; b.textContent=i;
+      b.onclick=()=>navigator.clipboard.writeText(String(i));
+      pad.appendChild(b);
+    }
+
+    // URL deep-link
+    const params = new URLSearchParams(location.search);
+    if(params.get('period')) el('period').value=params.get('period');
+    if(params.get('mode')) el('mode').value=params.get('mode');
+
+    // Clipboard sniffer (button)
+    el('btnClip').addEventListener('click', async ()=>{
+      try{
+        const t = await navigator.clipboard.readText();
+        if(isDigits(t)){ el('period').value=t; }
+        else alert('Clipboard does not contain digits');
+      }catch(_){ alert('Clipboard read blocked by browser'); }
+    });
+
+    // Demo
+    el('btnFillDemo').addEventListener('click', ()=>{
+      el('period').value = '20250813100052810';
+    });
+
+    // PWA manifest + SW (light)
+    const manifest = {
+      "name":"WinGo Predictor Pro",
+      "short_name":"WinGo Pro",
+      "start_url":"./",
+      "display":"standalone",
+      "background_color":"#000000",
+      "theme_color":"#000000",
+      "icons":[]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
+    el('dynManifest').setAttribute('href', URL.createObjectURL(manifestBlob));
+    if('serviceWorker' in navigator){
+      const swCode = `
+        self.addEventListener('install',e=>{ self.skipWaiting(); });
+        self.addEventListener('activate',e=>{ self.clients.claim(); });
+        self.addEventListener('fetch',()=>{});
+      `;
+      const swBlob = new Blob([swCode],{type:'text/javascript'});
+      navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+    }
+    el('installBtn').addEventListener('click', ()=> alert('Use browser menu → "Add to Home screen"'));
+
+    // =================== MODEL ===================
+    // daily seed for reproducible jitter
+    function dailySeed(){
+      const d = new Date(); const s = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      let h=0; for(let i=0;i<s.length;i++) h=(h*31 + s.charCodeAt(i))>>>0;
+      return h;
+    }
+    let RNG_S = dailySeed();
+    function rnd(){ // LCG
+      RNG_S = (1664525*RNG_S + 1013904223)>>>0; return (RNG_S/4294967296);
+    }
     function bumpPeriod(p){
       if(!isDigits(p)) return p;
       try{ return (BigInt(p)+1n).toString(); }
@@ -226,9 +424,8 @@
     }
     function describePeriod(p){ return isDigits(p) ? `len ${p.length} • tail ${p.slice(-4)}` : '—'; }
 
-    // ---------- improved model ----------
-    // Base prior from the period digits
-    function periodPrior(periodStr){
+    // PRIOR A: digits, sums, mods
+    function priorA(periodStr){
       if(!isDigits(periodStr)) return Array(10).fill(0.1);
       const d = periodStr.split('').map(n=>+n);
       const s  = d.reduce((a,b)=>a+b,0);
@@ -238,8 +435,6 @@
       const mod7  = s % 7;
       const freq = Array(10).fill(0); d.forEach(x=>freq[x]++);
       const v = Array(10).fill(0.1);
-
-      // deterministic anchors
       v[mod10] += 0.7;
       v[(last+10)%10] += 0.35;
       v[(last+1)%10]  += 0.18;
@@ -248,43 +443,57 @@
       v[(mod7*5)%10]  += 0.20;
       if(last2%2===0){ for(let i=0;i<10;i+=2) v[i]+=0.08; }
       else{ for(let i=1;i<10;i+=2) v[i]+=0.08; }
-
-      // rarity bonus (digits that appear less in the period string)
-      const maxF = Math.max(...freq), minF = Math.min(...freq);
-      for(let i=0;i<10;i++){
-        const rarity = (maxF-minF) ? (maxF - freq[i])/(maxF-minF) : 0;
-        v[i] += 0.06*rarity;
-      }
+      // rarity bonus
+      const maxF=Math.max(...freq), minF=Math.min(...freq);
+      for(let i=0;i<10;i++){ const r=(maxF-minF)?(maxF-freq[i])/(maxF-minF):0; v[i]+=0.06*r; }
       return normalize(v);
     }
 
-    // Stochastic ensemble + adaptive weights
-    function predictFromPeriod(periodStr, mode){
+    // PRIOR B: hash & windowed features (div/mod)
+    function priorB(periodStr){
+      if(!isDigits(periodStr)) return Array(10).fill(0.1);
+      const v = Array(10).fill(0.1);
+      // rolling 3-digit windows
+      for(let i=0;i<periodStr.length-2;i++){
+        const tri = +(periodStr.slice(i,i+3));
+        v[tri%10] += 0.05;
+        v[(Math.floor(tri/3))%10] += 0.03;
+      }
+      // simple hash influence
+      let h=0; for(let i=0;i<periodStr.length;i++) h = (h*131 + periodStr.charCodeAt(i))>>>0;
+      v[(h%10)] += 0.25;
+      v[((h>>3)%10)] += 0.15;
+      v[((h>>7)%10)] += 0.10;
+      return normalize(v);
+    }
+
+    function blendPriors(pA, pB, mode){
+      // stacking: mode + adaptive third-peak pivot
       const hyper = {
-        conservative:{ temp:1.04, maxCap:0.58, jitter:0.05, adapt:0.12 },   // "Confidence"
-        balanced    :{ temp:1.06, maxCap:0.62, jitter:0.08, adapt:0.18 },   // "Normal"
-        aggressive  :{ temp:1.08, maxCap:0.66, jitter:0.12, adapt:0.24 }    // "Very Confident"
-      }[mode] || { temp:1.06, maxCap:0.62, jitter:0.08, adapt:0.18 };
+        conservative:{ wA:0.60, temp:1.04, maxCap:0.58, jitter:0.05, adapt:0.10 },
+        balanced    :{ wA:0.55, temp:1.06, maxCap:0.62, jitter:0.08, adapt:0.18 },
+        aggressive  :{ wA:0.50, temp:1.08, maxCap:0.66, jitter:0.12, adapt:0.24 }
+      }[mode] || { wA:0.55, temp:1.06, maxCap:0.62, jitter:0.08, adapt:0.18 };
 
-      const base = periodPrior(periodStr);
+      let base = pA.map((x,i)=> hyper.wA*x + (1-hyper.wA)*pB[i]);
 
-      // adaptive emphasis: push top few a bit more, flatten tail
+      // adaptive emphasis
       const sorted = base.slice().sort((a,b)=>b-a);
-      const t = (sorted[2]||0.1); // third highest as pivot
-      const adapt = base.map(p => p * (1 + hyper.adapt*((p - t)/(t+1e-9))));
-      let prior = normalize(adapt);
+      const t=(sorted[2]||0.1);
+      base = base.map(p=> p * (1 + hyper.adapt*((p - t)/(t+1e-9))));
+      base = normalize(base);
 
-      // bootstrap aggregation
+      // bootstrap with daily-seeded jitter
       const B=64, j=hyper.jitter;
       let agg=Array(10).fill(0), votes=Array(10).fill(0);
       for(let b=0;b<B;b++){
-        const p = normalize(prior.map(x => Math.max(0, x*(1 + (Math.random()*2-1)*j))));
+        const p = normalize(base.map(x => Math.max(0, x*(1 + (rnd()*2-1)*j))));
         for(let i=0;i<10;i++) agg[i]+=p[i];
         votes[argmax(p)]++;
       }
       let probs = normalize(agg);
 
-      // temperature + cap
+      // temp + cap
       probs = normalize(probs.map(p=>Math.pow(p, 1/hyper.temp)));
       const mx = Math.max(...probs);
       if(mx>hyper.maxCap){
@@ -296,10 +505,26 @@
       }
 
       const stability = Math.max(...votes)/B;
-      return { probs, stability };
+      return { probs, stability, meta:{temp:hyper.temp, cap:hyper.maxCap} };
     }
 
-    // ---------- charts ----------
+    // Smart Safe-Set: choose two digits with diversity (side/ parity)
+    function smartSafeSet(probs){
+      const sorted = probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
+      let best = [sorted[0].i, sorted[1].i];
+      let bestScore = -1;
+      for(let a=0;a<10;a++){
+        for(let b=a+1;b<10;b++){
+          const p = probs[a]+probs[b];
+          const diversity = ((a>=5)!=(b>=5) ? 1:0) + ((a%2)!=(b%2) ? 1:0);
+          const score = p + 0.03*diversity; // small diversity reward
+          if(score>bestScore){ bestScore=score; best=[a,b]; }
+        }
+      }
+      return best;
+    }
+
+    // charts
     function renderCharts(probs){
       const big = probs.slice(5).reduce((a,b)=>a+b,0), small = 1-big;
       const labels=[...Array(10).keys()].map(String);
@@ -321,68 +546,168 @@
       return {big, small};
     }
 
-    function renderResult(periodStr, out){
-      const probs = out.probs.slice();
+    // JOURNAL & Dashboard
+    const journal=[]; // {ts, period, pick, score, signal, actual?, win?}
+    function updateDashboard(){
+      const plays = journal.filter(j=>j.signal==='Play');
+      const rate = (()=>{ const m = journal.filter(j=>j.win!==undefined); if(!m.length) return '—'; const hit=m.filter(j=>j.win).length/m.length; return fmtPct(hit); })();
+      el('dHit').textContent = rate;
+      el('dPlay').textContent = journal.length ? fmtPct(plays.length/journal.length) : '—';
+      // loss streak
+      let cur=0, best=0;
+      for(const j of journal){
+        if(j.win===false){ cur++; best=Math.max(best,cur); } else if(j.win===true){ cur=0; }
+      }
+      el('dStreak').textContent = best || 0;
+      // variance (stddev of probs top)
+      const spreads = journal.slice(-20).map(j=>j.spread||0);
+      const avg = spreads.length? (spreads.reduce((a,b)=>a+b,0)/spreads.length) : 0;
+      const varc = spreads.length? Math.sqrt(spreads.reduce((a,b)=>a+(b-avg)*(b-avg),0)/spreads.length) : 0;
+      el('dVar').textContent = varc? varc.toFixed(3) : '—';
+    }
+    function exportCSV(){
+      const head = "timestamp,period,pick,score,signal,actual,win\n";
+      const rows = journal.map(j=>[
+        new Date(j.ts).toISOString(), j.period, j.pick, j.score.toFixed(3), j.signal, (j.actual??''), (j.win??'')
+      ].join(',')).join('\n');
+      const blob = new Blob([head+rows],{type:'text/csv'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='wingo_journal.csv'; a.click();
+    }
+
+    // Auto-mode switcher based on score
+    function autoSwitchMode(score){
+      // If Very Confident but low score → downgrade; if Normal & high score → upgrade
+      if(score>=0.80 && el('mode').value==='balanced') el('mode').value='aggressive';
+      if(score<0.35 && el('mode').value==='aggressive') el('mode').value='conservative';
+    }
+
+    // Bet sizing helper
+    function updateStake(probTop){
+      const bk = parseFloat(el('bankroll').value||'0');
+      const odds = parseFloat(el('odds').value||'9');
+      const mode = el('risk').value;
+      let stake=0;
+      if(mode==='flat'){ stake = 0.01*bk; }
+      else{
+        const b = odds-1; // net multiple
+        const p = clamp01(probTop);
+        const kelly = (b*p - (1-p))/b; // Kelly fraction
+        const f = mode==='kelly_half' ? 0.5*kelly : kelly;
+        stake = Math.max(0, f)*bk;
+      }
+      el('stakeOut').textContent = stake ? `Suggested stake: ${stake.toFixed(2)}` : '—';
+    }
+
+    // Session guard
+    function guardCheck(){
+      const maxLoss = parseInt(el('maxLoss').value||'3',10);
+      const coolMin = parseInt(el('cooldown').value||'5',10);
+      // calc current loss streak tail
+      let cur=0;
+      for(let i=journal.length-1;i>=0;i--){
+        if(journal[i].win===false) cur++;
+        else if(journal[i].win===true) break;
+      }
+      const now=Date.now();
+      if(cur>=maxLoss){
+        pausedUntil = Math.max(pausedUntil, now + coolMin*60*1000);
+      }
+      if(now<pausedUntil){
+        const left = Math.max(0, Math.round((pausedUntil-now)/1000));
+        el('guardMsg').textContent = `Paused for ${left}s due to loss streak`;
+        return true;
+      }else{
+        el('guardMsg').textContent = '—';
+        return false;
+      }
+    }
+    setInterval(()=>{ if(pausedUntil>Date.now()) guardCheck(); }, 1000);
+
+    // ---------- RENDER ----------
+    function render(periodStr, probs, stability){
       const predicted = argmax(probs);
       const {big, small} = renderCharts(probs);
 
       // confidence by entropy + stability combo
       let H=0; probs.forEach(p=>{ if(p>0) H += -p*Math.log(p); });
       const entropyConf = clamp01(1 - H/Math.log(10));
-      const stability = clamp01(out.stability ?? 0);
-      const accScore = clamp01(0.55*entropyConf + 0.45*stability); // combined score
+      const accScore = clamp01(0.55*entropyConf + 0.45*clamp01(stability||0));
 
-      const opp = (predicted>=5)? argmax(probs.slice(0,5)) : 5 + argmax(probs.slice(5));
-
-      // fill UI
-      const card = document.getElementById('resultCard');
-      card.style.display='block';
-      el('vPeriod').textContent = periodStr;
-      el('vNum').textContent = predicted;
-      el('vSize').textContent = predicted>=5 ? 'Big' : 'Small';
-      el('vBackup').textContent = opp;
-      el('vBig').textContent = fmtPct(big);
-      el('vSmall').textContent = fmtPct(small);
-      el('confBar').style.width = (accScore*100).toFixed(1)+'%';
-
-      // high accuracy badge
-      el('hiAcc').style.display = accScore>=0.85 ? 'inline-block' : 'none';
-
-      // signal + theme
+      // theme/signal
+      const card = el('resultCard'); card.style.display='block';
       let signal='Play', cls='ok', theme='theme-good';
       const issues=[];
       if(entropyConf<0.18) issues.push('low entropy');
-      if(stability<0.28)   issues.push('unstable');
-
+      if((stability||0)<0.28) issues.push('unstable');
       if(issues.length===1){ signal='Caution'; cls='warn'; theme='theme-warn'; }
       if(issues.length>=2){ signal='Wait'; cls='bad'; theme='theme-bad'; }
-      card.classList.remove('theme-good','theme-warn','theme-bad');
-      card.classList.add(theme);
+      card.classList.remove('theme-good','theme-warn','theme-bad'); card.classList.add(theme);
 
+      // safe set
+      const safe = smartSafeSet(probs);
       const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
-      el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
-      el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
+
+      // fill
+      el('vPeriod').textContent = periodStr;
+      el('vNum').textContent = predicted;
+      el('vSize').textContent = predicted>=5 ? 'Big' : 'Small';
+      el('vBig').textContent = fmtPct(big);
+      el('vSmall').textContent = fmtPct(small);
+      el('confBar').style.width = (accScore*100).toFixed(1)+'%';
+      el('hiAcc').style.display = accScore>=0.85 ? 'inline-block' : 'none';
+
       el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
+      el('top2').textContent='Safe set: '+safe.join(', ');
+      el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
       el('reasons').textContent = issues.length ? ('Reasons: '+issues.join(', ')) : `Score: ${(accScore*100).toFixed(0)}%`;
 
-      // history (max 10 latest)
+      // stake helper (use top prob)
+      updateStake(sorted[0].p);
+
+      // history (max 10)
       const stamp=new Date().toLocaleTimeString();
-      const h=el('hist');
-      if(h.textContent==='—') h.textContent='';
+      const h=el('hist'); if(h.textContent==='—') h.textContent='';
       h.insertAdjacentHTML('afterbegin',
         `<div class="hrow">⏱ ${stamp} • Period ${periodStr} → #${predicted} (${predicted>=5?'Big':'Small'}) • score ${(accScore*100).toFixed(0)}%</div>`
       );
-      const rows=[...h.children];
-      rows.slice(10).forEach(r=>r.remove());
+      const rows=[...h.children]; rows.slice(10).forEach(r=>r.remove());
+
+      // webhook on Play
+      if(signal==='Play'){
+        const url = el('webhook').value.trim();
+        if(url){
+          try{
+            fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({period:periodStr, pick:predicted, score:accScore})});
+          }catch(_){}
+        }
+      }
+
+      // journal push (no actual yet)
+      const spread = sorted[0].p - (sorted[1]?.p||0);
+      journal.unshift({ts:Date.now(), period:periodStr, pick:predicted, score:accScore, signal, spread});
+      updateDashboard();
+
+      // auto-mode switch
+      autoSwitchMode(accScore);
+      return {predicted, signal, score:accScore};
     }
 
-    // ---------- actions ----------
+    // ---------- CONTROLLER ----------
+    function priorEnsemble(period, mode){
+      const A = priorA(period);
+      const B = priorB(period);
+      return blendPriors(A,B,mode);
+    }
+
     async function runPredict(){
+      if(guardCheck()) { alert('Session paused by guard'); return; }
       const pr = el('period').value.trim();
-      if(!pr || !isDigits(pr)){ alert('Valid period number भरें (केवल digits)'); return; }
+      if(!pr || !isDigits(pr)){ alert('Valid period number भरें (digits only)'); return; }
       el('periodInfo').textContent = 'Period: '+describePeriod(pr);
-      const out = predictFromPeriod(pr, el('mode').value);
-      renderResult(pr, out);
+
+      const out = priorEnsemble(pr, el('mode').value);
+      const r = render(pr, out.probs, out.stability);
+      return r;
     }
 
     function startAuto(){
@@ -395,7 +720,7 @@
       }, sec*1000);
     }
 
-    // events
+    // ---------- EVENTS ----------
     el('btnPredict').addEventListener('click', runPredict);
     el('btnClear').addEventListener('click', ()=>{
       clearInterval(autoTimer); autoTimer=null;
@@ -406,16 +731,33 @@
       el('hist').textContent='—';
       if(probChart) { probChart.destroy(); probChart=null; }
       if(bsChart) { bsChart.destroy(); bsChart=null; }
+      journal.length=0; updateDashboard();
     });
     el('btnCopy').addEventListener('click', async ()=>{
       const n=el('vNum').textContent; if(!n || n==='—'){ alert('पहले Predict करें'); return; }
       const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}, Big:${el('vBig').textContent}, Small:${el('vSmall').textContent}`;
       try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{ alert('Copy failed'); }
     });
+    el('btnExport').addEventListener('click', exportCSV);
     el('autoNext').addEventListener('change', e=>{
-      clearInterval(autoTimer); autoTimer=null;
-      if(e.target.checked) startAuto();
+      clearInterval(autoTimer); autoTimer=null; if(e.target.checked) startAuto();
     });
+    el('bankroll').addEventListener('input', ()=>updateStake(0.1));
+    el('odds').addEventListener('input', ()=>updateStake(0.1));
+    el('risk').addEventListener('change', ()=>updateStake(0.1));
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter') runPredict();
+      if(e.key.toLowerCase()==='a'){ el('autoNext').checked = !el('autoNext').checked; el('autoNext').dispatchEvent(new Event('change')); }
+      if(e.key.toLowerCase()==='n'){ el('period').value = bumpPeriod(el('period').value.trim()||'0'); }
+      if(e.key==='1') el('mode').value='balanced';
+      if(e.key==='2') el('mode').value='conservative';
+      if(e.key==='3') el('mode').value='aggressive';
+    });
+
+    // Auto-run if period in URL
+    if(el('period').value) runPredict();
   });
   </script>
 </body>
