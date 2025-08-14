@@ -3,57 +3,70 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>🎯 WinGo Predictor Pro — Period Only</title>
+<title>🎯 WinGo Predictor Pro</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#000000">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
-  --gold:#FFD700;--gold-2:#f5d46b;--bg1:#0b0b0b;--bg2:#000;--card:#121212;
-  --ok:#22c55e;--warn:#f59e0b;--bad:#f87171;--radius:18px;--shadow:0 10px 30px rgba(0,0,0,.35)
+  --gold:#ffd700; --gold-2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
+  --bg:#0a0a0a; --panel:#111216; --card:#14161b; --stroke:#222533;
+  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+  --radius:16px; --shadow:0 12px 26px rgba(0,0,0,.35);
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto;background:linear-gradient(140deg,var(--bg1),var(--bg2));color:#fff}
-header{position:sticky;top:0;z-index:5;background:#000;border-bottom:1px solid #111;padding:14px 16px}
-.brand{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:22px;color:#FFD700}
-.container{max-width:1180px;margin:0 auto;padding:22px 16px 40px}
-.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border:0;padding:12px 18px;border-radius:12px;cursor:pointer}
-.btn.secondary{background:#1f2937;color:#e5e7eb;border:1px solid #2b3442}
-.meta{color:#9ca3af;font-size:13px;margin-top:6px}
-.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.kv .box{background:#0a0a0a;border:1px solid #222;border-radius:14px;padding:16px}
-.key{color:#9ca3af;font-size:13px}.val{font-weight:900;font-size:32px;color:var(--gold)}
-.line{height:10px;background:#1f2937;border-radius:999px;overflow:hidden;margin:8px 0 2px}
-.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
-.pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #2b3442;margin-right:6px;font-weight:700}
-.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
-.grid2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
-@media(max-width:900px){.grid2{grid-template-columns:1fr}.kv{grid-template-columns:1fr}}
-.history{font-size:12px;color:#cbd5e1;max-height:220px;overflow:auto}.hrow{padding:6px 0;border-bottom:1px dashed #222}
-.small{font-size:12px;color:#cbd5e1}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+header{position:sticky;top:0;z-index:5;background:#000;border-bottom:1px solid #0f1117}
+.bar{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+.logo{font-weight:800;font-size:22px;color:var(--gold);letter-spacing:.2px}
+.container{max-width:1180px;margin:0 auto;padding:18px 16px 38px}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.h1{font-size:18px;font-weight:800;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+label{font-size:13px;color:#d8dbe2;font-weight:700;margin-bottom:6px;display:block}
+input,select{width:100%;padding:14px 14px;background:#0c0f14;border:2px solid #202636;border-radius:12px;color:#fff;font-size:16px;outline:none}
+input:focus,select:focus{border-color:var(--gold)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.switch{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:#cbd5e1}
-.badge{display:inline-block;padding:4px 8px;border-radius:8px;font-size:12px;background:#1a1a1a;border:1px solid #2a2a2a;margin-left:8px}
+.btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
+.btn.sec{background:#1e2636;color:#e5e7eb;border:1px solid #2a3448}
+.switch{display:inline-flex;gap:8px;align-items:center;color:var(--ink);font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#0e121a;border:1px solid #1f2636;border-radius:999px;padding:8px 12px;color:#cfd4e1;font-weight:700}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:900px){.kv{grid-template-columns:1fr}}
+.box{background:#0b0f15;border:1px solid #1a2130;border-radius:14px;padding:14px}
+.key{color:#a1a8b8;font-size:12px}
+.val{color:var(--gold);font-weight:900;font-size:30px}
+.line{height:10px;background:#1c2534;border-radius:999px;overflow:hidden;margin:10px 0 2px}
+.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
+.pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:6px}
+.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.history{font-size:12px;color:#cfd4e1;max-height:220px;overflow:auto}
+.hrow{padding:6px 0;border-bottom:1px dashed #21293a}
+.helper{font-size:12px;color:#9ca3af}
+footer{color:#6b7280;text-align:center;font-size:12px;margin-top:16px}
+.hr{height:1px;background:#1a2130;margin:12px 0}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand">
-    <span>🎯 WinGo Predictor Pro</span>
-    <label class="switch">
-      <input type="checkbox" id="compactToggle"> Compact View
-    </label>
+  <div class="bar">
+    <div class="logo">🎯 WinGo Predictor Pro</div>
+    <label class="switch"><input type="checkbox" id="compactToggle"> Compact View</label>
   </div>
 </header>
 
 <div class="container" id="appRoot">
+  <!-- CONTROL -->
   <div class="card">
-    <div class="grid2">
+    <div class="h1">Quick Predict</div>
+    <div class="grid">
       <div>
-        <label for="period">🧾 Period Number (required)</label>
-        <input id="period" placeholder="e.g. 20250813100052810"/>
-        <div class="meta">bdgop WinGo_30S जैसा लम्बा period ID — केवल digits (0–9)</div>
+        <label for="period">🧾 Period Number</label>
+        <input id="period" placeholder="e.g. 20250813100052810" />
+        <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
       </div>
       <div>
         <label for="mode">Strategy</label>
@@ -62,49 +75,49 @@ header{position:sticky;top:0;z-index:5;background:#000;border-bottom:1px solid #
           <option value="conservative">Confidence</option>
           <option value="aggressive">Very Confident</option>
         </select>
-        <div class="row meta" style="margin-top:10px">
-          <span>
-            <input id="autoNext" type="checkbox" style="transform:translateY(2px)"> Auto Next
-            <input id="autoEvery" type="number" min="5" value="30" style="width:90px;margin-left:8px"> sec
-          </span>
-          <label class="switch"><input type="checkbox" id="antiSeq" checked> Anti-sequence</label>
-          <label class="switch"><input type="checkbox" id="learnOn" checked> Learning ON</label>
-          <button class="btn secondary" id="resetLearnBtn" title="Clear learned calibration">Reset Learning</button>
-          <button class="btn secondary" id="notifyBtn">🔔 Notifications</button>
+        <div class="row" style="margin-top:8px">
+          <label class="switch"><input id="autoNext" type="checkbox"> Auto Next</label>
+          <span class="chip"><span>⏱</span><input id="autoEvery" type="number" min="5" value="30" style="width:70px;background:transparent;border:0;color:#fff">sec</span>
+          <label class="switch"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
+          <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON</label>
+          <button class="btn sec" id="notifyBtn">🔔 Notifications</button>
         </div>
       </div>
     </div>
 
-    <div class="row" style="margin-top:14px">
+    <div class="row" style="margin-top:12px">
       <button class="btn" id="btnPredict">🔮 Predict</button>
-      <button class="btn secondary" id="btnClear">Clear</button>
-      <button class="btn secondary" id="btnCopy">Copy Result</button>
-      <span class="meta" id="periodInfo">—</span>
+      <button class="btn sec" id="btnClear">Clear</button>
+      <button class="btn sec" id="btnCopy">Copy Result</button>
+      <span class="helper" id="periodInfo">—</span>
     </div>
 
-    <div class="row" style="margin-top:10px">
-      <div style="flex:1;min-width:240px">
-        <label for="actual">✅ Actual result (0–9) — optional (learning)</label>
+    <div class="hr"></div>
+
+    <div class="grid">
+      <div>
+        <label for="actual">✅ Actual result (0–9) — optional</label>
         <input id="actual" placeholder="e.g. 7"/>
       </div>
-      <button class="btn secondary" id="btnVerify">Verify & Learn</button>
-      <span class="meta" id="verifyMsg">—</span>
+      <div class="row" style="align-items:end">
+        <button class="btn sec" id="btnVerify">Verify & Learn</button>
+        <span class="helper" id="verifyMsg">—</span>
+      </div>
     </div>
   </div>
 
-  <div class="card" id="resultCard" style="margin-top:16px;display:none">
+  <!-- RESULT -->
+  <div class="card" id="resultCard" style="margin-top:14px;display:none">
     <div class="kv">
       <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
       <div class="box"><div class="key">🔢 Predicted Number</div><div class="val" id="vNum">—</div></div>
       <div class="box"><div class="key">📏 Size</div><div class="val" id="vSize">—</div></div>
     </div>
-
-    <div style="margin-top:12px">
-      <div class="key">🧠 Confidence <span class="badge" id="hiAcc" style="display:none">🔥 High Accuracy</span></div>
+    <div style="margin-top:10px">
+      <div class="key">🧠 Confidence <span id="hiAcc" class="chip" style="display:none">🔥 High Accuracy</span></div>
       <div class="line"><div class="bar" id="confBar"></div></div>
     </div>
-
-    <div style="margin-top:12px">
+    <div style="margin-top:10px">
       <span id="playSignal" class="pill">—</span>
       <span id="top2" class="pill">Safe set: —</span>
       <span id="top3" class="pill">Top-3: —</span>
@@ -112,14 +125,23 @@ header{position:sticky;top:0;z-index:5;background:#000;border-bottom:1px solid #
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px">
-    <h3 style="margin:0 0 8px">🕘 Recent Predictions</h3>
-    <div id="hist" class="history">—</div>
+  <!-- CHARTS + HISTORY -->
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <div class="h1">📊 Probability (0–9)</div>
+      <canvas id="probChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="h1">🕘 Recent Predictions</div>
+      <div id="hist" class="history">—</div>
+    </div>
   </div>
+
+  <footer>Tip: Auto-Next + Notifications ON रखें ताकि हर नए period पर popup मिल जाए।</footer>
 </div>
 
 <script>
-/* ====== (Optional) Service Worker register for OS notifications ====== */
+/* ---------------- Service Worker / Notifications ---------------- */
 (async function setupSW(){
   if('serviceWorker' in navigator){
     try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; }catch{}
@@ -144,58 +166,44 @@ async function notifyViaSW({tail,digit,size}){
   }catch{}
 }
 
-/* ====== Utilities ====== */
+/* ---------------- Helpers ---------------- */
 const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||"");
-const clamp01=x=>Math.max(0,Math.min(1,x));
+const isDigits=s=>/^\d+$/.test(s||""); const clamp01=x=>Math.max(0,Math.min(1,x));
 const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
-const argmax=a=>a.indexOf(Math.max(...a));
-const fmtPct=x=>(x*100).toFixed(1)+'%';
-const bump = p => { try{return (BigInt(p)+1n).toString()}catch{ const a=p.split('').map(n=>+n); for(let i=a.length-1;i>=0;i--){ if(a[i]===9)a[i]=0; else{a[i]++;break;} } return a.join(''); } };
+const argmax=a=>a.indexOf(Math.max(...a)); const fmtPct=x=>(x*100).toFixed(1)+'%';
+const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
+function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
 
-/* ====== Learning store (Dirichlet) ====== */
+/* ---------------- Learning Store ---------------- */
 const LS_ALPHA='WPP_ALPHA10', LS_SIZE='WPP_SIZE2', LS_RECENT='WPP_RECENT20';
-function loadAlpha(){ try{ return JSON.parse(localStorage.getItem(LS_ALPHA)) || Array(10).fill(1); }catch{ return Array(10).fill(1); } }
-function saveAlpha(a){ localStorage.setItem(LS_ALPHA, JSON.stringify(a)); }
-function loadSize(){ try{ return JSON.parse(localStorage.getItem(LS_SIZE)) || [1,1]; }catch{ return [1,1]; } } // [small0-4, big5-9]
-function saveSize(s){ localStorage.setItem(LS_SIZE, JSON.stringify(s)); }
-function pushRecent(digit){
-  try{
-    const r = JSON.parse(localStorage.getItem(LS_RECENT)) || [];
-    r.unshift(digit); if(r.length>20) r.length=20;
-    localStorage.setItem(LS_RECENT, JSON.stringify(r));
-  }catch{}
-}
-function readRecent(){ try{ return JSON.parse(localStorage.getItem(LS_RECENT)) || []; }catch{ return []; } }
-function resetLearning(){
-  saveAlpha(Array(10).fill(1));
-  saveSize([1,1]);
-  localStorage.removeItem(LS_RECENT);
-}
-
-/* ====== Seeded RNG ====== */
+const loadAlpha=()=>{try{return JSON.parse(localStorage.getItem(LS_ALPHA))||Array(10).fill(1)}catch{return Array(10).fill(1)}};
+const saveAlpha=a=>localStorage.setItem(LS_ALPHA,JSON.stringify(a));
+const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
+const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+function pushRecent(d){try{const r=JSON.parse(localStorage.getItem(LS_RECENT))||[];r.unshift(d);if(r.length>20)r.length=20;localStorage.setItem(LS_RECENT,JSON.stringify(r));}catch{}}
+function readRecent(){try{return JSON.parse(localStorage.getItem(LS_RECENT))||[]}catch{return[]}}
+/* RNG */
 function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-/* ====== Priors (5 signals) ====== */
+/* ---------------- Priors (5 signals) ---------------- */
 function priorPeriodDigits(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const d=[...period].map(Number);
   const s=d.reduce((a,b)=>a+b,0), last=d[d.length-1], last2=+period.slice(-2), mod10=s%10, mod7=s%7;
   const freq=Array(10).fill(0); d.forEach(x=>freq[x]++);
   const v=Array(10).fill(0.1);
-  v[mod10]+=0.6;
-  v[(last+10)%10]+=0.28; v[(last+1)%10]+=0.14; v[(last+9)%10]+=0.14;
+  v[mod10]+=0.6; v[(last+10)%10]+=0.28; v[(last+1)%10]+=0.14; v[(last+9)%10]+=0.14;
   v[(mod7*3)%10]+=0.20; v[(mod7*5)%10]+=0.18;
-  if(last2%2===0){ for(let i=0;i<10;i+=2) v[i]+=0.08 } else { for(let i=1;i<10;i+=2) v[i]+=0.08 }
+  if(last2%2===0){for(let i=0;i<10;i+=2)v[i]+=0.08}else{for(let i=1;i<10;i+=2)v[i]+=0.08}
   const mx=Math.max(...freq), mn=Math.min(...freq);
-  for(let i=0;i<10;i++){ const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.05*r }
+  for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.05*r}
   return normalize(v);
 }
 function priorParity(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const even=(+period.slice(-2))%2===0; const v=Array(10).fill(0.1);
-  if(even){ for(let i=0;i<10;i+=2) v[i]+=0.22 } else { for(let i=1;i<10;i+=2) v[i]+=0.22 }
+  if(even){for(let i=0;i<10;i+=2)v[i]+=0.22}else{for(let i=1;i<10;i+=2)v[i]+=0.22}
   return normalize(v);
 }
 function priorBucket(period, antiSeq){
@@ -212,26 +220,21 @@ function priorChecksum(period){
 function priorDistance(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const last=+period.slice(-1); const v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){ const d=Math.min((i-last+10)%10,(last-i+10)%10); v[i]+=0.30*Math.exp(-0.55*d); }
+  for(let i=0;i<10;i++){const d=Math.min((i-last+10)%10,(last-i+10)%10); v[i]+=0.30*Math.exp(-0.55*d);}
   return normalize(v);
 }
-
-/* ====== Regime detector (recent verified 20) ====== */
+/* Regime tilt (recent verified 20) */
 function regimeWeights(baseW){
-  const r = readRecent();
-  if(!r.length) return baseW;
-  const odd = r.filter(x=>x%2===1).length / r.length;
-  const big = r.filter(x=>x>=5).length / r.length;
-  // small, subtle tilt
-  const w = baseW.slice();
-  if(odd>0.62) { w[1]+=0.02; } // parity prior weight+
-  if(odd<0.38) { w[1]+=0.02; }
-  if(big>0.62) { w[4]+=0.02; } // distance prior (big side) tilt
-  if(big<0.38) { w[4]+=0.02; }
+  const r=readRecent(); if(!r.length) return baseW;
+  const odd = r.filter(x=>x%2===1).length/r.length;
+  const big = r.filter(x=>x>=5).length/r.length;
+  const w=baseW.slice();
+  if(odd>0.62||odd<0.38) w[1]+=0.02;
+  if(big>0.62||big<0.38) w[4]+=0.02;
   const s=w.reduce((a,b)=>a+b,0); return w.map(x=>x/s);
 }
 
-/* ====== Predictor (Ensemble + Learning Calibration) ====== */
+/* ---------------- Predictor ---------------- */
 function predictLocal(period, mode, antiSeq, learnOn){
   const hyper={
     conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.36,0.14,0.16,0.18,0.16]},
@@ -239,138 +242,101 @@ function predictLocal(period, mode, antiSeq, learnOn){
     aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.32,0.16,0.20,0.18,0.14]}
   }[mode]||{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.34,0.16,0.18,0.18,0.14]};
 
-  // priors
-  const P1=priorPeriodDigits(period);
-  const P2=priorParity(period);
-  const P3=priorBucket(period,antiSeq);
-  const P4=priorChecksum(period);
-  const P5=priorDistance(period);
-
-  // regime-aware weights
-  const w = regimeWeights(hyper.w);
-
-  // base blend
-  let base = normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
-
-  // adaptive push (3rd best pivot)
+  const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistance(period);
+  const w=regimeWeights(hyper.w);
+  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
   const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  base = normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
+  base=normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
 
-  // === Online learning calibration ===
   if(learnOn){
-    const alpha = loadAlpha();                 // Dirichlet counts (10)
-    const size  = loadSize();                 // [small, big]
-    // Posterior: multiply base with alpha
-    base = normalize(base.map((p,i)=> p * (alpha[i]||1)));
-    // Size prior push from learned frequency
-    const smallWeight = (size[0]||1), bigWeight=(size[1]||1);
-    const smallScale = smallWeight/(smallWeight+bigWeight);
-    const bigScale   = bigWeight/(smallWeight+bigWeight);
-    for(let i=0;i<5;i++)  base[i] *= (0.9 + 0.2*smallScale);
-    for(let i=5;i<10;i++) base[i] *= (0.9 + 0.2*bigScale);
-    base = normalize(base);
+    const alpha=loadAlpha(), size=loadSize();
+    base=normalize(base.map((p,i)=>p*(alpha[i]||1)));
+    const small= size[0]/(size[0]+size[1]); const big=size[1]/(size[0]+size[1]);
+    for(let i=0;i<5;i++)  base[i]*=(0.9+0.2*small);
+    for(let i=5;i<10;i++) base[i]*=(0.9+0.2*big);
+    base=normalize(base);
   }
 
-  // bootstrap (seeded for stability)
   const seed=hash32(period); const rnd=mulberry32(seed);
-  const B=72,j=hyper.jitter; const agg=Array(10).fill(0); const votes=Array(10).fill(0);
-  for(let b=0;b<B;b++){
-    const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j))));
-    p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++;
-  }
+  const B=72,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
+  for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
   let probs=normalize(agg).map(p=>Math.pow(p,1/hyper.temp)); probs=normalize(probs);
-
   const iM=argmax(probs), mx=probs[iM];
-  if(mx>hyper.cap){
-    const excess=mx-hyper.cap; probs[iM]-=excess;
-    const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1;
-    const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs);
-  }
+  if(mx>hyper.cap){ const excess=mx-hyper.cap; probs[iM]-=excess; const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
   const stability=Math.max(...votes)/B;
-  return {probs, stability, source:'local'};
+  return {probs,stability};
 }
 
-/* ====== Charts (simple) ====== */
-let probChart=null, bsChart=null;
+/* ---------------- Charts ---------------- */
+let probChart=null;
 function renderCharts(probs){
-  const big=probs.slice(5).reduce((a,b)=>a+b,0), small=1-big;
-  const labels=[...Array(10).keys()].map(String);
   const data=probs.map(p=>Math.round(p*1000)/10);
+  const labels=[...Array(10).keys()].map(String);
   if(probChart) probChart.destroy();
-  probChart=new Chart(el('probChart')?.getContext?.('2d')||document.createElement('canvas'),{
+  probChart=new Chart(el('probChart').getContext('2d'),{
     type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
     options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}
   });
-  if(bsChart) bsChart.destroy();
-  bsChart=new Chart(el('bsChart')?.getContext?.('2d')||document.createElement('canvas'),{
-    type:'doughnut', data:{labels:['Big','Small'],datasets:[{data:[Math.round(big*100),Math.round(small*100)]}]},
-    options:{responsive:true,cutout:'60%'}
-  });
-  return {big,small};
 }
 
-/* ====== Render ====== */
-function renderResult(period, payload, source='manual'){
-  const probs=payload.probs.slice(); const predicted=argmax(probs);
-  const {big,small}=renderCharts(probs);
+/* ---------------- Render ---------------- */
+function renderResult(period, out, source='manual'){
+  const probs=out.probs.slice(); const pick=argmax(probs);
+  renderCharts(probs);
   let H=0; probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
-  const stability=clamp01(payload.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
+  const stability=clamp01(out.stability||0); const score=clamp01(0.55*entropy+0.45*stability);
 
   el('resultCard').style.display='block';
   el('vPeriod').textContent=period;
-  el('vNum').textContent=predicted;
-  el('vSize').textContent=predicted>=5?'Big':'Small';
+  el('vNum').textContent=pick;
+  el('vSize').textContent=pick>=5?'Big':'Small';
   el('confBar').style.width=(score*100).toFixed(1)+'%';
-  el('hiAcc').style.display=score>=0.85?'inline-block':'none';
+  el('hiAcc').style.display=score>=0.85?'inline-flex':'none';
 
   const issues=[]; if(entropy<0.18) issues.push('low entropy'); if(stability<0.28) issues.push('unstable');
   let signal='Play',cls='ok'; if(issues.length===1){signal='Caution';cls='warn'} if(issues.length>=2){signal='Wait';cls='bad'}
   el('playSignal').textContent=signal; el('playSignal').className='pill '+cls;
+
   const sorted=probs.map((p,i)=>({i,p})).sort((a,b)=>b.p-a.p);
   el('top2').textContent='Safe set: '+sorted.slice(0,2).map(o=>o.i).join(', ');
   el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
-  el('reasons').textContent = issues.length ? ('Reasons: '+issues.join(', ')) : `Score: ${(score*100).toFixed(0)}%`;
+  el('reasons').textContent = `Score ${(score*100).toFixed(0)}%`;
 
   const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • ${period.slice(-6)} → #${predicted} (${predicted>=5?'Big':'Small'}) • score ${(score*100).toFixed(0)}%</div>`);
-  [...h.children].slice(12).forEach(n=>n.remove());
+  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
+  [...h.children].slice(14).forEach(n=>n.remove());
 
-  // Background OS notification (when auto mode)
   if(source==='auto' && el('autoNext').checked){
-    notifyViaSW({tail:String(period).slice(-3), digit:predicted, size:(predicted>=5?'Big':'Small')});
+    notifyViaSW({tail:String(period).slice(-3), digit:pick, size:(pick>=5?'Big':'Small')});
   }
 }
 
-/* ====== Actions ====== */
-let autoTimer=null, clickBusy=false;
-function describePeriod(p){ return isDigits(p) ? `len ${p.length} • tail ${p.slice(-4)}` : '—'; }
-
+/* ---------------- Actions ---------------- */
+let autoTimer=null, busy=false;
 async function runPredict(source='manual'){
-  if(clickBusy) return; clickBusy=true; setTimeout(()=>clickBusy=false,150);
-  const pr=el('period').value.trim(); if(!isDigits(pr)){ alert('Valid period number भरें (केवल digits)'); return; }
-  el('periodInfo').textContent = 'Period: '+describePeriod(pr);
-  const out = predictLocal(pr, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
+  if(busy) return; busy=true; setTimeout(()=>busy=false,120);
+  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
+  el('periodInfo').textContent='Period: '+describePeriod(pr);
+  const out=predictLocal(pr, el('mode').value, el('antiSeq').checked, el('learnOn').checked);
   renderResult(pr,out,source);
 }
-
 function startAuto(){
   const sec=Math.max(5, parseInt(el('autoEvery').value||'30',10));
   clearInterval(autoTimer);
   autoTimer=setInterval(()=>{
-    const cur=el('period').value.trim();
-    if(isDigits(cur)) el('period').value=bump(cur);
+    const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur);
     runPredict('auto');
   }, sec*1000);
 }
 
-/* ====== Event binds ====== */
+/* ---------------- Bindings ---------------- */
 document.addEventListener('DOMContentLoaded', ()=>{
   el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
   el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
   el('btnClear').addEventListener('click', ()=>{
     clearInterval(autoTimer); autoTimer=null; el('autoNext').checked=false;
     el('period').value=''; el('periodInfo').textContent='—'; el('resultCard').style.display='none'; el('hist').textContent='—';
-    if(probChart){ probChart.destroy(); probChart=null } if(bsChart){ bsChart.destroy(); bsChart=null }
+    if(probChart){probChart.destroy();probChart=null}
   });
   el('btnCopy').addEventListener('click', async ()=>{
     const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
@@ -380,34 +346,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
     clearInterval(autoTimer); autoTimer=null;
     if(e.target.checked){ await ensureNotifyPerm(); startAuto(); }
   });
-  el('notifyBtn').addEventListener('click', async ()=>{
-    alert((await ensureNotifyPerm()) ? 'Notifications enabled' : 'Notifications blocked');
-  });
-  el('resetLearnBtn').addEventListener('click', ()=>{
-    if(confirm('Reset learning (digit & size calibration)?')){ resetLearning(); alert('Learning data cleared.'); }
-  });
+  el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
 
-  // Verify = update learning
+  // Verify & learn
   el('btnVerify').addEventListener('click', ()=>{
-    const act = el('actual').value.trim();
+    const act=el('actual').value.trim();
     if(!/^[0-9]$/.test(act)){ el('verifyMsg').textContent='एक अंक 0–9 भरें.'; return; }
-    const pick = el('vNum').textContent.trim();
+    const pick=el('vNum').textContent.trim();
     if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; return; }
-    const win = (+act === +pick);
-    el('verifyMsg').textContent = win ? `WIN ✔ • picked ${pick} • actual ${act}` : `LOSS ✘ • picked ${pick} • actual ${act}`;
-
-    // learning update (Dirichlet + size counts + regime)
+    const win=(+act===+pick);
+    el('verifyMsg').textContent=win?`WIN ✔ picked ${pick} • actual ${act}`:`LOSS ✘ picked ${pick} • actual ${act}`;
     if(el('learnOn').checked){
-      const a = loadAlpha(); a[+act] = (a[+act]||1) + 1; saveAlpha(a);
-      const s = loadSize(); (+act>=5) ? s[1]++ : s[0]++; saveSize(s);
+      const a=loadAlpha(); a[+act]=(a[+act]||1)+1; saveAlpha(a);
+      const s=loadSize(); (+act>=5)?s[1]++:s[0]++; saveSize(s);
       pushRecent(+act);
     }
   });
 });
 </script>
-
-<!-- Hidden canvases for charts (optional; create if you want visible) -->
-<canvas id="probChart" style="display:none"></canvas>
-<canvas id="bsChart"   style="display:none"></canvas>
 </body>
 </html>
