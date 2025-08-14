@@ -1,341 +1,391 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>🎯 WinGo Predictor Pro — Edge-Guard 60</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>🎯 WinGo Predictor Pro</title>
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
-  --gold:#ffd700; --gold2:#f5d46b; --ink:#e5e7eb; --muted:#9ca3af;
-  --bg:#090a0f; --card:#12141a; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-  --radius:16px; --shadow:0 14px 28px rgba(0,0,0,.38);
+  --gold:#FFD54A; --gold2:#F2C300;
+  --ink:#E8ECF3; --muted:#94A3B8;
+  --card:#12141A; --panel:#0D0F14; --stroke:#232838;
+  --ok:#22C55E; --amber:#F59E0B; --bad:#EF4444;
+  --pillbg:#1A1F2C; --shadow:0 14px 30px rgba(0,0,0,.35);
+  --radius:16px;
 }
-*{box-sizing:border-box} body{margin:0;background:
- radial-gradient(900px 360px at 10% -5%,rgba(255,215,0,.06),transparent),
- radial-gradient(700px 300px at 110% 10%,rgba(245,212,107,.06),transparent),
- linear-gradient(160deg,#0a0b10,#000); color:#fff;font:15.5px/1.5 ui-sans-serif,system-ui,Segoe UI,Roboto}
-.header{position:sticky;top:0;z-index:1000;backdrop-filter:saturate(140%) blur(6px);
-  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);
-  background:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,.75))}
-.header .wrap{max-width:1180px;margin:0 auto;padding:0 16px;display:flex;justify-content:center}
-.brand{display:flex;align-items:center;gap:10px;padding:8px 18px;border-radius:999px;color:#111;font-weight:900;letter-spacing:.3px;
-  background:linear-gradient(90deg,#ffc107,#ffd700 50%,#f5d46b);box-shadow:inset 0 -2px 0 rgba(0,0,0,.25),0 6px 18px rgba(255,215,0,.18)}
-.brand .dot{width:10px;height:10px;border-radius:50%;background:#111;box-shadow:0 0 0 3px rgba(0,0,0,.18) inset}
-.container{max-width:1180px;margin:18px auto 48px;padding:0 16px}
-.card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
-.h1{font-size:18px;font-weight:800;margin:0 0 10px}.sub{color:var(--muted);font-size:12.8px;margin-top:6px}
-.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px} @media (max-width:900px){.grid{grid-template-columns:1fr}}
-label{font-size:13px;color:#d8dbe2;font-weight:700;margin-bottom:6px;display:block}
-input,select{width:100%;padding:14px;background:#0b0f15;border:2px solid #202636;border-radius:12px;color:#fff;font-size:16px}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1000px 600px at 20% -10%,#1d2433 0,#0b0e14 45%,#05070b 95%) fixed;color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#0b0e14,#0b0e14cc);backdrop-filter:blur(6px);border-bottom:1px solid #101523}
+.headwrap{max-width:1180px;margin:auto;padding:12px 16px;display:flex;justify-content:center}
+.brand{
+  display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;
+  background:linear-gradient(180deg,var(--gold),var(--gold2));color:#111;font-weight:900;
+  letter-spacing:.2px;box-shadow:0 8px 20px #000 inset,0 2px 10px rgba(0,0,0,.35)
+}
+.brand::before{content:"●";color:#111;background:#ffc;display:inline-grid;place-items:center;width:10px;height:10px;border-radius:999px;box-shadow:0 0 0 6px #0003}
+.container{max-width:1180px;margin:18px auto;padding:0 16px 28px}
+.card{background:var(--card);border:1px solid #1b2132;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.h1{font-size:20px;font-weight:900;margin:0 0 8px}
+.sub{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+label{font-size:13px;color:#cfd6e4;font-weight:800;display:block;margin:6px 0}
+input,select{width:100%;padding:14px;background:#0E1420;border:2px solid #20273A;border-radius:12px;color:#fff;outline:none}
 input:focus,select:focus{border-color:var(--gold)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#111;font-weight:900;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
-.btn.sec{background:#1c2333;color:#e5e7eb;border:1px solid #2a3448}
-.switch{display:inline-flex;gap:8px;align-items:center;color:#e0e3ea;font-size:13px}
-.chip{display:inline-flex;align-items:center;gap:8px;background:#0f1522;border:1px solid #1f2a40;border-radius:999px;padding:8px 12px;color:#cfd4e1;font-weight:700}
-.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px} @media (max-width:900px){.kv{grid-template-columns:1fr}}
-.box{background:#0b0f15;border:1px solid #1a2130;border-radius:14px;padding:14px}
-.key{color:#a1a8b8;font-size:12px}.val{color:var(--gold);font-weight:900;font-size:30px}
-.line{height:10px;background:#1c2534;border-radius:999px;overflow:hidden;margin:10px 0 2px}
-.bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
-.pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:6px}
-.ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px} @media (max-width:900px){.grid2{grid-template-columns:1fr}}
-.history{font-size:12px;color:#cfd4e1;max-height:240px;overflow:auto}
-.hrow{padding:6px 0;border-bottom:1px dashed #21293a}
-.helper{font-size:12px;color:#9ca3af}.hr{height:1px;background:#1a2130;margin:12px 0}
-.pack{display:flex;gap:10px;flex-wrap:wrap}
-.badge{font-size:12px;color:#cbd5e1;margin-left:6px}
+
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;background:#0f1522;border:1px solid #202942;color:#dfe6f3;font-weight:800}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:900;cursor:pointer}
+.btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#111}
+.btn.ghost{background:#1B2233;border:1px solid #2a3650;color:#E6ECF7}
+.badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid #2a3650;background:#0f1522;color:#BFD1FF;font-size:12px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:900px){.kv{grid-template-columns:1fr}}
+.box{background:#0E1420;border:1px solid #1b2132;border-radius:14px;padding:14px}
+.key{font-size:12px;color:#9fb0cc}.val{font-size:34px;font-weight:900;color:var(--gold)}
+.progress{height:10px;background:#1e2738;border-radius:999px;overflow:hidden}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),#6de87c)}
+.signal{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #2a3650}
+.sig-ok{background:#0e1a12;color:var(--ok)}
+.sig-am{background:#1e1509;color:var(--amber)}
+.sig-bad{background:#1a0e0e;color:var(--bad)}
+.history{font-size:13px;color:#d5ddf0;max-height:240px;overflow:auto}
+.hrow{padding:8px 0;border-bottom:1px dashed #26314a}
+.small{font-size:12px;color:#9fb0cc}
+.sep{height:1px;background:#1b2132;margin:12px 0}
 </style>
 </head>
 <body>
-<div class="header"><div class="wrap">
-  <div class="brand"><span class="dot"></span><span>WINGO PREDICTOR PRO</span></div>
-</div></div>
+<header><div class="headwrap"><div class="brand">WINGO PREDICTOR PRO</div></div></header>
 
-<div class="container" id="appRoot">
+<div class="container">
   <div class="card">
     <div class="h1">Quick Predict</div>
     <div class="grid">
       <div>
-        <label for="period">🧾 Period Number</label>
-        <input id="period" placeholder="e.g. 20250813100052810" autocomplete="off"/>
-        <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
+        <label>🧾 Period Number</label>
+        <input id="period" placeholder="e.g. 20250813100052810"/>
+        <div class="sub">केवल digits (0–9) • tail खुद-ब-खुद दिखेगा</div>
       </div>
       <div>
-        <label for="mode">Strategy</label>
+        <label>Strategy</label>
         <select id="mode">
-          <option value="balanced" selected>Normal</option>
-          <option value="conservative">Confidence</option>
+          <option value="balanced">Normal</option>
+          <option value="conservative">Confident</option>
           <option value="aggressive">Very Confident</option>
         </select>
-        <div class="row" style="margin-top:10px">
-          <label class="switch"><input id="autoNext" type="checkbox"> Auto Next</label>
-          <label class="switch">⏱ Interval
-            <select id="autoEvery" style="padding:8px 10px;border-radius:10px;border:1px solid #2a3448;background:#121722;color:#fff">
-              <option value="30" selected>30 sec</option><option value="60">1 min</option>
+        <div class="row" style="margin-top:8px">
+          <span class="pill"><input id="autoNext" type="checkbox"> Auto Next</span>
+          <span class="pill">
+            Interval
+            <select id="interval" style="width:120px">
+              <option value="30">30 sec</option>
+              <option value="60">60 sec</option>
             </select>
-          </label>
-          <label class="switch"><input id="antiSeq" type="checkbox" checked> Anti-sequence</label>
-          <label class="switch"><input id="learnOn" type="checkbox" checked> Learning ON <span id="bias" class="badge">—</span></label>
-          <button class="btn sec" id="notifyBtn" type="button">🔔 Notifications</button>
-        </div>
-        <div class="sub" style="margin-top:8px">Pattern Pack</div>
-        <div class="pack">
-          <label class="chip"><input id="pReverse" type="checkbox"> Reverse</label>
-          <label class="chip"><input id="pMirror"  type="checkbox"> Mirror</label>
-          <label class="chip"><input id="pCont"    type="checkbox"> Continuous</label>
-          <label class="chip"><input id="pGap"     type="checkbox"> Gap/Skip</label>
-          <label class="chip"><input id="pGuard"   type="checkbox" checked> Adversarial Guard</label>
-          <label class="chip">Gate
-            <select id="gate" style="margin-left:8px;padding:4px 8px;border-radius:8px;border:1px solid #2a3448;background:#0d1320;color:#fff">
-              <option value="0.55">High (≈कम सिग्नल)</option>
-              <option value="0.60" selected>Very High (Edge-Guard 60)</option>
-              <option value="0.65">Ultra</option>
-            </select>
-          </label>
+          </span>
+          <span class="pill"><input id="antiSeq" type="checkbox" checked> Anti-sequence</span>
+          <span class="pill"><input id="learnOn" type="checkbox" checked> Learning ON</span>
+          <span class="pill"><input id="soundOn" type="checkbox" checked> Sound ON</span>
+          <button class="btn ghost" id="notifyBtn">🔔 Notifications</button>
         </div>
       </div>
     </div>
 
-    <div class="row" style="margin-top:12px">
-      <button class="btn" id="btnPredict" type="button">🔮 Predict</button>
-      <button class="btn sec" id="btnClear" type="button">Clear</button>
-      <button class="btn sec" id="btnCopy" type="button">Copy Result</button>
-      <span class="helper" id="periodInfo">—</span>
+    <div class="sep"></div>
+
+    <div class="row">
+      <button class="btn gold" id="btnPredict">🔮 Predict</button>
+      <button class="btn ghost" id="btnClear">Clear</button>
+      <button class="btn ghost" id="btnCopy">Copy Result</button>
+      <span class="badge" id="periodInfo">—</span>
     </div>
 
-    <div class="hr"></div>
-    <div class="grid">
-      <div>
-        <label>✅ Actual size — optional (Learning)</label>
-        <div class="row">
-          <label class="switch"><input type="radio" name="actSize" id="actSmall" value="small"> Small (0–4)</label>
-          <label class="switch"><input type="radio" name="actSize" id="actBig" value="big"> Big (5–9)</label>
-        </div>
-      </div>
-      <div class="row" style="align-items:end">
-        <button class="btn sec" id="btnVerify" type="button">Verify & Learn</button>
-        <span class="helper" id="verifyMsg">—</span>
-      </div>
+    <div class="sep"></div>
+
+    <div class="row" style="gap:12px">
+      <span class="pill"><input type="checkbox" id="patReverse" checked> Reverse</span>
+      <span class="pill"><input type="checkbox" id="patMirror" checked> Mirror</span>
+      <span class="pill"><input type="checkbox" id="patCont" checked> Continuous</span>
+      <span class="pill"><input type="checkbox" id="patGap" checked> Gap/Skip</span>
+      <span class="pill"><input type="checkbox" id="guard" checked> Streak-Guard</span>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <span class="pill">Confidence gate
+        <select id="gate" style="width:110px"><option value="med">Med</option><option value="high" selected>High</option><option value="very">Very</option></select>
+      </span>
+      <span class="pill">Max Skip
+        <select id="maxSkip" style="width:110px"><option>2</option><option selected>3</option><option>4</option></select>
+      </span>
+      <span class="pill">Soft gate
+        <select id="softGate" style="width:110px"><option value="lo">Lo</option><option value="med" selected>Med</option></select>
+      </span>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="row">
+      <span class="pill"><input type="radio" name="act" value="small"> Actual Small (0–4)</span>
+      <span class="pill"><input type="radio" name="act" value="big"> Actual Big (5–9)</span>
+      <button class="btn ghost" id="btnVerify">Verify & Learn</button>
+      <span class="badge" id="verifyMsg">—</span>
     </div>
   </div>
 
   <div class="card" id="resultCard" style="margin-top:14px;display:none">
     <div class="kv">
-      <div class="box"><div class="key">🧾 Period</div><div class="val" id="vPeriod">—</div></div>
-      <div class="box"><div class="key">🔢 Predicted</div><div class="val" id="vNum">—</div></div>
-      <div class="box"><div class="key">📏 Size</div><div class="val" id="vSize">—</div></div>
+      <div class="box"><div class="key">Period</div><div class="val" id="vPeriod">—</div></div>
+      <div class="box"><div class="key">Predicted</div><div class="val" id="vNum">—</div></div>
+      <div class="box"><div class="key">Size</div><div class="val" id="vSize">—</div></div>
     </div>
     <div style="margin-top:10px">
-      <div class="key">🧠 Confidence</div>
-      <div class="line"><div class="bar" id="confBar"></div></div>
+      <div class="key">Confidence</div>
+      <div class="progress"><div class="bar" id="confBar"></div></div>
     </div>
-    <div style="margin-top:10px">
-      <span id="playSignal" class="pill">—</span>
-      <span id="reasons" class="pill">—</span>
+    <div style="margin-top:10px" id="signalWrap">
+      <span class="signal sig-bad" id="sig">Skip</span>
+      <span class="badge" id="stake">Stake: —</span>
+      <span class="badge" id="why">—</span>
     </div>
   </div>
 
-  <div class="grid2" style="margin-top:14px">
-    <div class="card"><div class="h1">📊 Probability (0–9)</div><canvas id="probChart" height="220"></canvas></div>
-    <div class="card"><div class="h1">🕘 Recent Predictions</div><div id="hist" class="history">—</div></div>
+  <div class="grid" style="margin-top:14px">
+    <div class="card">
+      <div class="h1">📊 Probability (0–9)</div>
+      <canvas id="probChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="h1">🕘 Recent Predictions</div>
+      <div class="history" id="hist">—</div>
+    </div>
   </div>
 </div>
 
 <script>
-/* ---------- notifications + ding ---------- */
-(async function(){ if('serviceWorker' in navigator){ try{await navigator.serviceWorker.register('/sw.js',{scope:'/'});await navigator.serviceWorker.ready;}catch{}}})();
-async function ensureNotifyPerm(){ if(!('Notification' in window)) return false;
-  if(Notification.permission==='granted') return true; if(Notification.permission==='denied') return false;
-  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; } }
-async function notifyPopup({tail,digit,size}){ try{
-  const ok=await ensureNotifyPerm(); if(!ok) return;
-  try{ const reg=await navigator.serviceWorker.ready; if(reg?.showNotification){
-    await reg.showNotification(`Next • ${tail}`,{body:`#${digit} • ${size}`,tag:`wingo-${tail}`,renotify:true,requireInteraction:true}); return;}}
-  catch{} new Notification(`Next • ${tail}`,{body:`#${digit} • ${size}`});
-}catch{} }
-let audioCtx=null; function playDing(){ try{
-  audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
-  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-  o.type='triangle'; o.frequency.setValueAtTime(880,audioCtx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(660,audioCtx.currentTime+0.15);
-  g.gain.setValueAtTime(0.001,audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.55,audioCtx.currentTime+0.03);
-  g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.95);
-  o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+1);
-}catch{} }
+/* ---------------- Notifications + coin chime ---------------- */
+(async function sw(){ if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('/sw.js'); }catch{} }})();
+async function ensureNotify(){ if(!('Notification' in window)) return false; if(Notification.permission==='granted') return true; if(Notification.permission==='denied') return false; return (await Notification.requestPermission())==='granted'; }
+function coinChime(){
+  if(!document.getElementById('soundOn').checked) return;
+  try{const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(), g=a.createGain(); o.connect(g); g.connect(a.destination);
+  o.type='triangle'; o.frequency.setValueAtTime(880,a.currentTime); g.gain.setValueAtTime(0.0001,a.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.5,a.currentTime+0.01);
+  o.frequency.exponentialRampToValueAtTime(1660,a.currentTime+0.12);
+  g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.8);
+  o.start(); o.stop(a.currentTime+1);}catch{} }
 
-/* ---------- helpers ---------- */
-const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||""); const clamp01=x=>Math.max(0,Math.min(1,x));
-const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
-const argmax=a=>a.indexOf(Math.max(...a));
+/* ---------------- Helpers ---------------- */
+const el=id=>document.getElementById(id); const isDigits=s=>/^\d+$/.test(s||"");
+const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);}; const argmax=a=>a.indexOf(Math.max(...a));
+const clamp01=x=>Math.max(0,Math.min(1,x));
 const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
-const hash32=str=>{let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
-const mulberry32=seed=>function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}
-function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
+function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function tailInfo(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
 
-/* ---------- size learning ---------- */
-const LS_SIZE='WPP_SIZE2';
-const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
-const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
-function renderBias(){ const s=loadSize(); const t=(s[0]+s[1])||1; el('bias').textContent=`Bias Big ${Math.round(s[1]/t*100)}%`; }
+/* ---------------- Local memory (size only) ---------------- */
+const LS_SIZE='WPP_SIZE2', LS_REC='WPP_RECENT';
+const loadSize=()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return[1,1]}};
+const saveSize=s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
+function pushRec(obj){try{const r=JSON.parse(localStorage.getItem(LS_REC))||[];r.unshift(obj);if(r.length>50)r.length=50;localStorage.setItem(LS_REC,JSON.stringify(r));}catch{}}
+function readRec(){try{return JSON.parse(localStorage.getItem(LS_REC))||[]}catch{return[]}}
 
-/* ---------- base priors ---------- */
-function priorPeriodDigits(period){ if(!isDigits(period)) return Array(10).fill(0.1);
-  const d=[...period].map(Number), s=d.reduce((a,b)=>a+b,0), mod10=s%10, mod7=s%7;
-  const freq=Array(10).fill(0); d.forEach(x=>freq[x]++); const v=Array(10).fill(0.1);
-  v[mod10]+=0.44; v[(mod7*3)%10]+=0.22; v[(mod7*5)%10]+=0.20;
-  const mx=Math.max(...freq), mn=Math.min(...freq); for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.06*r}
+/* ---------------- Priors & Patterns ---------------- */
+function priorChecksum(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
+  const v=Array(10).fill(0.1); v[t]+=0.30; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);
+}
+function priorCyclic(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const d=[...period].map(Number), sum=d.reduce((a,b)=>a+b,0);
+  const v=Array(10).fill(0.1);
+  v[sum%10]+=0.22; v[(sum%7*3)%10]+=0.18; v[(sum%7*5)%10]+=0.16;
   return normalize(v);
 }
-function priorParity(period){ if(!isDigits(period)) return Array(10).fill(0.1);
-  const even=(+period.slice(-2))%2===0; const v=Array(10).fill(0.1);
-  if(even){for(let i=0;i<10;i+=2)v[i]+=0.22}else{for(let i=1;i<10;i+=2)v[i]+=0.22} return normalize(v); }
-function priorBucket(period,antiSeq){ if(!isDigits(period)) return Array(10).fill(0.1);
-  const tail=+period.slice(-3), m=tail%10, v=Array(10).fill(0.1); const k=antiSeq?0.16:0.36;
-  v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45; return normalize(v); }
-function priorChecksum(period){ if(!isDigits(period)) return Array(10).fill(0.1);
-  const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10; const v=Array(10).fill(0.1);
-  v[t]+=0.30; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v); }
-function priorDistanceHashed(period){ if(!isDigits(period)) return Array(10).fill(0.1);
-  const seedDigit=hash32(period+'d')%10; const v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){const d=Math.min((i-seedDigit+10)%10,(seedDigit-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);} return normalize(v); }
-
-/* patterns */
-function patternPack(period,{rev,mir,cont,gap}){ const v=Array(10).fill(0.1); if(!isDigits(period)) return v;
-  const t1=(+period.slice(-1))%10, t2=(+period.slice(-2))%10, t3=(+period.slice(-3))%10;
-  if(rev){ v[(10-t2)%10]+=0.18; v[(10-t3)%10]+=0.10; }
-  if(mir){ v[(9-t1)]+=0.20; }
-  if(cont){ v[(t1+1)%10]+=0.16; v[(t1+2)%10]+=0.10; }
-  if(gap){  v[(t1+3)%10]+=0.12; v[(t1+5)%10]+=0.08; }
+function priorDistanceHashed(period){
+  if(!isDigits(period)) return Array(10).fill(0.1);
+  const seedDigit = hash32(period+'K')%10;
+  const v=Array(10).fill(0.1); for(let i=0;i<10;i++){const d=Math.min((i-seedDigit+10)%10,(seedDigit-i+10)%10); v[i]+=0.26*Math.exp(-0.55*d);}
   return normalize(v);
 }
-function regimeWeights(w){ const s=loadSize(); const big=s[1]/(s[0]+s[1]); const out=w.slice();
-  if(big>0.62||big<0.38) out[4]+=0.02; const sum=out.reduce((a,b)=>a+b,0); return out.map(x=>x/sum); }
+function parity(period){
+  if(!isDigits(period)) return 0.5;
+  return ((+period.slice(-2))%2===0)?0.62:0.38; // tilt towards observed parity
+}
+function applyPatterns(period, base){
+  let p=base.slice(), why=[];
+  const t=period.slice(-4), rev=t.split('').reverse().join(''), mir=([...t].map(x=>(9-+x)).join(''));
+  if(el('patReverse').checked){ p[(+rev)%10]+=0.08; why.push('rev'); }
+  if(el('patMirror').checked){ p[(+mir)%10]+=0.08; why.push('mir'); }
+  if(el('patCont').checked){ const m=(+period.slice(-1)+1)%10; p[m]+=0.06; why.push('cont'); }
+  if(el('patGap').checked){ const g=(+period.slice(-3))%5; for(let i=g;i<10;i+=5) p[i]+=0.04; why.push('gap'); }
+  return {p:normalize(p), why};
+}
 
-/* ---------- ensemble predictor ---------- */
-function singleModel(period,mode,antiSeq,learnOn,packFlags,guard,tempShift=0,seedSalt=''){
-  const baseHyper={
-    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.33,0.16,0.18,0.18,0.15],learnBoost:0.25},
-    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.31,0.18,0.20,0.18,0.13],learnBoost:0.30},
-    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.35}
+/* ---------------- Predictor ---------------- */
+function predictLocal(period, mode){
+  const hyper={
+    conservative:{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.28,0.26,0.22,0.24]},
+    balanced    :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.26,0.26,0.24,0.24]},
+    aggressive  :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.24,0.26,0.26,0.24]}
   }[mode];
-  const hyper=JSON.parse(JSON.stringify(baseHyper)); hyper.temp+=tempShift;
 
-  const P1=priorPeriodDigits(period),P2=priorParity(period),P3=priorBucket(period,antiSeq),P4=priorChecksum(period),P5=priorDistanceHashed(period),PP=patternPack(period,packFlags);
-  const w=regimeWeights(hyper.w);
-  let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]+0.12*PP[i]));
+  const P1=priorChecksum(period), P2=priorCyclic(period), P3=priorDistanceHashed(period), P4=Array(10).fill(0.1);
+  for(let i=0;i<10;i+=2) P4[i]+=0.12*(parity(period)); for(let i=1;i<10;i+=2) P4[i]+=0.12*(1-parity(period));
 
-  if(guard){ const ramp=i=>Math.abs(base[i]-((base[(i+1)%10]+base[(i+9)%10])/2));
-    const mean=base.reduce((a,b)=>a+b,0)/10, lin=base.map((_,i)=>ramp(i)).reduce((a,b)=>a+b,0)/10;
-    if(lin<0.01) base=normalize(base.map(p=>p*0.8+mean*0.2));
+  let mix=normalize(P1.map((_,i)=>hyper.w[0]*P1[i]+hyper.w[1]*P2[i]+hyper.w[2]*P3[i]+hyper.w[3]*P4[i]));
+  const pat=applyPatterns(period,mix); mix=pat.p;
+
+  // learning tilt (size)
+  if(el('learnOn').checked){
+    const s=loadSize(), total=s[0]+s[1], sb=s[0]/total, bb=s[1]/total, k=0.30;
+    for(let i=0;i<5;i++)  mix[i]*=(1-k+k*sb);
+    for(let i=5;i<10;i++) mix[i]*=(1-k+k*bb);
+    mix=normalize(mix);
   }
 
-  const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
-  base=normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
-
-  if(learnOn){
-    const sz=loadSize(); const total=(sz[0]+sz[1])||1; const smallBias=sz[0]/total, bigBias=sz[1]/total, k=hyper.learnBoost;
-    for(let i=0;i<5;i++) base[i]*=(1-k+k*smallBias); for(let i=5;i<10;i++) base[i]*=(1-k+k*bigBias); base=normalize(base);
-  }
-
-  const seed=hash32(period+seedSalt); const rnd=mulberry32(seed);
-  const B=64,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
-  for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
+  // bootstrap smoothing
+  const rnd=mulberry32(hash32(period)), B=72,j=hyper.jitter, agg=Array(10).fill(0), votes=Array(10).fill(0);
+  for(let b=0;b<B;b++){ const p=normalize(mix.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
   let probs=normalize(agg).map(p=>Math.pow(p,1/hyper.temp)); probs=normalize(probs);
-  const iM=argmax(probs), mx=probs[iM];
-  if(mx>hyper.cap){ const ex=mx-hyper.cap; probs[iM]-=ex; const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
-  const stab=Math.max(...votes)/B;
-  let H=0; probs.forEach(p=>{if(p>0)H+=-p*Math.log(p)}); const entropy=clamp01(1-H/Math.log(10));
-  const score=clamp01(0.55*entropy+0.45*stab);
-  return {probs,score};
-}
-function predictEnsemble(period,mode,antiSeq,learnOn,packFlags,guard,gate){
-  const members=[
-    singleModel(period,mode,antiSeq,learnOn,packFlags,guard, 0.00,'A'),
-    singleModel(period,mode,antiSeq,learnOn,{...packFlags,rev:!packFlags.rev},guard, 0.02,'B'),
-    singleModel(period,mode,antiSeq,learnOn,{...packFlags,mir:!packFlags.mir},guard,-0.01,'C'),
-    singleModel(period,'conservative',antiSeq,learnOn,packFlags,guard,-0.02,'D'),
-    singleModel(period,'aggressive',antiSeq,learnOn,packFlags,guard, 0.03,'E'),
-    singleModel(period,mode,!antiSeq,learnOn,packFlags,guard, 0.00,'F'),
-  ];
-  // median mix
-  const mix=Array(10).fill(0); members.forEach(m=>m.probs.forEach((p,i)=>mix[i]+=p)); 
-  let probs=normalize(mix);
-  const picks=members.map(m=>argmax(m.probs));
-  const consensus = [...new Set(picks)].map(d=>({d,count:picks.filter(x=>x===d).length}))
-                   .sort((a,b)=>b.count-a.count)[0];
-  const pick = consensus.d; const pmax=probs[pick];
-  const score = members.reduce((a,b)=>a+b.score,0)/members.length;
-  const pass = (consensus.count>=4) && (score>=gate) && (pmax>=0.55);
-  return {probs,score,pass,pick,pmax,consensus};
+
+  // cap top prob
+  const iM=argmax(probs); const mx=probs[iM];
+  if(mx>hyper.cap){ const excess=mx-hyper.cap; probs[iM]-=excess; const rest=probs.reduce((a,b,i)=>i===iM?a:a+b,0)||1; const scale=(1-probs[iM])/rest; for(let i=0;i<10;i++) if(i!==iM) probs[i]*=scale; probs=normalize(probs); }
+
+  const stability=Math.max(...votes)/B;
+  return {probs,stability, why:pat.why.join(',')||'mix'};
 }
 
-/* ---------- chart & render ---------- */
-let probChart=null;
-function renderChart(probs){ const data=probs.map(p=>Math.round(p*1000)/10); const labels=[...Array(10).keys()].map(String);
-  if(probChart) probChart.destroy();
-  probChart=new Chart(el('probChart').getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'Probability (%)',data}]},
-    options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}});
+/* ---------------- Gates & Soft Play ---------------- */
+let skipStreak=0;
+function decideSignal(conf, softConf){
+  const gate=el('gate').value, soft=el('softGate').value, maxSkip=parseInt(el('maxSkip').value||'3',10);
+  const thresh = gate==='very'?0.78: gate==='high'?0.66:0.58;
+  const softT  = soft==='med'?0.48:0.42;
+
+  if(conf>=thresh){ skipStreak=0; return {sig:'Play', cls:'sig-ok', stake:'Full', why:`conf ${Math.round(conf*100)}% ≥ gate`}; }
+
+  // Soft Play only if too many skips
+  if(skipStreak>=maxSkip && softConf>=softT){
+    skipStreak=0;
+    return {sig:'Soft Play', cls:'sig-am', stake:'Half', why:`maxSkip ${maxSkip} reached • soft ${Math.round(softConf*100)}%`};
+  }
+
+  skipStreak++;
+  return {sig:'Skip', cls:'sig-bad', stake:'No bet', why:`conf ${Math.round(conf*100)}%`};
 }
-function renderResult(period,out,source='manual'){
-  renderChart(out.probs);
+
+/* ---------------- Charts ---------------- */
+let probChart=null;
+function drawChart(probs){
+  const data=probs.map(p=>Math.round(p*1000)/10), labels=[...Array(10).keys()].map(String);
+  if(probChart) probChart.destroy();
+  probChart=new Chart(el('probChart').getContext('2d'),{
+    type:'bar', data:{labels,datasets:[{label:'Probability (%)',data}]},
+    options:{responsive:true,scales:{y:{beginAtZero:true,title:{display:true,text:'%'}},x:{title:{display:true,text:'Digit'}}}}
+  });
+}
+
+/* ---------------- Render ---------------- */
+function render(period, out, source='manual'){
+  drawChart(out.probs);
+  const pick=argmax(out.probs), size=pick>=5?'Big':'Small';
+  let H=0; out.probs.forEach(p=>{ if(p>0) H+=-p*Math.log(p) }); const entropy=clamp01(1-H/Math.log(10));
+  const stability=clamp01(out.stability||0);
+  const conf=clamp01(0.55*entropy+0.45*stability);
+
+  // softer confidence (only entropy)
+  const softConf=entropy;
+
+  const decision=decideSignal(conf,softConf);
+
   el('resultCard').style.display='block';
   el('vPeriod').textContent=period;
-  el('vNum').textContent= out.pass ? out.pick : '—';
-  el('vSize').textContent= out.pass ? (out.pick>=5?'Big':'Small') : '—';
-  el('confBar').style.width=(out.score*100).toFixed(1)+'%';
+  el('vNum').textContent=pick;
+  el('vSize').textContent=size;
+  el('confBar').style.width=(conf*100).toFixed(1)+'%';
+
+  const sig=el('sig'); sig.textContent=decision.sig; sig.className='signal '+decision.cls;
+  el('stake').textContent='Stake: '+decision.stake;
+  el('why').textContent='Why: '+decision.why + ' • patterns ['+out.why+']';
+
+  // history row
   const h=el('hist'); if(h.textContent==='—') h.textContent='';
-  const sig = out.pass ? `#${out.pick} (${out.pick>=5?'Big':'Small'})` : 'Skip';
-  const cls = out.pass ? (out.score<0.6?'warn':'ok') : 'bad';
-  el('playSignal').textContent = out.pass ? 'Play' : 'Skip';
-  el('playSignal').className = 'pill '+cls;
-  el('reasons').textContent = out.pass ? `Edge ${(out.score*100|0)}% • p=${(out.pmax*100).toFixed(0)} • c=${out.consensus.count}/6` : 'No edge';
-  h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → ${sig}</div>`);
-  [...h.children].slice(16).forEach(n=>n.remove());
-  if(source==='auto' && el('autoNext').checked && out.pass){ notifyPopup({tail:String(period).slice(-3),digit:out.pick,size:(out.pick>=5?'Big':'Small')}); playDing(); }
+  h.insertAdjacentHTML('afterbegin',
+    `<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${size}) • <span class="small">${decision.sig}</span></div>`);
+  [...h.children].slice(40).forEach(n=>n.remove());
+
+  // popup + sound only for Play/Soft
+  if(source==='auto' && (decision.sig!=='Skip')){
+    ensureNotify().then(ok=>{
+      if(ok && navigator.serviceWorker?.ready){
+        navigator.serviceWorker.ready.then(reg=>{
+          reg.showNotification(`${decision.sig} • tail ${String(period).slice(-3)}`,{
+            body:`#${pick} • ${size} • ${Math.round(conf*100)}%`,
+            tag:`wingo-${period}`, renotify:true, badge:'/icons/icon-192.png', icon:'/icons/icon-192.png'
+          });
+        });
+      }
+    });
+    coinChime();
+  }
+
+  // record for learning visualization
+  pushRec({time:Date.now(), pick, size, conf, sig:decision.sig});
 }
 
-/* ---------- run ---------- */
-let autoTimer=null, busy=false;
-async function runPredict(source='manual'){
+/* ---------------- Auto + Actions ---------------- */
+let timer=null, busy=false;
+function runPredict(source='manual'){
   if(busy) return; busy=true; setTimeout(()=>busy=false,120);
-  const pr=el('period').value.trim(); if(!isDigits(pr)){alert('Valid period number भरें');return;}
-  el('periodInfo').textContent='Period: '+describePeriod(pr);
-  const out=predictEnsemble(pr, el('mode').value, el('antiSeq').checked, el('learnOn').checked,
-    {rev:el('pReverse').checked, mir:el('pMirror').checked, cont:el('pCont').checked, gap:el('pGap').checked},
-    el('pGuard').checked, parseFloat(el('gate').value||'0.60')
-  );
-  renderResult(pr,out,source);
+  const p=el('period').value.trim(); if(!isDigits(p)){ alert('Valid period number भरें'); return; }
+  el('periodInfo').textContent=tailInfo(p);
+  const out=predictLocal(p, el('mode').value);
+  render(p,out,source);
 }
-function startAuto(){ const sec=parseInt(el('autoEvery').value,10);
-  clearInterval(autoTimer); autoTimer=setInterval(()=>{ const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur); runPredict('auto'); },Math.max(5,sec)*1000); }
+function startAuto(){
+  const sec=parseInt(el('interval').value||'30',10);
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    const cur=el('period').value.trim(); if(isDigits(cur)) el('period').value=bump(cur);
+    runPredict('auto');
+  },sec*1000);
+}
 
-/* ---------- bindings ---------- */
+/* ---------------- Verify & Learn ---------------- */
 document.addEventListener('DOMContentLoaded', ()=>{
-  renderBias();
   el('btnPredict').onclick=()=>runPredict('manual');
   el('period').addEventListener('keydown',e=>{ if(e.key==='Enter') runPredict('manual'); });
-  el('btnClear').onclick=()=>{ clearInterval(autoTimer); autoTimer=null; el('autoNext').checked=false;
-    el('period').value=''; el('periodInfo').textContent='—'; el('resultCard').style.display='none'; el('hist').textContent='—';
-    if(probChart){probChart.destroy();probChart=null} };
-  el('btnCopy').onclick=async()=>{ const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
-    try{ await navigator.clipboard.writeText(txt); alert('Copied!'); }catch{} };
-  el('notifyBtn').onclick=async()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked');
-  el('autoNext').onchange=async e=>{ clearInterval(autoTimer); autoTimer=null; if(e.target.checked){ await ensureNotifyPerm(); startAuto(); } }
-  el('autoEvery').onchange=()=>{ if(el('autoNext').checked) startAuto(); };
+  el('btnClear').onclick=()=>{
+    clearInterval(timer); timer=null; el('autoNext').checked=false;
+    el('period').value=''; el('periodInfo').textContent='—';
+    el('resultCard').style.display='none'; el('hist').textContent='—';
+    if(probChart){probChart.destroy();probChart=null} skipStreak=0;
+  };
+  el('btnCopy').onclick=async ()=>{
+    const txt=`Period: ${el('vPeriod').textContent}, Number: ${el('vNum').textContent}, Size: ${el('vSize').textContent}`;
+    try{ await navigator.clipboard.writeText(txt); alert('Copied'); }catch{}
+  };
+  el('autoNext').onchange=e=>{ clearInterval(timer); timer=null; if(e.target.checked) startAuto(); };
+  el('interval').onchange=()=>{ if(el('autoNext').checked){ startAuto(); } };
+  el('notifyBtn').onclick=async ()=> alert((await ensureNotify())?'Notifications ON':'Notifications blocked');
 
-  el('btnVerify').onclick=()=>{ const pick=el('vNum').textContent.trim();
-    if(!pick || pick==='—'){ el('verifyMsg').textContent='पहले Predict करें.'; el('verifyMsg').style.color='#9ca3af'; return; }
-    const chosen=document.querySelector('input[name="actSize"]:checked');
-    if(!chosen){ el('verifyMsg').textContent='Actual के लिए Big/Small चुनें.'; el('verifyMsg').style.color='#9ca3af'; return; }
-    const actual=chosen.value, predicted=(+pick>=5)?'big':'small', win=(actual===predicted);
-    el('verifyMsg').textContent = win?`WIN ✔ size ${predicted.toUpperCase()}`:`LOSS ✘ picked ${predicted.toUpperCase()} • actual ${actual.toUpperCase()}`;
-    el('verifyMsg').style.color = win?'var(--ok)':'var(--bad)';
-    if(el('learnOn').checked){ const s=loadSize(); if(actual==='small') s[0]++; else s[1]++; saveSize(s); renderBias(); }
+  el('btnVerify').onclick=()=>{
+    const chosen=document.querySelector('input[name="act"]:checked');
+    const pick=el('vNum').textContent.trim();
+    if(!pick||pick==='—'){ el('verifyMsg').textContent='पहले Predict करें'; return; }
+    if(!chosen){ el('verifyMsg').textContent='Actual size चुनें'; return; }
+    const actual=chosen.value, pred=(+pick>=5)?'big':'small', win=(actual===pred);
+    el('verifyMsg').textContent= win? 'WIN ✔' : 'LOSS ✘';
+    el('verifyMsg').style.color= win? 'var(--ok)' : 'var(--bad)';
+    if(el('learnOn').checked){
+      const s=loadSize(); (actual==='big')?s[1]++:s[0]++; saveSize(s);
+    }
   };
 });
 </script>
