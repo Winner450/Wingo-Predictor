@@ -17,12 +17,11 @@
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(160deg,#0b0b0f,#000);color:#fff;font:16px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto}
 
-/* SINGLE golden header (centered, no duplicate) */
+/* Single golden header */
 header{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,var(--gold),var(--gold-2));border-bottom:1px solid #000}
 .brand{max-width:1180px;margin:0 auto;padding:10px 14px;display:flex;justify-content:center;align-items:center}
 .brand .title{font-weight:900;letter-spacing:.6px;color:#000;text-align:center;font-size:clamp(18px,4.6vw,22px);white-space:nowrap}
 
-/* layout */
 .container{max-width:1180px;margin:0 auto;padding:18px 16px 38px}
 .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
 .h1{font-size:18px;font-weight:800;margin:0 0 12px}
@@ -36,16 +35,13 @@ input:focus,select:focus{border-color:var(--gold)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .btn{background:linear-gradient(180deg,var(--gold),var(--gold-2));color:#000;font-weight:800;border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
 .btn.sec{background:#1e2636;color:#e5e7eb;border:1px solid #2a3448}
-
 .switch{display:inline-flex;gap:8px;align-items:center;color:#e0e3ea;font-size:13px}
 .chip{display:inline-flex;align-items:center;gap:8px;background:#0e121a;border:1px solid #1f2636;border-radius:999px;padding:8px 12px;color:#cfd4e1;font-weight:700}
 
-/* result blocks */
 .kv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media (max-width:900px){.kv{grid-template-columns:1fr}}
 .box{background:#0b0f15;border:1px solid #1a2130;border-radius:14px;padding:14px}
-.key{color:#a1a8b8;font-size:12px}
-.val{color:var(--gold);font-weight:900;font-size:30px}
+.key{color:#a1a8b8;font-size:12px}.val{color:var(--gold);font-weight:900;font-size:30px}
 .line{height:10px;background:#1c2534;border-radius:999px;overflow:hidden;margin:10px 0 2px}
 .bar{height:10px;width:0%;background:linear-gradient(90deg,var(--gold-2),var(--gold))}
 .pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;padding:6px 10px;font-weight:800;margin-right:6px}
@@ -57,8 +53,6 @@ input:focus,select:focus{border-color:var(--gold)}
 .hrow{padding:6px 0;border-bottom:1px dashed #21293a}
 .helper{font-size:12px;color:#9ca3af}
 .hr{height:1px;background:#1a2130;margin:12px 0}
-
-/* verify line compact */
 .verify-line{white-space:nowrap}
 #verifyMsg{font-weight:800}
 </style>
@@ -72,7 +66,7 @@ input:focus,select:focus{border-color:var(--gold)}
     <div class="grid">
       <div>
         <label for="period">🧾 Period Number</label>
-        <input id="period" placeholder="e.g. 20250813100052810" inputmode="numeric" />
+        <input id="period" placeholder="e.g. 20250813100052810" inputmode="numeric"/>
         <div class="sub">लम्बा period ID • केवल digits (0–9)</div>
       </div>
       <div>
@@ -102,7 +96,6 @@ input:focus,select:focus{border-color:var(--gold)}
 
     <div class="hr"></div>
 
-    <!-- Verify & Learn (Big/Small) -->
     <div class="grid">
       <div>
         <label class="verify-line">✅ Actual size — optional (Learning)</label>
@@ -149,56 +142,48 @@ input:focus,select:focus{border-color:var(--gold)}
 </div>
 
 <script>
-/* ---------------- PWA Notifications ---------------- */
-(async function setupSW(){
-  if('serviceWorker' in navigator){
-    try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; }catch{}
-  }
-})();
-async function ensureNotifyPerm(){
-  if(!('Notification' in window)) return false;
-  if(Notification.permission==='granted') return true;
-  if(Notification.permission==='denied') return false;
-  try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; }
-}
-async function notifyViaSW({tail,digit,size}){
-  try{
-    const reg = await navigator.serviceWorker.ready; if(!reg) return;
-    const ok = await ensureNotifyPerm(); if(!ok) return;
-    await reg.showNotification(`Next • ${tail}`,{
-      body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true,
-      icon:'/icons/icon-192.png', badge:'/icons/icon-192.png', vibrate:[80,30,80]
-    });
-  }catch{}
-}
+/* ---------- PWA Notifications ---------- */
+(async function setupSW(){ if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('/sw.js',{scope:'/'}); await navigator.serviceWorker.ready; }catch{} }})();
+async function ensureNotifyPerm(){ if(!('Notification' in window)) return false; if(Notification.permission==='granted') return true; if(Notification.permission==='denied') return false; try{ return (await Notification.requestPermission())==='granted'; }catch{ return false; } }
+async function notifyViaSW({tail,digit,size}){ try{ const reg=await navigator.serviceWorker.ready; if(!reg) return; if(!(await ensureNotifyPerm())) return; await reg.showNotification(`Next • ${tail}`,{ body:`#${digit} • ${size}`, tag:`wingo-${tail}`, renotify:true, requireInteraction:true, icon:'/icons/icon-192.png', badge:'/icons/icon-192.png', vibrate:[80,30,80] }); }catch{} }
 
-/* ---------------- Helpers ---------------- */
+/* ---------- Helpers ---------- */
 const el=id=>document.getElementById(id);
-const isDigits=s=>/^\d+$/.test(s||"");
-const clamp01=x=>Math.max(0,Math.min(1,x));
+const isDigits=s=>/^\d+$/.test(s||""); const clamp01=x=>Math.max(0,Math.min(1,x));
 const normalize=a=>{const s=a.reduce((p,c)=>p+c,0)||1;return a.map(x=>x/s);};
 const argmax=a=>a.indexOf(Math.max(...a));
 const bump=p=>{try{return (BigInt(p)+1n).toString()}catch{const a=p.split('').map(n=>+n);for(let i=a.length-1;i>=0;i--){if(a[i]===9)a[i]=0;else{a[i]++;break;}}return a.join('')}};
 function describePeriod(p){return isDigits(p)?`len ${p.length} • tail ${p.slice(-4)}`:'—';}
+
+/* hashing (mix three ways so +1 period ≠ +1 digit) */
 function hash32(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function mixSeed(period){
+  const rev=[...period].reverse().join('');
+  let big=0n; try{ big=BigInt(period); }catch{ big=0n; }
+  const k = (big*BigInt('2654435761')) & BigInt('0xffffffff'); // Knuth prime
+  const m = (hash32(period) ^ hash32(rev) ^ Number(k)) >>> 0;
+  // final avalanche
+  let x=m; x^=x>>>15; x=Math.imul(x|1,0x85ebca6b); x^=x>>>13; x=Math.imul(x|1,0xc2b2ae35); x^=x>>>16;
+  return x>>>0;
+}
 function mulberry32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 
-/* ---------------- Local storage (learning + history) ---------------- */
+/* ---------- Learning + recent picks ---------- */
 const LS_SIZE='WPP_SIZE2', LS_RECENT='WPP_RECENT20';
 const loadSize =()=>{try{return JSON.parse(localStorage.getItem(LS_SIZE))||[1,1]}catch{return [1,1]}};
 const saveSize =s=>localStorage.setItem(LS_SIZE,JSON.stringify(s));
 function pushRecentPick(n){try{const r=JSON.parse(localStorage.getItem(LS_RECENT))||[];r.unshift(n);if(r.length>20)r.length=20;localStorage.setItem(LS_RECENT,JSON.stringify(r));}catch{}}
 function getRecent(){try{return JSON.parse(localStorage.getItem(LS_RECENT))||[]}catch{return[]}}
-const seqDir = (a,b)=> (b-a+10)%10===1 ? 1 : ((a-b+10)%10===1 ? -1 : 0);
+const seqDir=(a,b)=> (b-a+10)%10===1 ? 1 : ((a-b+10)%10===1 ? -1 : 0);
 
-/* ---------------- Priors (decoupled from last digit) ---------------- */
+/* ---------- Priors (no last-digit dependency) ---------- */
 function priorPeriodDigits(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const d=[...period].map(Number);
   const s=d.reduce((a,b)=>a+b,0), mod10=s%10, mod7=s%7;
   const freq=Array(10).fill(0); d.forEach(x=>freq[x]++);
   const v=Array(10).fill(0.1);
-  v[mod10]+=0.44;
+  v[mod10]+=0.42;
   v[(mod7*3)%10]+=0.22; v[(mod7*5)%10]+=0.20;
   const mx=Math.max(...freq), mn=Math.min(...freq);
   for(let i=0;i<10;i++){const r=(mx-mn)?(mx-freq[i])/(mx-mn):0; v[i]+=0.06*r}
@@ -213,7 +198,7 @@ function priorParity(period){
 function priorBucket(period, antiSeq){
   if(!isDigits(period)) return Array(10).fill(0.1);
   const tail=+period.slice(-3), m=tail%10, v=Array(10).fill(0.1);
-  const k=antiSeq?0.16:0.36; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45;
+  const k=antiSeq?0.16:0.34; v[m]+=k; v[(m+3)%10]+=k*0.55; v[(m+7)%10]+=k*0.45;
   return normalize(v);
 }
 function priorChecksum(period){
@@ -221,24 +206,25 @@ function priorChecksum(period){
   const s=[...period].reduce((a,b)=>a+(+b),0), t=(s%9+s%10)%10;
   const v=Array(10).fill(0.1); v[t]+=0.30; v[(t+1)%10]+=0.16; v[(t+9)%10]+=0.16; return normalize(v);
 }
-function priorDistanceHashed(period){
+function priorDistanceNonlinear(period){
   if(!isDigits(period)) return Array(10).fill(0.1);
-  const seedDigit = hash32(period+'d')%10;
+  const sd = mixSeed(period)%10;             // non-linear anchor
   const v=Array(10).fill(0.1);
-  for(let i=0;i<10;i++){const d=Math.min((i-seedDigit+10)%10,(seedDigit-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);}
+  for(let i=0;i<10;i++){const d=Math.min((i-sd+10)%10,(sd-i+10)%10); v[i]+=0.28*Math.exp(-0.55*d);}
   return normalize(v);
 }
 
-/* ---------------- Strategy (with anti-sequence “Beast Mode”) ---------------- */
+/* ---------- Strategy + anti-sequence ---------- */
 function regimeWeights(w){
   const s=loadSize(); const big=s[1]/(s[0]+s[1]); const out=w.slice();
   if(big>0.62||big<0.38) out[4]+=0.02;
   const sum=out.reduce((a,b)=>a+b,0); return out.map(x=>x/sum);
 }
 
-// penalize monotonic runs in recent predictions
 function antiSequenceTilt(base){
   const r=getRecent(); if(r.length<2) return base.slice();
+
+  // detect most recent monotonic direction (+1 / -1)
   let dir=0, run=1;
   for(let i=0;i<Math.min(6,r.length-1);i++){
     const d=seqDir(r[i+1], r[i]);
@@ -248,31 +234,38 @@ function antiSequenceTilt(base){
   const out=base.slice();
   if(run>=3 && dir!==0){
     const nextForbid = (r[0]+(dir===1?1:9))%10;
-    out[nextForbid]*=0.65; // punch the obvious next step
-    for(let i=0;i<10;i++) if(i!==nextForbid) out[i]*=1.0+(0.35/(9));
+    // suppress obvious next step
+    out[nextForbid]*=0.35;
+    // push off-cycle digits far from the trend
+    [4,5,6].forEach(delta=>{
+      out[(nextForbid+delta)%10]*=1.18;
+      out[(nextForbid+10-delta)%10]*=1.18;
+    });
   }
   return normalize(out);
 }
 
 function predictLocal(period, mode, antiSeq, learnOn){
   const presets={
-    beast        :{temp:1.05,cap:0.64,jitter:0.07,adapt:0.22,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.34},
+    beast        :{temp:1.05,cap:0.63,jitter:0.07,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.34},
     balanced     :{temp:1.06,cap:0.62,jitter:0.08,adapt:0.18,w:[0.32,0.18,0.20,0.18,0.12],learnBoost:0.30},
     conservative :{temp:1.04,cap:0.58,jitter:0.05,adapt:0.12,w:[0.34,0.16,0.18,0.18,0.14],learnBoost:0.25},
     aggressive   :{temp:1.08,cap:0.66,jitter:0.12,adapt:0.24,w:[0.30,0.18,0.22,0.18,0.12],learnBoost:0.35}
   };
   const hyper=presets[mode]||presets.beast;
 
-  const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistanceHashed(period);
+  const P1=priorPeriodDigits(period), P2=priorParity(period), P3=priorBucket(period,antiSeq), P4=priorChecksum(period), P5=priorDistanceNonlinear(period);
   const w=regimeWeights(hyper.w);
   let base=normalize(P1.map((_,i)=> w[0]*P1[i]+w[1]*P2[i]+w[2]*P3[i]+w[3]*P4[i]+w[4]*P5[i]));
 
-  // adapt and anti-sequence
+  // adaptive sharpening
   const sorted=base.slice().sort((a,b)=>b-a), t=sorted[2]||0.1;
   base=normalize(base.map(p=>p*(1+hyper.adapt*((p-t)/(t+1e-9)))));
+
+  // anti-sequence pass
   base=antiSequenceTilt(base);
 
-  // size learning
+  // size learning (Big/Small)
   if(learnOn){
     const sz=loadSize(); const total=(sz[0]+sz[1])||1;
     const smallBias=sz[0]/total, bigBias=sz[1]/total, k=hyper.learnBoost;
@@ -282,8 +275,8 @@ function predictLocal(period, mode, antiSeq, learnOn){
   }
 
   // bootstrap + temperature + cap
-  const seed=hash32(period); const rnd=mulberry32(seed);
-  const B=80,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
+  const seed=mixSeed(period); const rnd=mulberry32(seed);
+  const B=84,j=hyper.jitter; const agg=Array(10).fill(0), votes=Array(10).fill(0);
   for(let b=0;b<B;b++){ const p=normalize(base.map(x=>Math.max(0,x*(1+(rnd()*2-1)*j)))); p.forEach((x,i)=>agg[i]+=x); votes[argmax(p)]++; }
   let probs=normalize(agg).map(p=>Math.pow(p,1/hyper.temp)); probs=normalize(probs);
   const iM=argmax(probs), mx=probs[iM];
@@ -292,7 +285,7 @@ function predictLocal(period, mode, antiSeq, learnOn){
   return {probs,stability};
 }
 
-/* ---------------- Chart ---------------- */
+/* ---------- Chart ---------- */
 let probChart=null;
 function renderCharts(probs){
   const data=probs.map(p=>Math.round(p*1000)/10);
@@ -304,7 +297,7 @@ function renderCharts(probs){
   });
 }
 
-/* ---------------- Render ---------------- */
+/* ---------- Render ---------- */
 function renderResult(period, out, source='manual'){
   const probs=out.probs.slice(); const pick=argmax(probs);
   renderCharts(probs);
@@ -328,7 +321,6 @@ function renderResult(period, out, source='manual'){
   el('top3').textContent='Top-3: '+sorted.slice(0,3).map(o=>`${o.i} (${(o.p*100).toFixed(1)}%)`).join(', ');
   el('reasons').textContent=`Score ${(score*100).toFixed(0)}%`;
 
-  // history list and memory for anti-seq
   const h=el('hist'); if(h.textContent==='—') h.textContent='';
   h.insertAdjacentHTML('afterbegin',`<div class="hrow">⏱ ${new Date().toLocaleTimeString()} • tail ${String(period).slice(-4)} → #${pick} (${pick>=5?'Big':'Small'})</div>`);
   [...h.children].slice(14).forEach(n=>n.remove());
@@ -339,7 +331,7 @@ function renderResult(period, out, source='manual'){
   }
 }
 
-/* ---------------- Actions ---------------- */
+/* ---------- Actions ---------- */
 let autoTimer=null, busy=false;
 async function runPredict(source='manual'){
   if(busy) return; busy=true; setTimeout(()=>busy=false,140);
@@ -358,7 +350,7 @@ function startAuto(){
   }, sec*1000);
 }
 
-/* ---------------- Bindings ---------------- */
+/* ---------- Bindings ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
   el('btnPredict').addEventListener('click', ()=>runPredict('manual'));
   el('period').addEventListener('keydown', e=>{ if(e.key==='Enter') runPredict('manual'); });
@@ -377,21 +369,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
   el('notifyBtn').addEventListener('click', async ()=> alert((await ensureNotifyPerm())?'Notifications enabled':'Notifications blocked'));
 
-  // Verify & Learn — colored WIN/LOSS (size)
+  // Verify & Learn — colored
   el('btnVerify').addEventListener('click', ()=>{
     const pick = el('vNum').textContent.trim();
     const msg = el('verifyMsg');
     if(!pick || pick==='—'){ msg.textContent='पहले Predict करें.'; msg.style.color='#9ca3af'; return; }
     const chosen = document.querySelector('input[name="actSize"]:checked');
     if(!chosen){ msg.textContent='Actual के लिए Big/Small चुनें.'; msg.style.color='#9ca3af'; return; }
-
-    const actualSize = chosen.value; // 'small' | 'big'
+    const actualSize = chosen.value;
     const predictedSize = (+pick>=5)?'big':'small';
     const win = (actualSize===predictedSize);
-
-    if(win){ msg.textContent=`WIN ✔ (picked ${predictedSize.toUpperCase()})`; msg.style.color='var(--ok)'; }
-    else   { msg.textContent=`LOSS ✘ (picked ${predictedSize.toUpperCase()})`;  msg.style.color='var(--bad)'; }
-
+    msg.textContent = win ? `WIN ✔ (picked ${predictedSize.toUpperCase()})`
+                          : `LOSS ✘ (picked ${predictedSize.toUpperCase()})`;
+    msg.style.color = win ? 'var(--ok)' : 'var(--bad)';
     if(el('learnOn').checked){
       const s=loadSize(); if(actualSize==='small') s[0]++; else s[1]++; saveSize(s);
     }
