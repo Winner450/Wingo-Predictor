@@ -1,479 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>🎯 WinGo Predictor Pro — Premium Dashboard</title>
-<meta name="theme-color" content="#0b0f13" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>WinGo Predictor Pro — BDGOP Style</title>
+<meta name="theme-color" content="#0c1015"/>
 
-<!--
-  ============================================================================
-  WinGo Predictor Pro — Single-file Premium Dashboard (HTML+CSS+JS)
-  Author: You + ChatGPT
-  Notes:
-  - Zero external libraries. Everything is vanilla + one star GIF background.
-  - Deterministic prediction so the same Period => same output (no fake random).
-  - Realtime feel: Auto-refresh (pulls API when configured).
-  - Clean, mobile-first dark UI. Fully responsive.
-  ============================================================================ 
--->
+<!-- =======================================================================
+     WinGo Predictor Pro — BDGOP-like Neon Theme (single-file)
+     - No external libs, no remote CSS/JS; only an optional star GIF.
+     - Deterministic period prediction (hash-based) + live API history.
+     - Professional UI with BDGOP-ish deep blue/teal/green neon palette.
+     ======================================================================= -->
 
 <style>
-  /* ----------------------------- Root / Reset ----------------------------- */
-  :root{
-    --bg: #0b0f13;
-    --panel: #10161d;
-    --panel-soft: #0f141b;
-    --text: #e7eef8;
-    --muted: #9fb2c8;
-    --accent: #3b82f6;
-    --accent-2: #60a5fa;
-    --good: #22c55e;
-    --warn: #f59e0b;
-    --bad: #ef4444;
-    --chip-bg: rgba(255,255,255,.06);
-    --ring: rgba(96,165,250,.3);
-    --gold-1:#FFD94A; --gold-2:#FFC107; --gold-3:#FFB300;
-    --outline: rgba(255,255,255,.08);
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-    --radius-xl: 18px;
-    --radius-md: 12px;
-    --radius-sm: 8px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:radial-gradient(1200px 600px at 60% -10%,#141a22 0%,var(--bg) 40%, #070a0d 100%);
-    color:var(--text); font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-  a{color:inherit}
-  .container{max-width:1100px;margin:20px auto;padding:0 14px;}
-  /* ------------------------------ Golden Line ----------------------------- */
-  .golden-line{
-    position:relative; overflow:hidden; border-radius:999px;
-    padding:16px 22px; text-align:center; font-weight:800; letter-spacing:.4px; color:#121212;
-    background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 8px 30px rgba(255,193,7,.25);
-    margin-bottom:18px;
-  }
-  .golden-line::before{
-    content:""; position:absolute; inset:0; z-index:0; opacity:.35; pointer-events:none;
-    background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;
-    filter:contrast(120%) brightness(110%) saturate(110%);
-  }
-  .golden-line .dot{
-    width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:10px;background:#121212aa;border:2px solid #12121255;
-    box-shadow:0 0 0 3px rgba(18,18,18,.15), 0 0 20px 2px rgba(255,240,150,.55) inset;
-    vertical-align:middle;
-  }
-  .golden-line span{position:relative;z-index:1;}
-  /* -------------------------------- Cards --------------------------------- */
-  .card{
-    background: linear-gradient(180deg, var(--panel) 0%, #0f141b 100%);
-    border:1px solid var(--outline);
-    border-radius: var(--radius-xl);
-    padding:14px; box-shadow: var(--shadow); margin-bottom:16px;
-  }
-  .card h3{margin:0 0 10px;font-size:1.05rem;color:#d9e6f5;display:flex;align-items:center;gap:8px}
-  .section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media (max-width: 900px){ .section-grid{grid-template-columns:1fr} }
-  /* ------------------------------- Controls -------------------------------- */
-  .controls-grid{display:grid;grid-template-columns:1.4fr .7fr;gap:10px}
-  @media (max-width: 720px){ .controls-grid{grid-template-columns:1fr} }
-  .input, .select, .btn, .pill{
-    border-radius:12px; padding:10px 12px; border:1px solid var(--outline); background:#0d131a; color:var(--text);
-    outline:none; transition:.2s border,.2s box-shadow,.2s transform; width:100%;
-  }
-  .input::placeholder{color:#7f93a8}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
-  .btn{background:linear-gradient(180deg,var(--accent-2),var(--accent)); border:none; cursor:pointer; font-weight:700}
-  .btn:active{transform:translateY(1px)}
-  .btn.secondary{background:#17212b;border:1px solid var(--outline);font-weight:600}
-  .pill{display:inline-flex;gap:8px;align-items:center;background:#0c1218}
-  .label{font-size:.9rem;color:#b6c6d9;margin:4px 4px 8px 2px}
-  .note{font-size:.85rem;color:#8ea3bb}
-  .switch{display:flex;align-items:center;gap:10px}
-  .switch input{accent-color:var(--accent); transform:scale(1.1)}
-  .tiny{font-size:.78rem;color:#9bb0c7}
-  /* ------------------------------- Tabs ----------------------------------- */
-  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:10px 0 4px}
-  .tab-btn{
-    text-align:center;padding:12px;border-radius:14px;border:1px solid var(--outline);background:#0c1218;cursor:pointer;font-weight:700;
-    transition:.16s transform, .16s background, .16s border; user-select:none;
-  }
-  .tab-btn.active{background:#122131;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring) inset;color:#dff1ff}
-  .tab-pane{display:none;animation:fade .2s ease}
-  .tab-pane.active{display:block}
-  @keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
-  /* --------------------------- Probability Bars --------------------------- */
-  .bars{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;height:180px;align-items:end;margin:8px 0}
-  .bar{position:relative;border-radius:10px;background:#0f1a24;border:1px solid #0f2233;overflow:hidden}
-  .bar-fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#68b5ff,#3b82f6); box-shadow:inset 0 -6px 14px rgba(255,255,255,.15)}
-  .bar small{position:absolute;bottom:-18px;width:100%;text-align:center;color:#9cb3cc}
-  /* --------------------------- Predictions List --------------------------- */
-  .pred-row{
-    display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; 
-    background:linear-gradient(180deg,#0e141b,#0a1016 70%); border:1px solid var(--outline);
-    border-radius:14px; padding:10px 12px; margin-bottom:8px;
-  }
-  .chip{border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;background:var(--chip-bg)}
-  .chip.soft{color:var(--good); background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3)}
-  .chip.money{color:#ffc107; background:rgba(255,193,7,.14); border:1px solid rgba(255,193,7,.35)}
-  .chip.risk{color:#ef4444; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35)}
-  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
-  /* ------------------------------ Pattern Pills --------------------------- */
-  .pattern-line{display:flex;flex-wrap:wrap;gap:8px}
-  .p-pill{
-    padding:6px 10px;border-radius:999px;background:#0c131a;border:1px solid var(--outline);
-    font-weight:700; font-size:.85rem; display:flex; align-items:center; gap:8px;
-  }
-  .p-sm{color:#8ab4ff} .p-bg{color:#ffd56a}
-  .p-red{color:#fca5a5} .p-green{color:#86efac}
-  /* ------------------------------- Stats Grid ----------------------------- */
-  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  @media (max-width: 900px){ .stat-grid{grid-template-columns:repeat(2,1fr)} }
-  .stat{
-    padding:12px;border-radius:14px;background:#0f141b;border:1px solid var(--outline);
-  }
-  .stat h4{margin:0;font-size:.95rem;color:#cfe1f7}
-  .stat .v{font-size:1.3rem;font-weight:900;margin-top:6px}
-  .progress{height:8px;border-radius:999px;background:#0b1015;border:1px solid #0d1822;overflow:hidden}
-  .progress > span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#60a5fa)}
-  /* ------------------------------ Canvas Wrap ----------------------------- */
-  .canvas-wrap{background:#0c1218;border:1px solid var(--outline);border-radius:14px;padding:8px}
-  /* ------------------------------ Footer Help ----------------------------- */
-  .kbd{display:inline-block;border:1px solid var(--outline);border-bottom-width:2px;border-radius:6px;padding:2px 6px;background:#0e1319;font-weight:700}
-  .foot{color:#9fb4cc;font-size:.9rem;margin:16px 0 40px}
-  /* ----------------------------- Toast / Alerts --------------------------- */
-  .toast{
-    position:fixed;left:50%;translate:-50% 0;bottom:16px;z-index:99;background:#0d141b;border:1px solid var(--outline);
-    padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center
-  }
-  .hidden{display:none}
+/* ============================= Root / Reset ============================== */
+:root{
+  /* BDGOP-ish palette: deep navy + teal/emerald neon + gold accent */
+  --bg: #0b1016;
+  --bg-deep: #070b10;
+  --panel: #0f1520;
+  --panel-2: #0d1320;
+  --panel-3: #0c121a;
+  --text: #e8f0fa;
+  --muted: #94a9c6;
+  --accent: #1cc8b0;      /* teal neon */
+  --accent-2:#11a2e2;     /* cyan-blue */
+  --accent-3:#16a34a;     /* emerald */
+  --gold-1:#ffe680; --gold-2:#fbd34d; --gold-3:#f7b500;
+  --ring: rgba(27,207,177,.35);
+  --outline: rgba(255,255,255,.08);
+  --shadow: 0 20px 50px rgba(0,0,0,.45);
+
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad:  #ef4444;
+
+  --r-xl: 18px;
+  --r-md: 12px;
+  --r-sm: 8px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 70% -10%, #152034 0%, var(--bg) 45%, var(--bg-deep) 100%),
+    linear-gradient(180deg, #081018, #06090f);
+  font-family: Inter, Segoe UI, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+a{color:inherit;text-decoration:none}
+.container{max-width:1160px;margin:20px auto;padding:0 14px}
+
+/* =============================== Top Bar ================================= */
+.header{
+  position:relative; overflow:hidden; border-radius:999px; margin-bottom:16px;
+  padding:14px 16px; font-weight:800; letter-spacing:.35px; text-align:center; color:#071317;
+  background:
+    linear-gradient(90deg, #0af, #08d4b1 45%, #16db93 95%),
+    linear-gradient(180deg, var(--gold-1),var(--gold-2) 55%,var(--gold-3));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 40px rgba(10,180,160,.35);
+}
+.header .shine{
+  position:absolute; inset:0; opacity:.18; pointer-events:none;
+  background:url("https://media.giphy.com/media/l0HlGJcX4zFbhWgW8/giphy.gif") center/cover no-repeat;
+  mix-blend-mode:screen;
+}
+.header .dot{
+  width:10px;height:10px;background:#061015aa;border:2px solid #06101555;border-radius:50%;
+  display:inline-block;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 3px rgba(6,16,21,.18), 0 0 20px 2px rgba(255,255,255,.35) inset;
+}
+.header span{position:relative;z-index:1}
+
+/* =============================== Card / UI =============================== */
+.card{
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel-3) 100%);
+  border:1px solid var(--outline); border-radius:var(--r-xl);
+  box-shadow:var(--shadow); padding:14px; margin-bottom:14px;
+}
+.card h3{
+  margin:0 0 8px; font-size:1.02rem; color:#d9e7ff; display:flex; align-items:center; gap:8px
+}
+.label{color:#b7c8df;font-size:.9rem;margin:4px 2px 8px}
+.note{color:#8aa3c4;font-size:.86rem}
+.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
+/* Input / Button */
+.input, .select, .btn, .pill{
+  width:100%; border-radius:12px; padding:10px 12px; outline:none;
+  border:1px solid var(--outline); background:#0b1320; color:var(--text);
+  transition:.18s border,.18s box-shadow,.18s transform;
+}
+.input::placeholder{color:#8097b4}
+.select{appearance:none;background:
+  linear-gradient(180deg,#0d1826,#0a121d); position:relative}
+.btn{
+  cursor:pointer; border:none; font-weight:800; color:#071317;
+  background:linear-gradient(180deg,#1ee6c7,#11b2e6);
+  box-shadow:0 6px 20px rgba(20,200,190,.25); letter-spacing:.2px
+}
+.btn:active{transform:translateY(1px)}
+.btn.secondary{
+  color:#d9edff; background:linear-gradient(180deg,#0c1624,#0a111a); border:1px solid var(--outline);
+  font-weight:700
+}
+.pill{
+  display:inline-flex; align-items:center; gap:8px; background:#0a1422
+}
+
+/* Grid helpers */
+.row{display:flex; gap:10px; flex-wrap:wrap}
+.grid2{display:grid; grid-template-columns:1.4fr .8fr; gap:10px}
+@media (max-width: 760px){ .grid2{grid-template-columns:1fr} }
+
+/* Tabs */
+.tabs{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:10px 0 6px}
+.tab-btn{
+  text-align:center; padding:12px; border-radius:14px; border:1px solid var(--outline);
+  background:#0a141f; cursor:pointer; font-weight:800; letter-spacing:.2px
+}
+.tab-btn.active{background:#0b1e2a;border-color:#1dcfb7; box-shadow:0 0 0 3px var(--ring) inset}
+.tab-pane{display:none; animation:fade .2s ease}
+.tab-pane.active{display:block}
+@keyframes fade{from{opacity:.4; transform:translateY(4px)} to{opacity:1; transform:none}}
+
+/* Probability bars */
+.bars{display:grid; grid-template-columns:repeat(10,1fr); gap:8px; height:180px; align-items:end; margin:8px 0}
+.bar{position:relative; border-radius:10px; background:#0a1823; border:1px solid #0f2633; overflow:hidden}
+.bar-fill{position:absolute; left:0; right:0; bottom:0;
+  background:linear-gradient(180deg,#27e0c2,#11a8e6);
+  box-shadow:inset 0 -8px 16px rgba(255,255,255,.12)}
+.bar small{position:absolute; bottom:-18px; width:100%; text-align:center; color:#95b1cc}
+
+/* Predictions */
+.pred-row{
+  display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;
+  background:linear-gradient(180deg,#0d1622,#0a1119 70%); border:1px solid var(--outline);
+  border-radius:14px; padding:10px 12px; margin-bottom:8px;
+}
+.chip{border-radius:999px;padding:4px 10px;font-size:.82rem;font-weight:800;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06)}
+.chip.soft{color:#1ddabf; background:rgba(29,218,191,.12); border:1px solid rgba(29,218,191,.35)}
+.chip.money{color:#ffd66b; background:rgba(255,214,107,.14); border:1px solid rgba(255,214,107,.35)}
+.chip.risk{color:#ef8a8a; background:rgba(239,138,138,.12); border:1px solid rgba(239,138,138,.35)}
+
+/* Patterns */
+.pattern-line{display:flex;flex-wrap:wrap;gap:8px}
+.p-pill{
+  padding:6px 10px;border-radius:999px;background:#0a1422;border:1px solid var(--outline);
+  font-weight:800; font-size:.85rem; display:flex; align-items:center; gap:8px;
+}
+.p-sm{color:#7bb1ff} .p-bg{color:#ffe173}
+.p-red{color:#ffb4b4} .p-green{color:#96f7c5}
+
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width: 900px){ .stat-grid{grid-template-columns:repeat(2,1fr)} }
+.stat{padding:12px;border-radius:14px;background:#0e1522;border:1px solid var(--outline)}
+.stat h4{margin:0;font-size:.95rem;color:#d2e6ff}
+.stat .v{font-size:1.3rem;font-weight:900;margin-top:6px}
+.progress{height:8px;border-radius:999px;background:#0a121a;border:1px solid #0d1b26;overflow:hidden}
+.progress > span{display:block;height:100%;background:linear-gradient(90deg,#16db93,#11a8e6)}
+
+/* Canvas wrap */
+.canvas-wrap{background:#0a1420;border:1px solid var(--outline);border-radius:14px;padding:8px}
+
+/* Footer */
+.kbd{display:inline-block;border:1px solid var(--outline);border-bottom-width:2px;border-radius:6px;padding:2px 6px;background:#0a131c;font-weight:800}
+.foot{color:#9db6d4;font-size:.9rem;margin:16px 0 40px}
+
+/* Toast */
+.toast{
+  position:fixed;left:50%;translate:-50% 0;bottom:16px;z-index:99;background:#0d141f;border:1px solid var(--outline);
+  padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center
+}
+.hidden{display:none}
 </style>
 </head>
 <body>
-  <div class="container">
-    <!-- =============================== Header =============================== -->
-    <div class="golden-line">
-      <span class="dot"></span>
-      <span>WINGO PREDICTOR PRO</span>
-    </div>
+<div class="container">
 
-    <!-- =============================== Controls ============================ -->
-    <div class="card">
-      <h3>⚙️ Controls</h3>
-      <div class="controls-grid">
-        <div>
-          <div class="label">LIVE_API_URL (GitHub Raw / Your API)</div>
-          <input id="apiUrl" class="input mono" placeholder="https://raw.githubusercontent.com/username/repo/branch/data.json" />
-        </div>
-        <div class="row" style="align-items:flex-end">
-          <button id="btnConnect" class="btn" style="min-width:160px">Connect API</button>
-          <button id="btnSample" class="btn secondary">Load Sample</button>
-        </div>
-      </div>
+  <!-- ============================== Header ================================ -->
+  <div class="header">
+    <span class="shine"></span>
+    <span class="dot"></span>
+    <span>WINGO PREDICTOR PRO</span>
+  </div>
 
-      <div class="row" style="margin-top:10px">
-        <div style="flex:1 1 280px">
-          <div class="label">Strategy</div>
-          <select id="strategy" class="select">
-            <option value="balanced" selected>Balanced (⭐ High≥0.75)</option>
-            <option value="conservative">Conservative (⭐ High≥0.82)</option>
-            <option value="aggressive">Aggressive (⭐ High≥0.68)</option>
-            <option value="custom">Custom…</option>
-          </select>
-        </div>
-        <div style="flex:1 1 180px">
-          <div class="label">Custom High Threshold (0.50–0.95)</div>
-          <input id="thHigh" class="input" type="number" min="0.5" max="0.95" step="0.01" value="0.75" />
-        </div>
-        <div style="flex:1 1 160px">
-          <div class="label">Auto-Refresh</div>
-          <select id="autoRefresh" class="select">
-            <option value="0" selected>Off</option>
-            <option value="10">Every 10s</option>
-            <option value="30">Every 30s</option>
-            <option value="60">Every 60s</option>
-            <option value="300">Every 5m</option>
-          </select>
-        </div>
-        <div style="flex:0 0 140px;align-self:flex-end">
-          <button id="btnApply" class="btn" style="width:100%">Apply</button>
-        </div>
-        <div class="pill" style="flex:1 1 140px;align-self:flex-end;justify-content:center">
-          Live: <strong id="liveState">Off</strong>
-        </div>
+  <!-- ============================== Controls ============================== -->
+  <div class="card">
+    <h3>⚙️ Controls</h3>
+    <div class="grid2">
+      <div>
+        <div class="label">LIVE_API_URL (GitHub Raw / Your HTTPS API)</div>
+        <input id="apiUrl" class="input mono" placeholder="https://raw.githubusercontent.com/you/repo/branch/data.json"/>
       </div>
-      <div class="note" style="margin-top:6px">
-        Tip: GitHub में JSON raw link दें। कोई फ़ील्ड मिसिंग हो तो ऐप सुरक्षित तरीके से खुद compute कर लेगा (deterministic hash).
+      <div class="row" style="align-items:flex-end">
+        <button id="btnConnect" class="btn" style="min-width:160px">Connect API</button>
+        <button id="btnSample" class="btn secondary">Load Sample</button>
       </div>
     </div>
 
-    <!-- ============================ Check by Period ========================= -->
+    <div class="row" style="margin-top:10px">
+      <div style="flex:1 1 280px">
+        <div class="label">Strategy</div>
+        <select id="strategy" class="select">
+          <option value="balanced" selected>Balanced (⭐ High≥0.75)</option>
+          <option value="conservative">Conservative (⭐ High≥0.82)</option>
+          <option value="aggressive">Aggressive (⭐ High≥0.68)</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </div>
+      <div style="flex:1 1 180px">
+        <div class="label">Custom High Threshold (0.50–0.95)</div>
+        <input id="thHigh" class="input" type="number" min="0.5" max="0.95" step="0.01" value="0.75"/>
+      </div>
+      <div style="flex:1 1 160px">
+        <div class="label">Auto-Refresh</div>
+        <select id="autoRefresh" class="select">
+          <option value="0" selected>Off</option>
+          <option value="10">Every 10s</option>
+          <option value="30">Every 30s</option>
+          <option value="60">Every 60s</option>
+          <option value="300">Every 5m</option>
+        </select>
+      </div>
+      <div style="flex:0 0 140px;align-self:flex-end">
+        <button id="btnApply" class="btn" style="width:100%">Apply</button>
+      </div>
+      <div class="pill" style="flex:1 1 140px;align-self:flex-end;justify-content:center">
+        Live: <strong id="liveState">Off</strong>
+      </div>
+    </div>
+    <div class="note" style="margin-top:6px">
+      Tip: GitHub raw JSON दें; फ़ील्ड मिसिंग होने पर ऐप खुद सुरक्षित तरीके से compute करता है (deterministic).
+    </div>
+  </div>
+
+  <!-- =========================== Check by Period =========================== -->
+  <div class="card">
+    <h3>🔍 Check by Period</h3>
+    <div class="row">
+      <input id="periodInput" class="input mono" placeholder="Enter Period Number"/>
+      <button id="btnCheck" class="btn" style="min-width:140px">Check</button>
+    </div>
+    <div id="periodError" class="note" style="color:var(--bad);margin-top:8px;display:none"></div>
+
+    <div class="grid2" style="margin-top:10px">
+      <div class="card" style="margin:0">
+        <h3>Result</h3>
+        <div class="row"><div class="label" style="min-width:120px">Input</div><div class="mono" id="res-input">—</div></div>
+        <div class="row"><div class="label" style="min-width:120px">Using period</div><div class="mono" id="res-period">—</div></div>
+        <div class="row"><div class="label" style="min-width:120px">Digit</div><div class="mono" id="res-digit">—</div></div>
+        <div class="row"><div class="label" style="min-width:120px">Type</div><div class="mono" id="res-type">—</div></div>
+        <div class="row"><div class="label" style="min-width:120px">Color</div><div class="mono" id="res-color">—</div></div>
+        <div class="row"><div class="label" style="min-width:120px">Confidence</div><div class="mono" id="res-conf">—</div></div>
+        <div class="row"><div class="label" style="min-width:120px">Decision</div><div id="res-decision" class="chip">—</div></div>
+      </div>
+      <div class="card" style="margin:0">
+        <h3>About</h3>
+        <div class="note">
+          • Period string → stable hash → <b>digit (0–9)</b>.<br/>
+          • digit ≥5 ⇒ <b>Big</b>, else <b>Small</b> (type).<br/>
+          • Parity bits से <b>Green/Red</b> तय होता है — ताकि हर बार एक-सा आउटपुट न हो।<br/>
+          • Confidence = hash entropy + history context + strategy threshold.<br/>
+          • Decision: High<threshold ⇒ <span class="chip soft">Soft 💚</span>, High≥threshold ⇒ <span class="chip money">Money Magnet 🧲</span>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== Tabs ================================= -->
+  <div class="tabs">
+    <div class="tab-btn active" data-tab="tab-prob">Probability</div>
+    <div class="tab-btn" data-tab="tab-preds">Predictions</div>
+    <div class="tab-btn" data-tab="tab-patterns">Patterns</div>
+    <div class="tab-btn" data-tab="tab-stats">Stats</div>
+  </div>
+
+  <!-- ============================== Probability =========================== -->
+  <div id="tab-prob" class="tab-pane active">
     <div class="card">
-      <h3>🔎 Check by Period</h3>
+      <h3>📊 Probability (0–9) <span class="note" id="probSource">(from history)</span></h3>
+      <div class="bars" id="probBars"></div>
       <div class="row">
-        <input id="periodInput" class="input mono" placeholder="Enter Period Number" />
-        <button id="btnCheck" class="btn" style="min-width:140px">Check</button>
+        <div class="note">Top: <span id="probTop" class="mono">—</span></div>
+        <div class="note">Bottom: <span id="probBottom" class="mono">—</span></div>
       </div>
-
-      <div id="periodError" class="note" style="color:var(--bad);margin-top:8px;display:none"></div>
-
-      <div class="section-grid" style="margin-top:8px">
-        <div class="card" style="margin:0">
-          <h3>Result</h3>
-          <div class="row"><div class="label" style="min-width:120px">Input</div><div class="mono" id="res-input">—</div></div>
-          <div class="row"><div class="label" style="min-width:120px">Using period</div><div class="mono" id="res-period">—</div></div>
-          <div class="row"><div class="label" style="min-width:120px">Digit</div><div class="mono" id="res-digit">—</div></div>
-          <div class="row"><div class="label" style="min-width:120px">Type</div><div class="mono" id="res-type">—</div></div>
-          <div class="row"><div class="label" style="min-width:120px">Color</div><div class="mono" id="res-color">—</div></div>
-          <div class="row"><div class="label" style="min-width:120px">Confidence</div><div class="mono" id="res-conf">—</div></div>
-          <div class="row"><div class="label" style="min-width:120px">Decision</div>
-            <div id="res-decision" class="chip">—</div>
-          </div>
-        </div>
-        <div class="card" style="margin:0">
-          <h3>How this is computed?</h3>
-          <div class="tiny">
-            • Period string को <b>stable hash</b> (FNV-1a style) से reduce किया जाता है → 0–9 digit मिलता है।<br/>
-            • Digit ≥ 5 ⇒ <b>Big</b>, else <b>Small</b>.<br/>
-            • (digit + hash parity) के आधार पर <b>Green / Red</b> चुनते हैं ताकि हर period पर constant ना रहे।<br/>
-            • Confidence = weighted features (hash entropy + history context + strategy thresholds).<br/>
-            • Decision: Confidence ≥ High ⇒ <span class="chip money">Money Magnet 🧲</span>, else <span class="chip soft">Soft 💚</span>. 
-          </div>
-          <div class="tiny" style="margin-top:8px">नोट: जब आप API जोड़ते हैं तो history context वास्तविक डेटा से बनता है, जिससे Accuracy बेहतर होती है।</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================== Tabs ================================= -->
-    <div class="tabs">
-      <div class="tab-btn active" data-tab="tab-prob">Probability</div>
-      <div class="tab-btn" data-tab="tab-preds">Predictions</div>
-      <div class="tab-btn" data-tab="tab-patterns">Patterns</div>
-      <div class="tab-btn" data-tab="tab-stats">Stats</div>
-    </div>
-
-    <!-- ============================= Probability =========================== -->
-    <div id="tab-prob" class="tab-pane active">
-      <div class="card">
-        <h3>📊 Probability (0–9) <span class="tiny" id="probSource">(from history)</span></h3>
-        <div class="bars" id="probBars"></div>
-        <div class="row">
-          <div class="tiny">Top: <span id="probTop" class="mono">—</span></div>
-          <div class="tiny">Bottom: <span id="probBottom" class="mono">—</span></div>
-        </div>
-        <div class="canvas-wrap" style="margin-top:10px">
-          <canvas id="probCanvas" height="160"></canvas>
-        </div>
-        <div class="tiny" style="margin-top:6px">Tip: बार्स history (API या Sample) से बनती हैं।</div>
-      </div>
-    </div>
-
-    <!-- ============================= Predictions =========================== -->
-    <div id="tab-preds" class="tab-pane">
-      <div class="card">
-        <h3>🕒 Recent Predictions</h3>
-        <div id="predList"></div>
-      </div>
-    </div>
-
-    <!-- ============================== Patterns ============================= -->
-    <div id="tab-patterns" class="tab-pane">
-      <div class="card">
-        <h3>🧩 Pattern (Big/Small)</h3>
-        <div id="patBS" class="pattern-line"></div>
-      </div>
-      <div class="card">
-        <h3>🟢🔴 Pattern (Green/Red)</h3>
-        <div id="patCR" class="pattern-line"></div>
-      </div>
-      <div class="section-grid">
-        <div class="card" style="margin:0">
-          <h3>🔥 Hot Numbers</h3>
-          <div id="hotList" class="pattern-line"></div>
-        </div>
-        <div class="card" style="margin:0">
-          <h3>❄️ Cold Numbers</h3>
-          <div id="coldList" class="pattern-line"></div>
-        </div>
-      </div>
-      <div class="card">
-        <h3>📍 Gap Heatmap (Last 40)</h3>
-        <div id="gapMap" class="pattern-line"></div>
-      </div>
-    </div>
-
-    <!-- ================================ Stats ============================== -->
-    <div id="tab-stats" class="tab-pane">
-      <div class="card">
-        <h3>📈 Stats Overview</h3>
-        <div class="stat-grid">
-          <div class="stat">
-            <h4>Total Records</h4>
-            <div class="v mono" id="st-total">—</div>
-          </div>
-          <div class="stat">
-            <h4>Money Magnet Rate</h4>
-            <div class="v mono" id="st-mm">—</div>
-            <div class="progress"><span id="st-mm-p" style="width:0%"></span></div>
-          </div>
-          <div class="stat">
-            <h4>Avg Confidence</h4>
-            <div class="v mono" id="st-avg">—</div>
-            <div class="progress"><span id="st-avg-p" style="width:0%"></span></div>
-          </div>
-          <div class="stat">
-            <h4>Top Digit (Hit%)</h4>
-            <div class="v mono" id="st-top">—</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <h3>📊 Distribution Table</h3>
-        <div class="canvas-wrap"><canvas id="distCanvas" height="180"></canvas></div>
-      </div>
-    </div>
-
-    <div class="foot">
-      <b>Shortcuts:</b>
-      <span class="kbd">/</span> focus period, 
-      <span class="kbd">r</span> refresh, 
-      <span class="kbd">a</span> toggle auto-refresh, 
-      <span class="kbd">1</span>/<span class="kbd">2</span>/<span class="kbd">3</span>/<span class="kbd">4</span> tabs.
+      <div class="canvas-wrap" style="margin-top:10px"><canvas id="probCanvas" height="160"></canvas></div>
+      <div class="note" style="margin-top:6px">Bar heights history (API/Sample) पर depend हैं।</div>
     </div>
   </div>
 
-  <!-- =============================== Toast ================================= -->
-  <div id="toast" class="toast hidden">
-    <div id="toastText">Loaded</div>
+  <!-- ============================== Predictions =========================== -->
+  <div id="tab-preds" class="tab-pane">
+    <div class="card">
+      <h3>🕒 Recent Predictions</h3>
+      <div id="predList"></div>
+    </div>
   </div>
+
+  <!-- =============================== Patterns ============================= -->
+  <div id="tab-patterns" class="tab-pane">
+    <div class="card">
+      <h3>🧩 Pattern (Big/Small)</h3>
+      <div id="patBS" class="pattern-line"></div>
+    </div>
+    <div class="card">
+      <h3>🟢🔴 Pattern (Green/Red)</h3>
+      <div id="patCR" class="pattern-line"></div>
+    </div>
+    <div class="row">
+      <div class="card" style="flex:1">
+        <h3>🔥 Hot Numbers</h3>
+        <div id="hotList" class="pattern-line"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>❄️ Cold Numbers</h3>
+        <div id="coldList" class="pattern-line"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📍 Gap Heatmap (Last 40)</h3>
+      <div id="gapMap" class="pattern-line"></div>
+    </div>
+  </div>
+
+  <!-- ================================= Stats ============================== -->
+  <div id="tab-stats" class="tab-pane">
+    <div class="card">
+      <h3>📈 Stats Overview</h3>
+      <div class="stat-grid">
+        <div class="stat"><h4>Total Records</h4><div class="v mono" id="st-total">—</div></div>
+        <div class="stat"><h4>Money Magnet Rate</h4><div class="v mono" id="st-mm">—</div><div class="progress"><span id="st-mm-p" style="width:0%"></span></div></div>
+        <div class="stat"><h4>Avg Confidence</h4><div class="v mono" id="st-avg">—</div><div class="progress"><span id="st-avg-p" style="width:0%"></span></div></div>
+        <div class="stat"><h4>Top Digit (Hit%)</h4><div class="v mono" id="st-top">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📊 Distribution Table</h3>
+      <div class="canvas-wrap"><canvas id="distCanvas" height="180"></canvas></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>Shortcuts:</b>
+    <span class="kbd">/</span> focus period,
+    <span class="kbd">r</span> refresh,
+    <span class="kbd">a</span> toggle auto-refresh,
+    <span class="kbd">1</span>/<span class="kbd">2</span>/<span class="kbd">3</span>/<span class="kbd">4</span> tabs.
+  </div>
+</div>
+
+<!-- ================================ Toast ================================= -->
+<div id="toast" class="toast hidden"><div id="toastText">Loaded</div></div>
 
 <script>
-/* ============================================================================
-   WinGo Predictor Pro — Premium Dashboard Logic
-   - Deterministic, period-based prediction (no fake randomness).
-   - Optional history from API or sample to enhance context & accuracy.
-   - Cleanly structured functions, lots of safeguards.
-   ============================================================================ */
+/* ============================== Utilities ================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+const toast = (m,ms=1600)=>{const t=$("#toast");$("#toastText").textContent=m;t.classList.remove("hidden");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.add("hidden"),ms);};
 
-/* ------------------------------ Utilities --------------------------------- */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-
-const toast = (msg, ms=1600) => {
-  const t = $("#toast"); $("#toastText").textContent = msg; t.classList.remove("hidden");
-  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.add("hidden"), ms);
-};
-
-const clamp = (v,min,max)=> Math.max(min, Math.min(max,v));
-
-/* FNV-1a like hash (stable, fast) -> 32-bit unsigned */
-function fnv1a(str){
-  let h = 0x811c9dc5;
-  for(let i=0;i<str.length;i++){
-    h ^= str.charCodeAt(i);
-    h = (h + ((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24))) >>> 0;
-  }
-  return h >>> 0;
-}
-
-/* A deterministic digit 0-9 from a string (period) */
-function periodDigit(period){
-  const h = fnv1a(String(period));
-  return (h % 10);
-}
-
-/* Deterministic color (Green/Red) using parity + hash bits */
-function digitColor(d, period){
-  const h = fnv1a(String(period));
-  const parity = ((h >>> 3) ^ (h >>> 7) ^ (h >>> 11)) & 1; // spread bits
-  return ((d % 2) ^ parity) ? "Red" : "Green";
-}
-
-/* Deterministic confidence based on: digit entropy, moving bias, strategy */
-function computeConfidence(d, period, hist){
-  const base = 0.62 + ((fnv1a(String(period)+"#"+d) & 1023) / 1023) * 0.28; // 0.62..0.90
-  // history influence: reward if digit appeared less recently (contrarian)
-  let penalty = 0;
-  if(hist && hist.length){
+/* Stable FNV1a-like hash */
+function fnv1a(str){ let h=0x811c9dc5>>>0; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=((h+((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)))>>>0); } return h>>>0; }
+const periodDigit = p => fnv1a(String(p))%10;
+function digitColor(d, p){ const h=fnv1a(String(p)); const parity=((h>>>3)^(h>>>7)^(h>>>11))&1; return ((d%2)^parity) ? "Red":"Green"; }
+function computeConfidence(d, p, hist){
+  const base = 0.62 + ((fnv1a(String(p)+"#"+d)&1023)/1023)*0.28;
+  let penalty=0;
+  if(hist&&hist.length){
     const lastIndex = hist.findIndex(h=>h.num===d);
-    const recency = (lastIndex===-1) ? 30 : Math.max(1, lastIndex);
-    penalty = (recency<5) ? 0.05 : (recency<10 ? 0.02 : -0.02);
+    const recency = (lastIndex===-1)?30:Math.max(1,lastIndex);
+    penalty = (recency<5)?0.05 : (recency<10?0.02:-0.02);
   }
-  let c = clamp(base - penalty, 0.55, 0.93);
-  return c;
+  return clamp(base-penalty, .55, .93);
 }
-
-/* Strategy thresholds */
+/* Strategies */
 const strategies = {
-  balanced: { high: 0.75 },
-  conservative: { high: 0.82 },
-  aggressive: { high: 0.68 },
-  custom: { high: 0.75 }
+  balanced:{high:.75}, conservative:{high:.82}, aggressive:{high:.68}, custom:{high:.75}
 };
 
-/* ------------------------------ App State --------------------------------- */
+/* ============================== State ===================================== */
 const state = {
-  apiUrl: "",
-  autoRefresh: 0,     // seconds; 0=off
-  timer: null,
-  strategy: "balanced",
+  apiUrl:"",
+  autoRefresh:0,
+  timer:null,
+  strategy:"balanced",
   high: strategies.balanced.high,
-  history: [],        // normalized history
-  // derived:
-  probs: new Array(10).fill(0)
+  history:[],
+  probs:new Array(10).fill(0)
 };
 
-/* ------------------------------- Normalize -------------------------------- */
+/* ============================== Normalize ================================= */
 function normalizeHistory(arr){
-  // Ensure we have {period, num, type, color, confidence, ts}
-  const out = [];
+  const out=[];
   (arr||[]).forEach((r,i)=>{
     const period = r.period ?? (1000+i);
-    const num = Number.isInteger(r.num) ? clamp(r.num,0,9) : periodDigit(period);
-    const type = r.type ?? (num>=5 ? "Big" : "Small");
-    const color = r.color ?? digitColor(num, period);
-    const conf = (typeof r.confidence === "number") ? clamp(r.confidence, 0.5, 0.95)
-               : computeConfidence(num, period, out);
-    const ts = r.ts ?? (Date.now() - i*60000);
+    const num = Number.isInteger(r.num)? clamp(r.num,0,9) : periodDigit(period);
+    const type = r.type ?? (num>=5?"Big":"Small");
+    const color= r.color?? digitColor(num, period);
+    const conf = (typeof r.confidence==="number")?clamp(r.confidence,.5,.95):computeConfidence(num,period,out);
+    const ts = r.ts ?? (Date.now()-i*60000);
     out.push({period,num,type,color,confidence:conf,ts});
   });
   return out;
 }
 
-/* ------------------------------ API Loader -------------------------------- */
+/* ============================== API Loader ================================= */
 async function fetchApi(url){
-  const res = await fetch(url, {cache:"no-store"});
+  const res = await fetch(url,{cache:"no-store"});
   if(!res.ok) throw new Error(res.status+" "+res.statusText);
   return await res.json();
 }
 
-/* ------------------------------ UI Binding -------------------------------- */
+/* ============================== Controls Bind ============================== */
 function bindControls(){
   $("#btnConnect").addEventListener("click", async ()=>{
-    const url = $("#apiUrl").value.trim();
-    if(!url){ toast("Please paste a LIVE_API_URL"); return; }
+    const url=$("#apiUrl").value.trim(); if(!url){toast("Paste LIVE_API_URL"); return;}
     try{
       toast("Fetching…");
-      const json = await fetchApi(url);
-      const hist = normalizeHistory(json.history || json || []);
-      state.history = hist;
-      updateProbabilities();
-      renderAll();
-      $("#probSource").textContent = "(from API)";
+      const json=await fetchApi(url);
+      state.history = normalizeHistory(json.history||json||[]);
+      updateProbabilities(); renderAll();
+      $("#probSource").textContent="(from API)";
       toast("API connected ✓");
-    }catch(err){
-      console.error(err);
-      toast("Failed to load API");
-    }
+    }catch(e){console.error(e); toast("Failed to load API");}
   });
 
   $("#btnSample").addEventListener("click", ()=>{
-    // sample dataset
-    const sample = { history: [
+    const sample={history:[
       {period:1440,num:6,confidence:.76},
       {period:1439,num:4,confidence:.66},
       {period:1438,num:9,confidence:.81},
@@ -495,264 +453,189 @@ function bindControls(){
       {period:1422,num:3,confidence:.69},
       {period:1421,num:9,confidence:.83}
     ]};
-    state.history = normalizeHistory(sample.history);
-    updateProbabilities();
-    renderAll();
-    $("#probSource").textContent = "(from sample)";
+    state.history=normalizeHistory(sample.history);
+    updateProbabilities(); renderAll();
+    $("#probSource").textContent="(from sample)";
     toast("Sample loaded ✓");
   });
 
   $("#btnApply").addEventListener("click", ()=>{
     state.strategy = $("#strategy").value;
-    const th = parseFloat($("#thHigh").value) || strategies[state.strategy].high;
-    state.high = clamp(th, .5, .95);
-    const ar = parseInt($("#autoRefresh").value,10)||0;
-    setAutoRefresh(ar);
-    renderLiveBadge();
-    toast("Settings applied ✓");
+    const th=parseFloat($("#thHigh").value)||strategies[state.strategy].high;
+    state.high = clamp(th,.5,.95);
+    const ar=parseInt($("#autoRefresh").value,10)||0;
+    setAutoRefresh(ar); renderLiveBadge(); toast("Settings applied ✓");
   });
 
   $("#btnCheck").addEventListener("click", ()=>{
-    const p = $("#periodInput").value.trim();
+    const p=$("#periodInput").value.trim();
     if(!p){ $("#periodError").style.display="block"; $("#periodError").textContent="Please enter a Period number."; return; }
     $("#periodError").style.display="none";
-    const out = checkByPeriod(p);
-    renderCheck(out);
+    const out=checkByPeriod(p); renderCheck(out);
   });
 
-  // Keyboard shortcuts
+  // Shortcuts
   window.addEventListener("keydown", (e)=>{
     if(e.key==="/"){ e.preventDefault(); $("#periodInput").focus(); }
     if(e.key==="r"){ e.preventDefault(); manualRefresh(); }
     if(e.key==="a"){ e.preventDefault(); toggleAuto(); }
-    if(["1","2","3","4"].includes(e.key)){
-      e.preventDefault();
-      switchTab(["tab-prob","tab-preds","tab-patterns","tab-stats"][parseInt(e.key)-1]);
-    }
+    if(["1","2","3","4"].includes(e.key)){ e.preventDefault(); switchTab(["tab-prob","tab-preds","tab-patterns","tab-stats"][parseInt(e.key)-1]); }
   });
 
   // Tabs
-  $$(".tab-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=> switchTab(btn.dataset.tab));
-  });
+  $$(".tab-btn").forEach(b=> b.addEventListener("click", ()=> switchTab(b.dataset.tab)));
 }
+function switchTab(id){ $$(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===id)); $$(".tab-pane").forEach(p=>p.classList.toggle("active",p.id===id)); }
 
-function switchTab(id){
-  $$(".tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.tab===id));
-  $$(".tab-pane").forEach(p=>p.classList.toggle("active", p.id===id));
-}
-
-/* ---------------------------- Auto Refresh -------------------------------- */
-function setAutoRefresh(sec){
-  state.autoRefresh = sec;
-  clearInterval(state.timer);
-  if(sec>0){
-    state.timer = setInterval(()=> manualRefresh(true), sec*1000);
-  }
-}
-function toggleAuto(){
-  if(state.autoRefresh>0){ setAutoRefresh(0); $("#autoRefresh").value="0"; }
-  else { setAutoRefresh(60); $("#autoRefresh").value="60"; }
-  renderLiveBadge();
-}
-function renderLiveBadge(){
-  $("#liveState").textContent = state.autoRefresh>0 ? `On (${state.autoRefresh}s)` : "Off";
-}
+/* ============================ Auto Refresh ================================= */
+function setAutoRefresh(sec){ state.autoRefresh=sec; clearInterval(state.timer); if(sec>0){ state.timer=setInterval(()=>manualRefresh(true),sec*1000);} }
+function toggleAuto(){ if(state.autoRefresh>0){setAutoRefresh(0); $("#autoRefresh").value="0";} else {setAutoRefresh(60); $("#autoRefresh").value="60";} renderLiveBadge(); }
+function renderLiveBadge(){ $("#liveState").textContent = state.autoRefresh>0 ? `On (${state.autoRefresh}s)` : "Off"; }
 async function manualRefresh(silent=false){
-  const url = $("#apiUrl").value.trim();
-  if(!url) { if(!silent) toast("Set LIVE_API_URL to refresh"); return; }
+  const url=$("#apiUrl").value.trim(); if(!url){ if(!silent) toast("Set LIVE_API_URL to refresh"); return; }
   try{
     if(!silent) toast("Refreshing…");
-    const json = await fetchApi(url);
-    const hist = normalizeHistory(json.history || json || []);
-    state.history = hist;
-    updateProbabilities();
-    renderAll();
+    const json=await fetchApi(url);
+    state.history=normalizeHistory(json.history||json||[]);
+    updateProbabilities(); renderAll();
     if(!silent) toast("Refreshed ✓");
   }catch(e){ if(!silent) toast("Refresh failed"); }
 }
 
-/* ----------------------- Probability & Visuals ---------------------------- */
+/* ========================== Probability / Charts =========================== */
 function updateProbabilities(){
-  state.probs = new Array(10).fill(0);
-  state.history.forEach(h=> state.probs[h.num]++);
-  const total = state.history.length || 1;
-  state.probs = state.probs.map(c=> c/total);
+  state.probs=new Array(10).fill(0);
+  state.history.forEach(h=>state.probs[h.num]++);
+  const total=state.history.length||1;
+  state.probs=state.probs.map(c=>c/total);
 }
 function renderBars(){
-  const box = $("#probBars"); box.innerHTML="";
-  const max = Math.max(...state.probs, 0.01);
+  const box=$("#probBars"); box.innerHTML="";
+  const max=Math.max(...state.probs, .01);
   state.probs.forEach((p,i)=>{
-    const h = (p/max)*100;
-    const el = document.createElement("div");
+    const el=document.createElement("div");
     el.className="bar";
-    el.innerHTML = `<div class="bar-fill" style="height:${h}%"></div><small>${i}</small>`;
+    el.innerHTML=`<div class="bar-fill" style="height:${(p/max)*100}%"></div><small>${i}</small>`;
     box.appendChild(el);
   });
+  const sorted=state.probs.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
+  $("#probTop").textContent=`${sorted[0].i} (${(sorted[0].v*100).toFixed(1)}%)`;
+  const btm=sorted[sorted.length-1];
+  $("#probBottom").textContent=`${btm.i} (${(btm.v*100).toFixed(1)}%)`;
 
-  const sorted = state.probs.map((v,i)=>({i,v})).sort((a,b)=>b.v-a.v);
-  $("#probTop").textContent = `${sorted[0].i} (${(sorted[0].v*100).toFixed(1)}%)`;
-  const btm = sorted[sorted.length-1];
-  $("#probBottom").textContent = `${btm.i} (${(btm.v*100).toFixed(1)}%)`;
-
-  // Canvas chart
-  const canvas = $("#probCanvas"), ctx = canvas.getContext("2d");
-  const w = canvas.width = canvas.clientWidth; const h = canvas.height;
+  // Canvas
+  const canvas=$("#probCanvas"), ctx=canvas.getContext("2d");
+  const w=canvas.width=canvas.clientWidth, h=canvas.height;
   ctx.clearRect(0,0,w,h);
-  const pad = 16, bw = (w - pad*2)/10 - 6, base = h - 26;
-  ctx.font = "12px ui-monospace, monospace";
+  const pad=16,bw=(w-pad*2)/10-6,base=h-26;
+  ctx.font="12px ui-monospace, monospace";
   state.probs.forEach((p,i)=>{
-    const x = pad + i*(bw+6);
-    const bh = Math.max(4, p*h*0.9);
-    const y = base - bh;
-    // bar
-    const grd = ctx.createLinearGradient(0,y,0,y+bh);
-    grd.addColorStop(0,"#68b5ff");
-    grd.addColorStop(1,"#3b82f6");
-    ctx.fillStyle=grd; ctx.fillRect(x,y,bw,bh);
-    // outline
-    ctx.strokeStyle="#0f2233"; ctx.strokeRect(x,y,bw,bh);
-    // label
-    ctx.fillStyle="#9cb3cc"; ctx.fillText(String(i), x+bw/2-3, h-8);
+    const x=pad+i*(bw+6), bh=Math.max(4,p*h*0.9), y=base-bh;
+    const g=ctx.createLinearGradient(0,y,0,y+bh); g.addColorStop(0,"#27e0c2"); g.addColorStop(1,"#11a8e6");
+    ctx.fillStyle=g; ctx.fillRect(x,y,bw,bh);
+    ctx.strokeStyle="#0f2a3a"; ctx.strokeRect(x,y,bw,bh);
+    ctx.fillStyle="#93b0cc"; ctx.fillText(String(i), x+bw/2-3, h-8);
   });
 }
 
-/* ----------------------------- Predictions -------------------------------- */
+/* =============================== Predictions ============================== */
 function decisionTag(conf){
   if(conf>=state.high) return `<span class="chip money">Money Magnet 🧲</span>`;
-  if(conf>= (state.high - 0.07)) return `<span class="chip soft">Soft 💚</span>`;
+  if(conf>=(state.high-0.07)) return `<span class="chip soft">Soft 💚</span>`;
   return `<span class="chip risk">Risky</span>`;
 }
 function renderPredictions(){
-  const wrap = $("#predList"); wrap.innerHTML="";
-  const show = state.history.slice(0,20);
+  const wrap=$("#predList"); wrap.innerHTML="";
+  const show=state.history.slice(0,20);
   show.forEach(h=>{
-    const row = document.createElement("div");
+    const row=document.createElement("div");
     row.className="pred-row";
-    const time = new Date(h.ts).toLocaleTimeString();
-    row.innerHTML = `
-      <div class="tiny mono">🕒 ${time}</div>
-      <div class="mono">tail ${h.period} → <b>#${h.num}</b> (${h.type}) • <span class="tiny">${h.color}</span></div>
+    const time=new Date(h.ts).toLocaleTimeString();
+    row.innerHTML=`
+      <div class="note mono">🕒 ${time}</div>
+      <div class="mono">tail ${h.period} → <b>#${h.num}</b> (${h.type}) • <span class="note">${h.color}</span></div>
       <div>${decisionTag(h.confidence)}</div>
     `;
     wrap.appendChild(row);
   });
 }
 
-/* ------------------------------- Patterns --------------------------------- */
+/* ================================= Patterns =============================== */
 function renderPatterns(){
-  const hist = state.history.slice(0,40);
-  const patBS = $("#patBS"); patBS.innerHTML="";
-  const patCR = $("#patCR"); patCR.innerHTML="";
+  const hist=state.history.slice(0,40);
+  const patBS=$("#patBS"); patBS.innerHTML="";
+  const patCR=$("#patCR"); patCR.innerHTML="";
   hist.forEach(h=>{
-    const pill1 = document.createElement("div");
-    pill1.className="p-pill " + (h.type==="Big"?"p-bg":"p-sm");
-    pill1.textContent = h.type;
-    patBS.appendChild(pill1);
-
-    const pill2 = document.createElement("div");
-    pill2.className="p-pill " + (h.color==="Green"?"p-green":"p-red");
-    pill2.textContent = h.color;
-    patCR.appendChild(pill2);
+    const pill1=document.createElement("div"); pill1.className="p-pill "+(h.type==="Big"?"p-bg":"p-sm"); pill1.textContent=h.type; patBS.appendChild(pill1);
+    const pill2=document.createElement("div"); pill2.className="p-pill "+(h.color==="Green"?"p-green":"p-red"); pill2.textContent=h.color; patCR.appendChild(pill2);
   });
 
   // Hot/Cold
-  const counts = Array(10).fill(0);
-  hist.forEach(h=>counts[h.num]++);
-  const arr = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c);
-  const hot = arr.slice(0,3), cold = arr.slice(-3).reverse();
+  const counts=Array(10).fill(0); hist.forEach(h=>counts[h.num]++);
+  const arr=counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c);
+  const hot=arr.slice(0,3), cold=arr.slice(-3).reverse();
+  $("#hotList").innerHTML = hot.map(x=>`<div class="p-pill">${x.i} <span class="note">(${x.c})</span></div>`).join("");
+  $("#coldList").innerHTML = cold.map(x=>`<div class="p-pill">${x.i} <span class="note">(${x.c})</span></div>`).join("");
 
-  $("#hotList").innerHTML = hot.map(x=>`<div class="p-pill">${x.i} <span class="tiny">(${x.c})</span></div>`).join("");
-  $("#coldList").innerHTML = cold.map(x=>`<div class="p-pill">${x.i} <span class="tiny">(${x.c})</span></div>`).join("");
-
-  // Gap Heatmap = distance since last seen
-  const lastSeen = new Map();
-  const gaps = [];
-  hist.forEach((h,idx)=>{
-    const prev = lastSeen.get(h.num);
-    const gap = (prev==null) ? "—" : (idx - prev);
-    lastSeen.set(h.num, idx);
-    gaps.push({num:h.num, gap});
-  });
-  const gm = $("#gapMap"); gm.innerHTML="";
-  gaps.forEach(g=>{
-    const el = document.createElement("div");
-    el.className="p-pill";
-    el.innerHTML = `#${g.num} <span class="tiny">gap:${g.gap}</span>`;
-    gm.appendChild(el);
-  });
+  // Gap heatmap
+  const lastSeen=new Map(); const gaps=[];
+  hist.forEach((h,idx)=>{ const prev=lastSeen.get(h.num); const gap=(prev==null)?"—":(idx-prev); lastSeen.set(h.num,idx); gaps.push({num:h.num,gap}); });
+  const gm=$("#gapMap"); gm.innerHTML="";
+  gaps.forEach(g=>{ const el=document.createElement("div"); el.className="p-pill"; el.innerHTML=`#${g.num} <span class="note">gap:${g.gap}</span>`; gm.appendChild(el); });
 }
 
-/* -------------------------------- Stats ----------------------------------- */
+/* ================================== Stats ================================= */
 function renderStats(){
-  const hist = state.history;
-  const total = hist.length;
-  $("#st-total").textContent = String(total);
+  const hist=state.history; const total=hist.length;
+  $("#st-total").textContent=String(total);
 
-  const mm = hist.filter(h=>h.confidence>=state.high).length;
-  const mmRate = total? (mm/total): 0;
-  $("#st-mm").textContent = (mmRate*100).toFixed(1)+"%";
-  $("#st-mm-p").style.width = (mmRate*100)+"%";
+  const mm=hist.filter(h=>h.confidence>=state.high).length;
+  const mmRate= total? (mm/total) : 0; $("#st-mm").textContent=(mmRate*100).toFixed(1)+"%"; $("#st-mm-p").style.width=(mmRate*100)+"%";
 
-  const avg = total? (hist.reduce((a,b)=>a+b.confidence,0)/total):0;
-  $("#st-avg").textContent = (avg*100).toFixed(1)+"%";
-  $("#st-avg-p").style.width = ((avg-0.5)/0.45*100)+"%";
+  const avg= total? (hist.reduce((a,b)=>a+b.confidence,0)/total) : 0;
+  $("#st-avg").textContent=(avg*100).toFixed(1)+"%";
+  $("#st-avg-p").style.width=((avg-0.5)/0.45*100)+"%";
 
-  const counts = Array(10).fill(0); hist.forEach(h=>counts[h.num]++);
-  const top = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c)[0] || {i:"—",c:0};
-  $("#st-top").textContent = `${top.i} (${total? (top.c/total*100).toFixed(1):"0.0"}%)`;
+  const counts=Array(10).fill(0); hist.forEach(h=>counts[h.num]++);
+  const top=counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c)[0] || {i:"—",c:0};
+  $("#st-top").textContent=`${top.i} (${total? (top.c/total*100).toFixed(1):"0.0"}%)`;
 
   // Distribution canvas
-  const canvas = $("#distCanvas"), ctx = canvas.getContext("2d");
-  const w = canvas.width = canvas.clientWidth, h = canvas.height;
-  ctx.clearRect(0,0,w,h);
-  const pad=16, bw=(w-pad*2)/10 - 4, base=h-24;
-  const max = Math.max(...counts,1);
+  const canvas=$("#distCanvas"), ctx=canvas.getContext("2d");
+  const w=canvas.width=canvas.clientWidth, h=canvas.height; ctx.clearRect(0,0,w,h);
+  const pad=16,bw=(w-pad*2)/10-4,base=h-24, max=Math.max(...counts,1);
   ctx.font="12px ui-monospace, monospace";
-  counts.forEach((c,i)=>{
-    const x=pad+i*(bw+4), bh = Math.max(4, c/max*(h*0.85));
-    const y = base - bh;
-    ctx.fillStyle = "#1f2a38"; ctx.fillRect(x,y,bw,bh);
-    ctx.strokeStyle="#243241"; ctx.strokeRect(x,y,bw,bh);
-    ctx.fillStyle="#9cb3cc"; ctx.fillText(String(i), x+bw/2-3, h-6);
+  counts.forEach((c,i)=>{ const x=pad+i*(bw+4), bh=Math.max(4,c/max*(h*0.85)), y=base-bh;
+    ctx.fillStyle="#102131"; ctx.fillRect(x,y,bw,bh); ctx.strokeStyle="#1a3245"; ctx.strokeRect(x,y,bw,bh);
+    ctx.fillStyle="#8fb0cc"; ctx.fillText(String(i), x+bw/2-3, h-6);
   });
 }
 
-/* --------------------------- Check by Period ------------------------------ */
+/* =========================== Check by Period ============================== */
 function checkByPeriod(input){
-  // Allow plain period or strings; extract last 6–12 digits for stability
-  const s = String(input).replace(/\D/g,"");
-  const period = s.length>=4 ? s : ("0000"+s).slice(-6);
-  const d = periodDigit(period);
-  const type = d>=5 ? "Big":"Small";
-  const color = digitColor(d, period);
-  const conf = computeConfidence(d, period, state.history);
-  return {input, period: Number(period), digit:d, type, color, conf};
+  const s=String(input).replace(/\D/g,"");
+  const period = s.length>=4 ? s : ("000000"+s).slice(-6);
+  const d=periodDigit(period);
+  const type=d>=5?"Big":"Small";
+  const color=digitColor(d, period);
+  const conf=computeConfidence(d, period, state.history);
+  return {input, period:Number(period), digit:d, type, color, conf};
 }
 function renderCheck(res){
-  $("#res-input").textContent = res.input;
-  $("#res-period").textContent = res.period;
-  $("#res-digit").textContent = "#"+res.digit;
-  $("#res-type").textContent = res.type;
-  $("#res-color").textContent = res.color;
-  $("#res-conf").textContent = (res.conf*100).toFixed(1)+"%";
+  $("#res-input").textContent=res.input;
+  $("#res-period").textContent=res.period;
+  $("#res-digit").textContent="#"+res.digit;
+  $("#res-type").textContent=res.type;
+  $("#res-color").textContent=res.color;
+  $("#res-conf").textContent=(res.conf*100).toFixed(1)+"%";
   $("#res-decision").outerHTML = decisionTag(res.conf);
 }
 
-/* ------------------------------ Render All -------------------------------- */
-function renderAll(){
-  renderBars();
-  renderPredictions();
-  renderPatterns();
-  renderStats();
-}
+/* ============================== Render All ================================ */
+function renderAll(){ renderBars(); renderPredictions(); renderPatterns(); renderStats(); }
 
-/* --------------------------------- Init ----------------------------------- */
-function init(){
-  bindControls();
-  renderAll();
-  renderLiveBadge();
-}
+/* ================================= Init =================================== */
+function init(){ bindControls(); renderAll(); renderLiveBadge(); }
 init();
 </script>
 </body>
