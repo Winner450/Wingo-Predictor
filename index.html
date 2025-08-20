@@ -1,302 +1,426 @@
-<!doctype html>
-<html lang="hi">
+<!DOCTYPE html><html lang="hi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Big Daddy — Real Predictor Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg1:#030615; --card:#071827; --accent1:#ff5f7a; --accent2:#7c5cff; --glass: rgba(255,255,255,0.04);
-  }
-  *{box-sizing:border-box}
-  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg1),#000);color:#e6f6ff;margin:0;padding:28px}
-  .wrap{max-width:1100px;margin:0 auto}
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061026}
-  h1{margin:0;font-size:20px}
-  .muted{color:#9fb0d6}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
-  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid var(--glass);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
-  label{display:block;margin-bottom:6px;font-weight:600}
-  input, select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-  .controls{display:flex;gap:8px;margin-top:10px}
-  button.btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-  .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#061026}
-  .result-box{display:flex;gap:12px;align-items:center;margin-top:12px}
-  .bubble{background:#021226;padding:14px;border-radius:10px;min-width:110px;text-align:center}
-  .digit{font-size:44px;font-weight:900}
-  .conf-meter{width:100%;height:14px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
-  .conf-fill{height:100%;width:0%;transition:width 800ms cubic-bezier(.2,.9,.2,1);background:linear-gradient(90deg,#00f0ff,#ff7ab6)}
-  table{width:100%;margin-top:12px;border-collapse:collapse}
-  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
-  tr:hover td{background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent)}
-  .patterns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-  .chip{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);font-weight:700}
-  footer{margin-top:18px;text-align:center;color:#8da6d6}
-  @media(max-width:980px){.grid{grid-template-columns:1fr}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎯 WinGo Predictor Pro — Advanced</title>
+  <meta name="description" content="WinGo Predictor Pro — Advanced dashboard with local AI heuristics, API integration, backtest, charts, and Telegram webhook."/>
+  <style>
+    :root{
+      --gold:#FFD700;
+      --gold-soft:#ffc107;
+      --bg1:#0f0f0f; --bg2:#000; --panel:#111; --panel-2:#0b0b0b;
+      --text:#fff; --muted:#cfcfcf; --danger:#ff6b6b; --success:#4caf50;
+      --ring: 0 0 0 2px #ffa00088;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);} 
+    header{position:sticky;top:0;z-index:10;background:#000;padding:14px 10px;box-shadow:0 2px 8px var(--gold);}
+    header .wrap{max-width:1100px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:space-between}
+    h1{margin:0;font-size:26px;color:var(--gold);letter-spacing:.3px}
+    .badge{font-size:12px;background:linear-gradient(45deg,#111,#222);border:1px solid #333;padding:6px 10px;border-radius:999px;color:var(--muted)}.container{max-width:1100px;margin:30px auto;padding:0 16px}
+.grid{display:grid;gap:18px}
+@media(min-width:900px){.grid{grid-template-columns:2fr 1fr}}
+
+.card{background:var(--panel);border:1px solid #1f1f1f;border-radius:18px;padding:18px;box-shadow:0 0 15px #000 inset, 0 0 12px #000}
+.card h2{margin:0 0 10px;font-size:18px;color:var(--gold)}
+.card p.desc{margin:0 0 12px;color:var(--muted);font-size:13px}
+
+label{display:block;font-weight:600;margin:10px 0 6px;color:#fff}
+input, select, textarea{width:100%;padding:12px 12px;border-radius:12px;background:#000;border:2px solid var(--gold);color:#fff;font-size:15px;outline:none}
+input:focus, select:focus, textarea:focus{box-shadow:var(--ring)}
+textarea{min-height:84px;resize:vertical}
+
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold);border:none;color:#000;padding:12px 16px;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 0 10px var(--gold);}
+.btn.secondary{background:#1d1d1d;color:#fff;border:1px solid #2c2c2c;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--gold);border:1px dashed var(--gold)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > *{flex:1 1 180px}
+
+.result-box{background:var(--panel-2);color:var(--gold);padding:18px;border-radius:16px;margin-top:14px;font-size:16px;box-shadow:0 0 15px var(--gold-soft)}
+.label{font-weight:700;color:#fff;margin-right:6px}
+
+.thinking{font-size:15px;color:#FFEB3B;margin-top:8px;animation:blink 1s infinite}
+@keyframes blink{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+
+table{width:100%;border-collapse:collapse;border:1px solid #1d1d1d}
+th,td{padding:10px 8px;border-bottom:1px solid #1d1d1d;text-align:left}
+th{color:var(--gold);background:#0a0a0a;position:sticky;top:0}
+tr:hover{background:#0a0a0a}
+.pill{padding:4px 8px;border-radius:999px;font-size:12px}
+.pill.big{background:#101c10;color:#7CFC00}
+.pill.small{background:#1c1010;color:#ffb0b0}
+.pill.red{background:#1d0b0b;color:#ff8a80}
+.pill.green{background:#0b1d0b;color:#9cff9c}
+
+.footer{margin:30px 0;color:#808080;text-align:center;font-size:13px}
+.mini{font-size:12px;color:#aaa}
+
+.progress{height:10px;background:#1b1b1b;border-radius:999px;overflow:hidden;border:1px solid #2b2b2b}
+.progress > div{height:100%;background:linear-gradient(90deg,#ffee58,#ffb300);width:0}
+
+.chart{width:100%;height:170px;background:#0b0b0b;border:1px solid #1d1d1d;border-radius:12px;padding:8px}
+.hint{color:#b7b7b7;font-size:12px}
+
+  </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo">BD</div>
-        <div>
-          <h1>Big Daddy Predictor — Live</h1>
-          <div class="muted">Server-backed deterministic predictions. Replace backend algorithm as needed.</div>
-        </div>
+  <header>
+    <div class="wrap">
+      <h1>🎯 WinGo Predictor Pro — Advanced</h1>
+      <span class="badge">Backend-ready · Local AI Heuristics</span>
+    </div>
+  </header>
+  <div class="container"><div class="grid">
+  <!-- LEFT PANE -->
+  <section class="card" id="predictCard">
+    <h2>🔮 Prediction</h2>
+    <p class="desc">बैकएंड API (वैकल्पिक) + लोकल AI हीयूरिस्टिक्स का हाइब्रिड। अगर API सेट है तो वही प्राथमिकता लेगा, नहीं तो नीचे दिये गए हिस्ट्री इनपुट से लोकल इंटेलिजेंस प्रेडिक्ट करेगी।</p>
+
+    <div class="row">
+      <div>
+        <label>API Base URL (optional)</label>
+        <input id="apiBase" placeholder="https://wingo-predictor-seven.vercel.app"/>
+        <span class="hint">खाली छोड़ने पर लोकल AI मोड चलेगा।</span>
       </div>
       <div>
-        <button class="btn btn-primary" id="deployBtn">Deploy Repo</button>
+        <label>Product</label>
+        <select id="product">
+          <option value="wingo_blue">wingo_blue</option>
+          <option value="default">default</option>
+        </select>
       </div>
-    </header>
-
-    <div class="grid">
-      <!-- LEFT MAIN -->
-      <main>
-        <div class="card">
-          <label>Period Number</label>
-          <input id="periodInput" placeholder="e.g. 20250814-001" />
-
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <select id="productSelect" style="flex:1">
-              <option value="default">Product: Default</option>
-              <option value="wingo_blue">Product: Wingo Blue</option>
-              <option value="wingo_red">Product: Wingo Red</option>
-            </select>
-            <button class="btn btn-primary" id="predictBtn">Get Prediction</button>
-          </div>
-
-          <div class="result-box" id="resultArea" style="display:none">
-            <div class="bubble">
-              <div class="muted">Number</div>
-              <div class="digit" id="digitOut">0</div>
-            </div>
-            <div class="bubble">
-              <div class="muted">BIG / SMALL</div>
-              <div id="sizeOut" class="digit" style="font-size:20px">SMALL</div>
-            </div>
-            <div class="bubble" id="colorBubble">
-              <div class="muted">COLOR</div>
-              <div id="colorOut" class="digit" style="font-size:20px">BLUE</div>
-            </div>
-            <div style="flex:1">
-              <div class="muted">Confidence</div>
-              <div class="conf-meter" style="margin-top:6px"><div id="confFill" class="conf-fill"></div></div>
-              <div style="margin-top:6px"><span id="confText">--%</span> • Strategy Score: <b id="strScore">--</b></div>
-              <div class="patterns" id="patternsList"></div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <button class="btn" id="copyBtn">Copy Result</button>
-            <button class="btn" id="tgClientBtn">Send (Client→Telegram)</button>
-            <button class="btn" id="tgServerBtn">Send (Server Webhook)</button>
-          </div>
-
-          <div style="margin-top:14px">
-            <strong>Bulk Generator / Backtest</strong>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <input id="bulkCount" type="number" min="3" max="200" value="10" />
-              <button class="btn" id="bulkBtn">Generate</button>
-            </div>
-            <div id="bulkOutput" style="margin-top:10px"></div>
-          </div>
-
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>History</strong>
-          <table>
-            <thead><tr><th>Period</th><th>Product</th><th>Num</th><th>Size</th><th>Color</th><th>Conf</th></tr></thead>
-            <tbody id="historyTable"></tbody>
-          </table>
-        </div>
-      </main>
-
-      <!-- RIGHT SIDEBAR -->
-      <aside>
-        <div class="card">
-          <strong>Server Example</strong>
-          <div class="muted" style="margin-top:8px">Endpoint: <code>/api/getPrediction?period=...&product=...</code></div>
-          <pre style="background:#021226;padding:8px;border-radius:6px;color:#9be7d2;margin-top:8px">
-GET /api/getPrediction?period=20250814-001&product=wingo_blue
-Response:
-{
-  "period":"20250814-001",
-  "product":"wingo_blue",
-  "result": { "digit":7, "size":"BIG", "color":"RED", "confidence":89, "strategyScore":84, "patterns":[...] },
-  "meta":{...},
-  "ts":1630000000000
-}
-          </pre>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Webhook (Server)</strong>
-          <div class="muted" style="margin-top:8px">Send prediction to Telegram via server webhook:</div>
-          <pre style="background:#021226;padding:8px;border-radius:6px;color:#9be7d2;margin-top:8px">
-POST /api/webhook/telegram
-{ "token":"botXXX:...", "chatId":"12345678", "text":"Prediction: 7 | BIG | RED" }
-          </pre>
-        </div>
-
-      </aside>
+      <div>
+        <label>Period Number</label>
+        <input id="period" placeholder="e.g. 20250814-001"/>
+      </div>
     </div>
 
-    <footer class="muted">Demo server + dashboard. Secure tokens & DB before production. सत साहेब</footer>
-  </div>
+    <label>🔢 पिछले नंबर (comma/space):</label>
+    <textarea id="history" placeholder="उदा. 2 7 4 1 8 2 9 0 5"></textarea>
 
-<script>
-  const API_BASE = ''; // '' means same origin. If server remote, e.g. 'https://api.yourdomain.com'
-  const $ = id => document.getElementById(id);
+    <div class="row">
+      <button class="btn" id="btnPredict">Get Prediction</button>
+      <button class="btn secondary" id="btnClear">Clear</button>
+      <button class="btn ghost" id="btnSave">💾 Save Settings</button>
+    </div>
+    <div id="thinking" class="thinking" style="display:none">🤖 AI Thinking...</div>
+    <div class="result-box" id="resultBox" style="display:none"></div>
 
-  async function callApi(period, product) {
-    const url = `${API_BASE}/api/getPrediction?period=${encodeURIComponent(period)}&product=${encodeURIComponent(product)}`;
-    const r = await fetch(url);
-    if(!r.ok) throw new Error('API error: '+r.status);
-    return await r.json();
-  }
+    <div class="row" style="margin-top:12px">
+      <div class="card" style="background:#0c0c0c">
+        <h2 style="font-size:15px">📈 Frequency Chart</h2>
+        <div id="freqChart" class="chart"></div>
+      </div>
+      <div class="card" style="background:#0c0c0c">
+        <h2 style="font-size:15px">⚙️ Strategy Weights</h2>
+        <div class="mini">प्रत्येक फीचर के वेट से एंसेंबल स्कोर बनता है।</div>
+        <div class="row">
+          <div>
+            <label>Frequency Weight</label>
+            <input type="range" min="0" max="3" step="0.1" id="wFreq" value="1.2">
+          </div>
+          <div>
+            <label>Markov/Transition Weight</label>
+            <input type="range" min="0" max="3" step="0.1" id="wMark" value="1.4">
+          </div>
+          <div>
+            <label>Streak Weight</label>
+            <input type="range" min="0" max="3" step="0.1" id="wStreak" value="0.8">
+          </div>
+          <div>
+            <label>Recency Weight</label>
+            <input type="range" min="0" max="3" step="0.1" id="wRecent" value="1.0">
+          </div>
+        </div>
+        <div class="mini">Parity/Size bias ऑटो-कैलिब्रेटेड है (हिस्ट्री पर)।</div>
+      </div>
+    </div>
+  </section>
 
-  function showPrediction(obj){
-    const result = obj.result;
-    $('digitOut').textContent = result.digit;
-    $('sizeOut').textContent = result.size;
-    $('colorOut').textContent = result.color;
-    $('confFill').style.width = result.confidence + '%';
-    $('confText').textContent = result.confidence + '%';
-    $('strScore').textContent = result.strategyScore;
-    const patternsList = $('patternsList');
-    patternsList.innerHTML = '';
-    result.patterns.forEach(p=>{
-      const el = document.createElement('div');
-      el.className = 'chip';
-      el.textContent = `${p.pattern}${p.matched? ' ✓' : ' ✕'}`;
-      patternsList.appendChild(el);
-    });
-    $('resultArea').style.display = 'flex';
-  }
+  <!-- RIGHT PANE -->
+  <aside class="grid">
+    <section class="card">
+      <h2>🧪 Bulk Generator / Backtest</h2>
+      <p class="desc">API/लोकल मोड के साथ बैच प्रेडिक्शन। हिस्ट्री से N बार फॉरवर्ड-स्टेप सिमुलेशन।</p>
+      <div class="row">
+        <div>
+          <label>Rounds</label>
+          <input id="rounds" type="number" value="10" min="1" max="200"/>
+        </div>
+        <div>
+          <label>Warmup (use last N)</label>
+          <input id="warm" type="number" value="20" min="5" max="200"/>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnGenerate">Generate</button>
+        <button class="btn secondary" id="btnClearHist">Clear History</button>
+      </div>
+      <div class="progress" style="margin-top:10px"><div id="progBar"></div></div>
+      <div class="mini" id="btSummary" style="margin-top:8px"></div>
+      <div style="max-height:260px;overflow:auto;margin-top:10px;border-radius:12px;border:1px solid #1d1d1d">
+        <table id="historyTable">
+          <thead><tr>
+            <th>#</th><th>Period</th><th>Product</th><th>Num</th><th>Size</th><th>Color</th><th>Conf</th><th>Strategy</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-  async function fetchHistory(){
-    try{
-      const r = await fetch(API_BASE + '/api/history');
-      if(!r.ok) return;
-      const arr = await r.json();
-      const tbody = $('historyTable');
-      tbody.innerHTML = '';
-      arr.slice(0,50).forEach(it=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${it.period}</td><td>${it.product}</td><td>${it.digit}</td><td>${it.size}</td><td>${it.color}</td><td>${it.confidence}%</td>`;
-        tbody.appendChild(tr);
-      });
-    }catch(e){}
-  }
+    <section class="card">
+      <h2>📬 Telegram Webhook</h2>
+      <p class="desc">Prediction को आपके Telegram channel/chat पर भेजें (server webhook endpoint अपेक्षित)।</p>
+      <label>Server Webhook URL</label>
+      <input id="webhook" placeholder="https://your-server.com/api/webhook/telegram">
+      <div class="row">
+        <div><label>Bot Token</label><input id="bot" placeholder="botXXXXXXXX:AAAA...."></div>
+        <div><label>Chat ID</label><input id="chat" placeholder="123456789"></div>
+      </div>
+      <button class="btn" id="btnSendTG">Send Last Prediction</button>
+      <div class="mini" id="tgStatus" style="margin-top:8px"></div>
+    </section>
+  </aside>
+</div>
 
-  $('predictBtn').addEventListener('click', async ()=>{
-    const period = $('periodInput').value.trim();
-    const product = $('productSelect').value;
-    if(!period) return alert('Period डालो।');
-    try{
-      const data = await callApi(period, product);
-      showPrediction(data);
-      fetchHistory();
-    }catch(err){
-      alert('API error — fallback to client deterministic');
-      // client fallback: derive locally (same algorithm as server ideally)
-      const data = await deriveClient(period, product);
-      showPrediction(data);
+<p class="footer">Demo UI — Secure tokens/DB before production. Use responsibly.</p>
+
+  </div>  <script>
+    // ------------------------------ UTIL ------------------------------
+    const $ = (q)=>document.querySelector(q);
+    const $$ = (q)=>document.querySelectorAll(q);
+    const byId = id=>document.getElementById(id);
+
+    const saveLocal = ()=>{
+      const data={
+        apiBase: byId('apiBase').value.trim(),
+        product: byId('product').value,
+        period: byId('period').value.trim(),
+        history: byId('history').value.trim(),
+        w:{freq: +byId('wFreq').value, mark:+byId('wMark').value, streak:+byId('wStreak').value, recent:+byId('wRecent').value},
+        rounds:+byId('rounds').value, warm:+byId('warm').value, webhook:byId('webhook').value, bot:byId('bot').value, chat:byId('chat').value
+      };
+      localStorage.setItem('winpro_v2', JSON.stringify(data));
+      toast('✅ Settings saved');
     }
-  });
-
-  // Copy / Telegram buttons
-  $('copyBtn').addEventListener('click', ()=>{
-    const text = `${$('digitOut').textContent} | ${$('sizeOut').textContent} | ${$('colorOut').textContent} • ${$('confText').textContent}`;
-    navigator.clipboard.writeText(text).then(()=> alert('Copied: '+text));
-  });
-
-  // Client direct Telegram (not recommended for tokens) — this opens prompt for token/chat
-  $('tgClientBtn').addEventListener('click', async ()=>{
-    const token = prompt('Enter your Telegram bot token (botXXX:...)');
-    const chatId = prompt('Enter chat id');
-    if(!token||!chatId) return alert('token/chatId required');
-    const text = `Prediction: ${$('digitOut').textContent} | ${$('sizeOut').textContent} | ${$('colorOut').textContent}`;
-    try{
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({chat_id:chatId, text})});
-      alert('Sent to Telegram (client)');
-    }catch(e){ alert('Send failed: '+e.message); }
-  });
-
-  // Server webhook (recommended)
-  $('tgServerBtn').addEventListener('click', async ()=>{
-    const token = prompt('Telegram bot token (server will forward):');
-    const chatId = prompt('Chat ID:');
-    if(!token||!chatId) return alert('Required');
-    const text = `Prediction: ${$('digitOut').textContent} | ${$('sizeOut').textContent} | ${$('colorOut').textContent}`;
-    try{
-      const r = await fetch(API_BASE + '/api/webhook/telegram', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({token, chatId, text})});
-      const j = await r.json();
-      if(j.ok) alert('Server forwarded to Telegram');
-      else alert('Webhook failed');
-    }catch(e){ alert('Webhook error: '+e.message); }
-  });
-
-  // Bulk generator
-  $('bulkBtn').addEventListener('click', async ()=>{
-    const n = Math.max(3, Math.min(200, Number($('bulkCount').value) || 10));
-    const out = $('bulkOutput');
-    out.innerHTML = '';
-    for(let i=0;i<n;i++){
-      const p = 'BULK-'+Date.now()+'-'+i;
+    const loadLocal = ()=>{
+      const raw=localStorage.getItem('winpro_v2'); if(!raw) return;
       try{
-        const d = await callApi(p, $('productSelect').value);
-        const div = document.createElement('div');
-        div.className='chip';
-        div.style.marginTop='6px';
-        div.textContent = `${p} → ${d.result.digit} | ${d.result.size} | ${d.result.color} • ${d.result.confidence}%`;
-        out.appendChild(div);
-      }catch(e){
-        const d = await deriveClient(p, $('productSelect').value);
-        const div = document.createElement('div');
-        div.className='chip';
-        div.style.marginTop='6px';
-        div.textContent = `${p} → ${d.result.digit} | ${d.result.size} | ${d.result.color} • ${d.result.confidence}% (client)`;
-        out.appendChild(div);
-      }
+        const d=JSON.parse(raw);
+        byId('apiBase').value=d.apiBase||''; byId('product').value=d.product||'wingo_blue';
+        byId('period').value=d.period||''; byId('history').value=d.history||'';
+        if(d.w){ byId('wFreq').value=d.w.freq||1.2; byId('wMark').value=d.w.mark||1.4; byId('wStreak').value=d.w.streak||0.8; byId('wRecent').value=d.w.recent||1; }
+        if(d.rounds) byId('rounds').value=d.rounds; if(d.warm) byId('warm').value=d.warm;
+        if(d.webhook) byId('webhook').value=d.webhook; if(d.bot) byId('bot').value=d.bot; if(d.chat) byId('chat').value=d.chat;
+      }catch(e){}
     }
-  });
 
-  // simple client derive (mirror server logic minimally) - used as fallback
-  async function deriveClient(period, product='default'){
-    // lightweight client-side SHA-256
-    function buf2hex(buffer){return [...new Uint8Array(buffer)].map(b=>b.toString(16).padStart(2,'0')).join('');}
-    const key = period + '|' + product + '|wingo_v2';
-    const enc = new TextEncoder().encode(key);
-    const digest = await crypto.subtle.digest('SHA-256', enc);
-    const hashHex = buf2hex(digest);
-    // use first 8 hex chars to form seed
-    const seed = parseInt(hashHex.slice(0,8), 16) >>> 0;
-    let x = seed;
-    function rng(){ x ^= (x << 13) >>> 0; x ^= (x >>> 17) >>> 0; x ^= (x << 5) >>> 0; x = x >>> 0; return x/0xffffffff; }
-    const digit = Math.floor(rng()*10);
-    const size = digit>=5?'BIG':'SMALL';
-    const colors=['RED','BLUE','GREEN']; const color = colors[ parseInt(hashHex.slice(8,10),16) % colors.length ];
-    const confidence = Math.min(99, Math.max(50, 60 + (parseInt(hashHex.slice(10,12),16) % 36)));
-    const patterns = [
-      {pattern:'OddEven', matched: digit%2===1},
-      {pattern:'HighLow', matched: digit>=5},
-      {pattern:'Mirror', matched: (parseInt(hashHex.slice(12,14),16)%2===0)}
-    ];
-    const strategyScore = Math.min(100, Math.round((confidence*0.6) + (patterns.filter(p=>p.matched).length*8)));
-    return { period, product, result:{digit,size,color,confidence,strategyScore,patterns}, meta:{seed,hashHex}, ts:Date.now() };
-  }
+    function toast(msg){
+      const t=document.createElement('div');
+      t.textContent=msg; t.style.cssText=`position:fixed;bottom:20px;right:20px;background:#111;border:1px solid #333;padding:10px 14px;border-radius:12px;color:#fff;box-shadow:0 0 12px #000;z-index:9999`;
+      document.body.appendChild(t); setTimeout(()=>t.remove(),2000);
+    }
 
-  // on load try to fetch history
-  fetchHistory();
+    // -------------------------- LOCAL AI CORE -------------------------
+    // Parses numbers from free text
+    function parseHistory(str){
+      const arr=(str||'').split(/[^0-9]+/).filter(Boolean).map(s=>parseInt(s)%10);
+      return arr.slice(-200); // cap
+    }
 
-  // deploy button
-  $('deployBtn').addEventListener('click', ()=> window.open('https://github.com/new?name=wingo-bigdaddy-predictor','_blank'));
-</script>
-</body>
+    function freqScores(hist){
+      const f=Array(10).fill(0); hist.forEach(n=>f[n]++);
+      const max=Math.max(1,...f); return f.map(x=>x/max);
+    }
+
+    function recentBias(hist){
+      // Higher weight to last 5 numbers
+      const w=[5,4,3,2,1]; const s=Array(10).fill(0);
+      for(let i=0;i<Math.min(hist.length,5);i++){ s[hist.length-1-i] }
+      const last=Math.min(hist.length,12);
+      for(let i=0;i<last;i++){
+        const n=hist[hist.length-1-i]; s[n]+= (last-i)/last; // linear decay
+      }
+      const m=Math.max(1,...s); return s.map(v=>v/m);
+    }
+
+    function streakScores(hist){
+      // Reward breaking too-long streaks and following short streaks
+      if(hist.length<2) return Array(10).fill(0);
+      const last=hist[hist.length-1];
+      let len=1; for(let i=hist.length-2;i>=0 && hist[i]===last;i--) len++;
+      const s=Array(10).fill(0);
+      const follow = len<=2 ? 1 : -1; // encourage repeat for short streaks; otherwise discourage
+      s[last]=follow;
+      // Encourage neighbors if long gaps
+      return normalize01(s);
+    }
+
+    function markovScores(hist){
+      // First-order transition probabilities
+      const M=Array.from({length:10},()=>Array(10).fill(0));
+      for(let i=1;i<hist.length;i++){ M[hist[i-1]][hist[i]]++; }
+      const last=hist[hist.length-1]; if(last==null) return Array(10).fill(0);
+      const row=M[last], max=Math.max(1,...row); return row.map(v=>v/max);
+    }
+
+    function normalize01(arr){
+      const min=Math.min(...arr), max=Math.max(...arr);
+      const d=max-min || 1; return arr.map(v=> (v-min)/d );
+    }
+
+    function ensembleScore(hist, weights){
+      const A=freqScores(hist);
+      const B=markovScores(hist);
+      const C=streakScores(hist);
+      const D=recentBias(hist);
+      const w=weights||{freq:1.2,mark:1.4,streak:0.8,recent:1.0};
+      const S=Array(10).fill(0).map((_,i)=> A[i]*w.freq + B[i]*w.mark + C[i]*w.streak + D[i]*w.recent );
+      // Softmax-like normalization
+      const m=Math.max(...S), ex=S.map(x=>Math.exp(x-m));
+      const sum=ex.reduce((a,b)=>a+b,0);
+      return ex.map(x=>x/sum);
+    }
+
+    function sizeOf(n){ return n>=5 ? 'BIG' : 'SMALL'; }
+    function colorOf(n){ return (n%2===0)? 'RED' : 'GREEN'; }
+
+    function explainStrategy(hist, prob){
+      const top=prob.map((p,i)=>[i,p]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      const last=hist.at(-1);
+      return `Top candidates: ${top.map(([i,p])=>`${i} (${(p*100).toFixed(1)}%)`).join(', ')}. Last seen: ${last ?? 'NA'}.`;
+    }
+
+    function improvedPredictFromHistory(histStr, weights){
+      const hist=parseHistory(histStr);
+      const prob= ensembleScore(hist, weights);
+      const bestIndex = prob.indexOf(Math.max(...prob));
+      const conf = Math.round((Math.max(...prob))*100*0.85 + 10); // calibrated range
+      return {
+        number: bestIndex,
+        size: sizeOf(bestIndex),
+        color: colorOf(bestIndex),
+        confidence: Math.max(50, Math.min(99, conf)),
+        meta: { prob, strategy: explainStrategy(hist, prob), hist }
+      };
+    }
+
+    // -------------------------- API BRIDGE ---------------------------
+    async function fetchFromAPI(base, period, product){
+      const url = `${base.replace(/\/$/,'')}/api/getPrediction?period=${encodeURIComponent(period)}&product=${encodeURIComponent(product)}`;
+      const res = await fetch(url); if(!res.ok) throw new Error('API error');
+      const j = await res.json();
+      // Expected server shape: { period, product, result:{digit,size,color,confidence}, meta }
+      return j;
+    }
+
+    // -------------------------- UI BINDINGS --------------------------
+    function renderResult(r){
+      const resultBox = byId('resultBox');
+      const sizePill = r.size==='BIG'? 'pill big':'pill small';
+      const colorPill = r.color==='RED'? 'pill red':'pill green';
+      resultBox.innerHTML = `
+        <div class="row" style="align-items:center;gap:14px;flex-wrap:nowrap">
+          <div style="font-size:26px;font-weight:800;color:var(--gold)">🔢 ${r.number ?? r.result?.digit ?? '-'} </div>
+          <span class="${sizePill}">📏 ${r.size || r.result?.size}</span>
+          <span class="${colorPill}">🎨 ${r.color || r.result?.color}</span>
+          <span class="pill" style="background:#1a1400;color:#ffecb3">🧠 Confidence: ${(r.confidence || r.result?.confidence || 0)}%</span>
+        </div>
+        <div class="mini" style="margin-top:10px">${r.meta?.strategy || r.strategy || ''}</div>
+      `;
+      resultBox.style.display='block';
+    }
+
+    function drawFreqChart(hist){
+      const el = byId('freqChart'); el.innerHTML='';
+      const H=parseHistory(hist); const f=Array(10).fill(0); H.forEach(n=>f[n]++);
+      const max=Math.max(1,...f);
+      const wrap=document.createElement('div'); wrap.style.cssText='display:flex;gap:6px;align-items:flex-end;height:140px';
+      f.forEach((v,i)=>{
+        const bar=document.createElement('div');
+        bar.style.cssText=`flex:1;background:linear-gradient(180deg,#ffec80,#ffb300);height:${(v/max*100)||2}%;border-radius:6px 6px 0 0;position:relative`;
+        const cap=document.createElement('div'); cap.textContent=i; cap.style.cssText='position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:12px;color:#ccc';
+        const val=document.createElement('div'); val.textContent=v; val.style.cssText='position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;color:#aaa';
+        bar.appendChild(val); bar.appendChild(cap); wrap.appendChild(bar);
+      });
+      el.appendChild(wrap);
+    }
+
+    // ---------------------------- ACTIONS ----------------------------
+    let lastPrediction = null;
+
+    async function handlePredict(){
+      const thinking=byId('thinking'); thinking.style.display='block';
+      byId('resultBox').style.display='none';
+      const base=byId('apiBase').value.trim();
+      const period=byId('period').value.trim();
+      const product=byId('product').value;
+      const weights={freq:+byId('wFreq').value,mark:+byId('wMark').value,streak:+byId('wStreak').value,recent:+byId('wRecent').value};
+      try{
+        let r;
+        if(base){
+          r = await fetchFromAPI(base, period||'auto', product);
+          // Normalize to UI schema
+          r = { number: r?.result?.digit, size:r?.result?.size, color:r?.result?.color, confidence:r?.result?.confidence, meta:r?.meta };
+        } else {
+          r = improvedPredictFromHistory(byId('history').value, weights);
+        }
+        lastPrediction = { ...r, period, product };
+        renderResult(r);
+      } catch(e){ toast('⚠️ '+(e.message||'Prediction failed')); }
+      finally{ thinking.style.display='none'; }
+    }
+
+    async function handleBulk(){
+      const R=+byId('rounds').value; const W=+byId('warm').value; const hist=parseHistory(byId('history').value);
+      if(hist.length<5){ return toast('कम से कम 5 नंबर दें'); }
+      const tbody=byId('historyTable').querySelector('tbody'); tbody.innerHTML='';
+      const weights={freq:+byId('wFreq').value,mark:+byId('wMark').value,streak:+byId('wStreak').value,recent:+byId('wRecent').value};
+      const prog=byId('progBar'); prog.style.width='0%';
+      let cur=[...hist.slice(-W)];
+      for(let i=0;i<R;i++){
+        const r=improvedPredictFromHistory(cur.join(' '), weights);
+        // pseudo advance: append predicted digit as if next result (for forward simulation)
+        cur.push(r.number); if(cur.length>200) cur.shift();
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${i+1}</td><td>${byId('period').value||'-'}</td><td>${byId('product').value}</td>
+        <td>${r.number}</td>
+        <td><span class="${r.size==='BIG'?'pill big':'pill small'}">${r.size}</span></td>
+        <td><span class="${r.color==='RED'?'pill red':'pill green'}">${r.color}</span></td>
+        <td>${r.confidence}%</td>
+        <td class="mini">${r.meta.strategy}</td>`;
+        tbody.appendChild(tr);
+        prog.style.width = `${((i+1)/R*100).toFixed(1)}%`;
+        await new Promise(r=>setTimeout(r,30));
+      }
+      byId('btSummary').textContent = `Generated ${R} steps using warmup ${W}.`;
+    }
+
+    async function handleSendTG(){
+      if(!lastPrediction){ return toast('पहले prediction बनाएं'); }
+      const url=byId('webhook').value.trim(); const token=byId('bot').value.trim(); const chat=byId('chat').value.trim();
+      if(!url||!token||!chat) return toast('Webhook URL, token, chat ID भरें');
+      const payload={ token, chatId:chat, text:`Prediction: ${lastPrediction.number} | ${lastPrediction.size} | ${lastPrediction.color} (${lastPrediction.confidence}%)` };
+      try{
+        const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        byId('tgStatus').textContent = res.ok? '✅ Sent' : '❌ Failed';
+      }catch(e){ byId('tgStatus').textContent='❌ Error'; }
+    }
+
+    // ---------------------------- HOOK UP ----------------------------
+    byId('btnPredict').addEventListener('click', handlePredict);
+    byId('btnGenerate').addEventListener('click', handleBulk);
+    byId('btnClear').addEventListener('click', ()=>{ byId('history').value=''; drawFreqChart(''); });
+    byId('btnClearHist').addEventListener('click', ()=>{ byId('historyTable').querySelector('tbody').innerHTML=''; });
+    byId('btnSave').addEventListener('click', saveLocal);
+
+    ['history','wFreq','wMark','wStreak','wRecent'].forEach(id=>{
+      byId(id).addEventListener('input',()=> drawFreqChart(byId('history').value));
+    });
+
+    loadLocal();
+    drawFreqChart(byId('history').value);
+  </script></body>
 </html>
