@@ -4,197 +4,327 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WhatsApp Sender — Click / Cloud API</title>
+  <title>Bulk WhatsApp Sender — Click / Cloud API</title>
   <style>
-    :root{--card:#fff;--muted:#6b7280;--accent:#0ea5e9}
-    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#f8fafc;padding:28px}
-    .wrap{max-width:880px;margin:0 auto}
-    header{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-    h1{font-size:20px;margin:0}
-    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 24px rgba(2,6,23,0.06);border:1px solid #eef2f7}
-    label{display:block;font-weight:600;margin:12px 0 6px}
-    input[type=text],input[type=tel],textarea,select{width:100%;padding:12px;border:1px solid #e6edf3;border-radius:10px;font-size:15px}
-    textarea{min-height:120px;resize:vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .actions{display:flex;gap:8px;margin-top:12px}
+    :root{--bg:#f8fafc;--card:#fff;--muted:#6b7280;--accent:#0ea5e9;--danger:#ef4444}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);padding:20px}
+    .wrap{max-width:1000px;margin:0 auto}
+    h1{font-size:20px;margin:0 0 8px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(2,6,23,0.06);border:1px solid #eef2f7}
+    label{display:block;font-weight:700;margin:10px 0 6px}
+    input[type=text],input[type=tel],textarea,select{width:100%;padding:10px;border:1px solid #e6edf3;border-radius:10px;font-size:15px}
+    textarea{min-height:120px}
+    .grid{display:grid;gap:12px}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
     button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
     button.ghost{background:#fff;color:var(--accent);border:1px solid #dbeafe}
-    small{color:var(--muted)}
-    .muted{color:var(--muted);font-size:13px;margin-top:8px}
-    .progress{margin-top:12px;background:#eef2f6;border-radius:8px;height:14px;overflow:hidden}
-    .bar{height:100%;background:linear-gradient(90deg,#34d399,#0ea5e9);width:0%}
-    pre{background:#0f1724;color:#e6eef8;padding:10px;border-radius:8px;overflow:auto}
+    .muted{color:var(--muted);font-size:13px}
+    pre{background:#0b1220;color:#e6eef8;padding:10px;border-radius:8px;overflow:auto}
+    .bar{height:12px;background:linear-gradient(90deg,#34d399,#0ea5e9);width:0%;border-radius:8px}
+    .progress-wrap{background:#eef6fb;border-radius:10px;height:14px;overflow:hidden}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+    .chip{background:#eef2ff;padding:6px 8px;border-radius:8px;font-weight:600}
+    .danger{color:var(--danger);font-weight:700}
+    .small{font-size:13px}
     .flex{display:flex;gap:8px;align-items:center}
-    .note{background:#fffbeb;border:1px solid #fef3c7;padding:10px;border-radius:8px;color:#854d0e}
-    .small-btn{padding:8px 10px;border-radius:8px;font-weight:600}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>WhatsApp Sender — Click (Phone) & Cloud API (Automation)</h1>
-    </header><div class="card">
-  <label>Mode</label>
-  <select id="mode">
-    <option value="click">Click-to-WhatsApp (No backend)</option>
-    <option value="api">WhatsApp Cloud API (Requires backend)</option>
-  </select>
-
-  <div style="margin-top:12px;" id="api-settings" hidden>
-    <label>Backend Endpoint (POST)</label>
-    <input id="apiEndpoint" placeholder="e.g. https://yourdomain.com/api/send" />
-    <small class="muted">Backend should accept JSON: { to: "91XXXXXXXXXX", body: "message text" }</small>
-  </div>
-
-  <label>Recipient Numbers</label>
-  <textarea id="numbers" placeholder="एक लाइन पर एक नंबर — country code सहित (e.g. 919812345678)\nया comma-separated लिखें"></textarea>
-  <div class="flex" style="margin-top:8px">
-    <input id="csvFile" type="file" accept=".csv" />
-    <button class="ghost small-btn" id="loadCsv">Load CSV</button>
-    <div style="flex:1"></div>
-    <button class="ghost small-btn" id="clearList">Clear</button>
-  </div>
-
-  <label>Message (use {{name}} for personalization)</label>
-  <textarea id="message" placeholder="नमस्ते {{name}}, हमारे पास खास ऑफर है...">नमस्ते! यह एक टेस्ट संदेश है।</textarea>
-
-  <div class="row" style="margin-top:12px">
-    <div>
-      <label>Delay between messages (ms)</label>
-      <input id="delay" type="text" value="500" />
+    <h1>Bulk WhatsApp Sender — Click / Cloud API</h1>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>Mode</label>
+          <select id="mode">
+            <option value="click">Click-to-WhatsApp (Opens chat / user must press send)</option>
+            <option value="api">WhatsApp Cloud API (Automatic via backend)</option>
+          </select>
+          <div id="api-settings" style="margin-top:8px;display:none">
+            <label>Backend Endpoint (POST)</label>
+            <input id="apiEndpoint" placeholder="https://yourdomain.com/api/send" />
+            <div class="muted small">Backend must accept JSON: <code>{ to: "9199...", body: "text", templateId?: "TEMPLATE_NAME" }</code></div>
+          </div>
+        </div><div>
+      <label>Upload CSV / TXT</label>
+      <div class="row">
+        <input id="csvFile" type="file" accept=".csv,.txt" />
+        <button id="loadCsv" class="ghost">Load</button>
+        <button id="clearList" class="ghost">Clear</button>
+      </div>
+      <div class="muted small">CSV format: one number per line OR number,name columns. Country code required (e.g. 919812345678). Excel -> Save as CSV and upload.</div>
     </div>
+
     <div>
-      <label>Fallback: Open click link if API fails?</label>
-      <select id="fallback"><option value="yes">Yes</option><option value="no">No</option></select>
+      <label>Or Paste / Manually Enter Numbers</label>
+      <textarea id="numbers" placeholder="एक लाइन पर एक नंबर — e.g. 919812345678"></textarea>
+      <div class="chips" id="statsChips"></div>
     </div>
-  </div>
 
-  <div class="actions">
-    <button id="sendBtn">Send Messages</button>
-    <button id="previewBtn" class="ghost">Preview First</button>
-  </div>
+    <div>
+      <label>Message Templates (एक per line) — use {{name}} placeholder</label>
+      <textarea id="templates" placeholder="नमस्ते {{name}}, हमारी नई ऑफर देखिए...
 
-  <div class="muted">Progress: <span id="stats">0/0</span></div>
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <div style="margin-top:12px">
-    <pre id="log">Ready.
+Hi {{name}}! Special deal for you..."></textarea> <div class="muted small">आप multiple templates डाल सकते हैं; भेजते समय एक random template चुना जाएगा (या sequential)।</div> </div>
 
-</pre>
-      </div><div class="note" style="margin-top:12px">
-    नोट: Cloud API use करने के लिए Meta का WhatsApp Business Cloud API setup, PHONE_NUMBER_ID और ACCESS_TOKEN आपके backend में जरूरी होंगे। 24-hour window, templates और opt-in नियमों का पालन करें।
+<div>
+      <label>Sending Options</label>
+      <div class="row">
+        <div class="col">
+          <label>Delay between messages (ms)</label>
+          <input id="delay" type="text" value="1000" />
+        </div>
+        <div class="col">
+          <label>Randomize order?</label>
+          <select id="randomize"><option value="yes">Yes</option><option value="no">No</option></select>
+        </div>
+      </div>
+
+      <div style="margin-top:8px" class="row">
+        <div class="col">
+          <label>Use random template per message?</label>
+          <select id="randTemplate"><option value="yes">Yes</option><option value="no">No (use first)</option></select>
+        </div>
+        <div class="col">
+          <label>Max sends (limit)</label>
+          <input id="limit" type="text" placeholder="0 = no limit" value="0" />
+        </div>
+      </div>
+
+    </div>
+
+    <div>
+      <label>Controls</label>
+      <div class="row">
+        <button id="previewBtn" class="ghost">Preview First Message</button>
+        <button id="sendBtn">Start Sending</button>
+        <button id="stopBtn" class="ghost">Stop</button>
+      </div>
+      <div style="margin-top:8px" class="muted small">Preview opens click link or calls API for the first recipient only.</div>
+    </div>
+
+    <div>
+      <label>Progress</label>
+      <div class="muted">Sent: <span id="sentCount">0</span> / <span id="totalCount">0</span></div>
+      <div class="progress-wrap" style="margin-top:6px"><div class="bar" id="bar"></div></div>
+      <pre id="log">Ready.</pre>
+      <div style="margin-top:8px" class="muted small">Log can be exported after run.</div>
+    </div>
+
+    <div>
+      <label>Options & Export</label>
+      <div class="row">
+        <button id="exportList" class="ghost">Export Numbers</button>
+        <button id="exportLog" class="ghost">Export Log</button>
+        <button id="downloadHtml" class="ghost">Download HTML</button>
+      </div>
+      <div style="margin-top:8px" class="muted small">Note: For Cloud API use proper opt-in, templates and rate limits to avoid number bans.</div>
+    </div>
+
   </div>
 </div>
 
-<p style="margin-top:12px;color:var(--muted)">अगर आप backend भी चाहते हैं तो बोलिए — मैं Express (Node) / Flask (Python) दोनों में ready code बना दूँगा।</p>
+<p class="muted small" style="margin-top:8px">अगर आप चाहें तो मैं backend (Node.js Express) का ready code भी दे दूँगा जो WhatsApp Cloud API से जुड़कर messages भेजे — बताइए Node या Python कौन सी preferred है।</p>
 
   </div>  <script>
-    // Helpers
+    // Utility helpers
     const $ = id => document.getElementById(id);
     const mode = $('mode');
     const apiSettings = $('api-settings');
-    mode.addEventListener('change', e => {
-      apiSettings.hidden = e.target.value === 'click';
-    });
+    const MAX_TABS = 6; // browser tab opening safety cap
 
-    // CSV load
-    $('loadCsv').addEventListener('click', () => {
+    let stopFlag = false;
+
+    mode.addEventListener('change', e=>{ apiSettings.style.display = e.target.value==='api'? 'block':'none'; });
+
+    // File load
+    $('loadCsv').addEventListener('click', ()=>{
       const f = $('csvFile').files[0];
-      if(!f){ alert('Please choose a CSV file (one number per line or comma separated).'); return; }
+      if(!f){ alert('CSV/TXT फाइल चुनें'); return; }
       const reader = new FileReader();
       reader.onload = ev => {
         const txt = ev.target.result;
-        // accept both commas and newlines
-        const numbers = txt.split(/[,\n\r]+/).map(s=>s.trim()).filter(Boolean);
-        $('numbers').value = numbers.join('\n');
+        // split by newline, comma
+        const rows = txt.split(/
+?
+/).map(r=>r.trim()).filter(Boolean);
+        const numbers = [];
+        rows.forEach(r=>{
+          // if contains comma or tab, try split
+          const parts = r.split(/[,	]+/).map(s=>s.trim());
+          const num = parts[0];
+          const name = parts[1] || '';
+          if(num) numbers.push({num, name});
+        });
+        populateNumbers(numbers);
       };
       reader.readAsText(f);
     });
 
-    $('clearList').addEventListener('click', ()=>{$('numbers').value='';});
+    function populateNumbers(arr){
+      // accept array of {num,name}
+      const lines = arr.map(o=> o.name? `${o.num},${o.name}`: o.num);
+      $('numbers').value = lines.join('
+');
+      updateStats();
+    }
 
-    function parseNumbers(){
+    $('clearList').addEventListener('click', ()=>{ $('numbers').value=''; updateStats(); });
+
+    function parseInputNumbers(){
       const raw = $('numbers').value.trim();
       if(!raw) return [];
-      const arr = raw.split(/[,\n\r]+/).map(s=>s.trim()).filter(Boolean);
-      return arr;
+      const lines = raw.split(/
+?
+|,/).map(s=>s.trim()).filter(Boolean);
+      const out = lines.map(l=>{
+        // allow formats: 919812345678 OR 919812345678,Name
+        const parts = l.split(/[,	]+/).map(s=>s.trim());
+        return { num: parts[0], name: parts[1] || '' };
+      });
+      // dedupe by number
+      const seen = new Set();
+      const filtered = out.filter(o=>{ if(!o.num) return false; if(seen.has(o.num)) return false; seen.add(o.num); return true; });
+      return filtered;
     }
 
-    function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-    async function sendSingleAPI(endpoint, to, body){
-      try{
-        const res = await fetch(endpoint,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ to, body })
-        });
-        const data = await res.json();
-        return { ok: res.ok, status: res.status, data };
-      }catch(e){
-        return { ok:false, error: e.message };
-      }
+    function updateStats(){
+      const arr = parseInputNumbers();
+      $('totalCount').textContent = arr.length;
+      $('statsChips').innerHTML = `<div class="chip">Unique: ${arr.length}</div>`;
     }
 
-    function openClickLink(to, body){
-      const url = `https://wa.me/${encodeURIComponent(to)}?text=${encodeURIComponent(body)}`;
-      window.open(url, '_blank');
-    }
+    $('numbers').addEventListener('input', updateStats);
 
+    // Preview
     $('previewBtn').addEventListener('click', ()=>{
-      const nums = parseNumbers();
-      if(!nums.length){ alert('Please add at least one number'); return; }
-      const first = nums[0];
-      const msg = $('message').value.replace('{{name}}', first);
+      const arr = parseInputNumbers();
+      if(!arr.length){ alert('पहले नंबर जोड़ें'); return; }
+      const first = arr[0];
+      const templates = getTemplates();
+      const tpl = templates.length? templates[0] : 'नमस्ते {{name}}';
+      const msg = tpl.replace(/{{name}}/g, first.name || first.num);
       if(mode.value === 'click'){
-        openClickLink(first, msg);
+        openClick(first.num, msg);
       }else{
-        alert('Preview will attempt to call your API endpoint. Make sure it is set and CORS allows this origin.');
-        console.log('Preview sending to API...');
+        const ep = $('apiEndpoint').value.trim();
+        if(!ep){ alert('API endpoint set करें'); return; }
+        fetch(ep, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: first.num, body: msg })})
+        .then(r=>r.json()).then(d=> alert('API Response:
+'+JSON.stringify(d,null,2))).catch(e=> alert('API Error: '+e.message));
       }
     });
 
-    $('sendBtn').addEventListener('click', async ()=>{
-      const nums = parseNumbers();
-      if(!nums.length){ alert('Please add recipient numbers'); return; }
-      const delay = parseInt($('delay').value || '500', 10);
-      const endpoint = $('apiEndpoint').value.trim();
-      const total = nums.length;
-      $('stats').textContent = `0/${total}`;
-      $('bar').style.width = '0%';
-      $('log').textContent = 'Starting...\n';
+    function getTemplates(){
+      return $('templates').value.split(/
+?
+/).map(s=>s.trim()).filter(Boolean);
+    }
 
+    function openClick(num, msg){
+      const url = `https://wa.me/${encodeURIComponent(num)}?text=${encodeURIComponent(msg)}`;
+      return window.open(url, '_blank');
+    }
+
+    function shuffle(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } }
+
+    // Send loop
+    $('sendBtn').addEventListener('click', async ()=>{
+      stopFlag = false;
+      const list = parseInputNumbers();
+      if(!list.length){ alert('कोई नंबर नहीं है'); return; }
+      let limit = parseInt($('limit').value||'0',10); if(!limit || limit<0) limit = 0;
+      let toSend = list.slice();
+      if($('randomize').value === 'yes') shuffle(toSend);
+      const templates = getTemplates();
+      const randTpl = $('randTemplate').value === 'yes';
+      const delay = parseInt($('delay').value||'1000',10) || 1000;
+      const endpoint = $('apiEndpoint').value.trim();
+
+      const max = limit>0? Math.min(limit, toSend.length): toSend.length;
+      $('log').textContent = '';
       let sent = 0;
-      for(let i=0;i<nums.length;i++){
-        const to = nums[i];
-        const personalized = $('message').value.replace(/{{name}}/g, to);
+      $('sentCount').textContent = 0;
+
+      // safety cap to avoid opening too many tabs at once
+      let openTabs = 0;
+
+      for(let i=0;i<max;i++){
+        if(stopFlag) break;
+        const rec = toSend[i];
+        const tpl = templates.length? (randTpl? templates[Math.floor(Math.random()*templates.length)] : templates[0]) : '{{name}}';
+        const name = rec.name || rec.num;
+        const body = tpl.replace(/{{name}}/g, name);
+
         if(mode.value === 'click'){
-          openClickLink(to, personalized);
-          sent++;
-        }else{
-          if(!endpoint){
-            $('log').textContent += 'API mode selected but backend endpoint not set. Aborting.\n';
-            break;
+          if(openTabs >= MAX_TABS){
+            // wait until user closes some tabs
+            await new Promise(r=> setTimeout(r, 1500));
+            openTabs = 0; // best-effort reset
           }
-          const res = await sendSingleAPI(endpoint, to, personalized);
-          if(res.ok){
-            sent++;
-            $('log').textContent += `${to}: OK (status ${res.status})\n`;
-          }else{
-            $('log').textContent += `${to}: ERROR ${res.error || JSON.stringify(res.data)}\n`;
-            if($('fallback').value === 'yes'){
-              openClickLink(to, personalized);
-              $('log').textContent += `--> Fallback opened click link for ${to}\n`;
-              sent++;
-            }
+          openClick(rec.num, body);
+          openTabs++;
+          sent++;
+          $('log').textContent += `${rec.num}: Opened click link
+`;
+        }else{
+          if(!endpoint){ $('log').textContent += 'API endpoint missing — aborting
+'; break; }
+          try{
+            const res = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: rec.num, body }) });
+            const j = await res.text();
+            $('log').textContent += `${rec.num}: API ${res.status} - ${j}
+`;
+            if(res.ok) sent++;
+          }catch(e){
+            $('log').textContent += `${rec.num}: API error - ${e.message}
+`;
           }
         }
-        $('stats').textContent = `${sent}/${total}`;
-        const pct = Math.round((i+1)/total*100);
-        $('bar').style.width = pct + '%';
-        await sleep(delay);
+
+        $('sentCount').textContent = sent;
+        const pct = Math.round((i+1)/max*100);
+        $('bar').style.width = pct+'%';
+        await new Promise(r=> setTimeout(r, delay));
       }
 
-      $('log').textContent += 'Finished.\n';
+      $('log').textContent += `Finished. Sent ${sent}/${max}
+`;
     });
+
+    $('stopBtn').addEventListener('click', ()=>{ stopFlag = true; $('log').textContent += 'Stopped by user
+'; });
+
+    // Export
+    $('exportList').addEventListener('click', ()=>{
+      const arr = parseInputNumbers();
+      const csv = arr.map(o=> `${o.num},${o.name}`).join('
+');
+      downloadText(csv, 'numbers_export.csv');
+    });
+    $('exportLog').addEventListener('click', ()=>{ downloadText($('log').textContent || '','send_log.txt'); });
+
+    $('downloadHtml').addEventListener('click', ()=>{ downloadText(new XMLSerializer().serializeToString(document), 'bulk_whatsapp_sender.html'); });
+
+    function downloadText(txt, name){
+      const a = document.createElement('a');
+      const blob = new Blob([txt], {type:'text/plain'});
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    // initial stats
+    updateStats();
+
+    // Warn user about compliance
+    window.addEventListener('load', ()=>{
+      setTimeout(()=>{
+        const ok = confirm('Important: Bulk messaging without consent may violate WhatsApp policies and local laws. Use only with explicit opt-in. Proceed?');
+        if(!ok){ $('sendBtn').disabled = true; $('previewBtn').disabled=true; }
+      }, 300);
+    });
+
   </script></body>
 </html>
